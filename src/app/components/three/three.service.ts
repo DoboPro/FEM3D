@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import * as THREE from 'three';
+import { ViewObjectService } from './geometry/view-object.service';
 import { SceneService } from './scene.service';
 
 @Injectable({
@@ -8,7 +9,16 @@ import { SceneService } from './scene.service';
 })
 export class ThreeService {
 
-  constructor(public scene: SceneService) { }
+  constructor(public scene: SceneService,
+              private viewObj: ViewObjectService) { 
+    this.ClearData();
+  }
+
+   //////////////////////////////////////////////////////
+  // データをクリアする
+  //////////////////////////////////////////////////////
+  public ClearData(): void {
+  }
 
   //////////////////////////////////////////////////////
   // マウス位置とぶつかったオブジェクトを検出する

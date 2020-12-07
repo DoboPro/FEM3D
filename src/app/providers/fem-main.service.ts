@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { ThreeService } from '../components/three/three.service';
+import { FemDataModel } from './data/FemDataModel';
+import { FileIOService } from './file-io.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,40 +11,38 @@ import { Injectable } from '@angular/core';
 // 3次元有限要素法(FEM)
 export class FemMainService {
 
-  constructor() { }
+  constructor(private model: FemDataModel,
+              private viewModel: ThreeService,
+              private fileio: FileIOService) {
+  }
 
-  public model;		// FEMデータモデル
-  var viewModel;		// 表示モデル
-  var viewObj;		// 表示オブジェクト
-  var bounds;		// モデル境界
-  var info;		// モデル情報表示部
-  var colorBar;		// カラーバー
-  var resultView;		// 結果表示設定
-  var viewConfig;		// モデル表示設定
-  var modalWindow;	// モーダルウィンドウ
+  public resultView;		// 結果表示設定
+  public viewConfig;		// モデル表示設定
+  public modalWindow;	// モーダルウィンドウ
 
-  var FILE_WINDOW = 0;	// ファイル操作ウィンドウ
-  var CALC_WINDOW = 1;	// 計算設定ウィンドウ
-  var RESULT_WINDOW = 2;	// 結果表示設定ウィンドウ
-  var CONFIG_WINDOW = 3;	// コンフィグウィンドウ
+  public FILE_WINDOW = 0;	// ファイル操作ウィンドウ
+  public CALC_WINDOW = 1;	// 計算設定ウィンドウ
+  public RESULT_WINDOW = 2;	// 結果表示設定ウィンドウ
+  public CONFIG_WINDOW = 3;	// コンフィグウィンドウ
 
 // データを初期化する
 // fileName - データファイル名
-public initModel(fileName) {
-  model = new FemDataModel();
-  initThree();
-  resultView = new ResultView();
-  viewConfig = new ViewConfig();
+public initModel(fileName: string = null) {
+  this.model.clear();
+  this.viewModel.ClearData();
   if ((fileName !== null) && (fileName !== undefined)) {
-    readServerFemFile(fileName);
+    this.fileio.readServerFemFile(fileName);
   }
+  /*
   modalWindow = [document.getElementById('file'),
   document.getElementById('calc'),
   document.getElementById('result'),
   document.getElementById('config')];
   loop();
+  */
 }
-
+ 
+/*
 // three.js の初期化をする
 function initThree() {
   document.addEventListener('keydown', keyPressed, false);
@@ -52,20 +53,6 @@ function initThree() {
   colorBar = new ColorBar('colorbar');
 }
 
-// キーを押した時の処理を行う
-function keyPressed(e) {
-  switch (e.keyCode) {
-    case 88:		// X
-      viewModel.viewX();
-      break;
-    case 89:		// Y
-      viewModel.viewY();
-      break;
-    case 90:		// Z
-      viewModel.viewZ();
-      break;
-  }
-}
 
 // 表示オブジェクトを初期化する
 function initObject() {
@@ -163,6 +150,7 @@ function inherits(ctor, superCtor) {
   ctor.super_ = superCtor;
   Object.setPrototypeOf(ctor.prototype, superCtor.prototype);
 }
+*/
 
 
 }

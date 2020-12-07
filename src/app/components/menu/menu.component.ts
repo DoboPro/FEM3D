@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FemMainService } from 'src/app/providers/fem-main.service';
+import { ThreeService } from '../three/three.service';
 
 @Component({
   selector: 'app-menu',
@@ -7,15 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MenuComponent implements OnInit {
 
-  constructor() { }
+  constructor(public InputData: FemMainService) { }
 
   ngOnInit(): void {
+    this.renew();
   }
 
-  // 計算を開始する
-  public calcStart() {
+  // 計算
+  public calcrate() {
   }
 
+
+  // 新規作成
+  public renew(): void {
+    this.InputData.initModel('assets/bend/sampleBendHexa1.fem');
+  }
 
 
 }

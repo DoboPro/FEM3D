@@ -1,42 +1,41 @@
-import { Injectable } from '@angular/core';
+import * as THREE from 'three';
+import { Material } from './Material';
+import { BoundaryCondition } from '../BoundaryCondition';
+import { ResultService } from '../result.service';
+import { SolverService } from '../Solver';
 
-@Injectable({
-  providedIn: 'root'
-})
+
 //--------------------------------------------------------------------//
 // FEM データモデル
-export class FemDataModelService {
+export class FemDataModel {
 
   private COEF_F_W = 0.5 / Math.PI;	// f/ω比 1/2π
+  public materials: any[];          // 材料
+  public shellParams: any[];        // シェルパラメータ
+  public barParams: any[];          // 梁パラメータ
+  public coordinates: any[];        // 局所座標系
+  public hasShellBar: boolean;      // シェル要素または梁要素を含まない
 
-  constructor() { 
-    this.materials = [];			// 材料
-    this.shellParams = [];			// シェルパラメータ
-    this.barParams = [];			// 梁パラメータ
-    this.coordinates = [];			// 局所座標系
-    this.mesh = new MeshModel();		// メッシュモデル
-    this.bc = new BoundaryCondition();	// 境界条件
-    this.solver = new Solver();		// 連立方程式求解オブジェクト
-    this.result = new Result();		// 計算結果
-    this.hasShellBar = false;		// シェル要素または梁要素を含まない
-
+  constructor(public mesh: MeshModel,
+              public bc: BoundaryCondition,
+              private solver: SolverService,
+              private result: ResultService) { 
   }
 
 // データを消去する
 public clear(): void {
-  this.materials.length = 0;
-  this.shellParams.length = 0;
-  this.barParams.length = 0;
-  this.coordinates.length = 0;
-  this.mesh.clear();
-  this.bc.clear();
-  this.result.clear();
-  this.result.type = NODE_DATA;
-};
+  this.materials = new Array();
+  this.shellParams = new Array();
+  this.barParams = new Array();
+  this.coordinates = new Array();
+  this.mesh.clear(); // メッシュモデル
+  this.bc.clear();    // 境界条件
+  this.result.clear(); // 計算結果
+}
 
 // モデルを初期化する
-FemDataModel.prototype.init = function () {
-  this.solver.method = ILUCG_METHOD;	// デフォルトは反復解法
+public init(): void {
+  this.solver.method = this.solver.ILUCG_METHOD;	// デフォルトは反復解法
   var mats = this.materials;
   mats.sort(compareLabel);
   this.mesh.init();
@@ -54,49 +53,51 @@ FemDataModel.prototype.init = function () {
     var m3d = mats[i].matrix3D();
     mats[i].matrix = { m2d: m2d, msh: msh, m3d: m3d };
   }
-};
+}
 
 // 節点・要素ポインタを設定する
-FemDataModel.prototype.reNumbering = function () {
-  var nodes = this.mesh.nodes, elements = this.mesh.elements;
-  var map = [], i;
-  for (i = 0; i < nodes.length; i++) {
+public reNumbering(): void {
+  const nodes = this.mesh.nodes;
+  const elements = this.mesh.elements;
+  const map = [];
+  for (let i = 0; i < nodes.length; i++) {
     map[nodes[i].label] = i;
   }
-  for (i = 0; i < elements.length; i++) {
-    resetNodes(map, elements[i]);
+  for (let i = 0; i < elements.length; i++) {
+    this.resetNodes(map, elements[i]);
   }
-  for (i = 0; i < this.bc.restraints.length; i++) {
-    resetNodePointer(map, this.bc.restraints[i]);
+  for (let i = 0; i < this.bc.restraints.length; i++) {
+    this.resetNodePointer(map, this.bc.restraints[i]);
   }
-  for (i = 0; i < this.bc.loads.length; i++) {
-    resetNodePointer(map, this.bc.loads[i]);
+  for (let i = 0; i < this.bc.loads.length; i++) {
+    this.resetNodePointer(map, this.bc.loads[i]);
   }
-  for (i = 0; i < this.bc.temperature.length; i++) {
-    resetNodePointer(map, this.bc.temperature[i]);
+  for (let i = 0; i < this.bc.temperature.length; i++) {
+    this.resetNodePointer(map, this.bc.temperature[i]);
   }
   map.length = 0;
-  for (i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     map[elements[i].label] = i;
   }
-  for (i = 0; i < this.bc.pressures.length; i++) {
-    resetElementPointer(map, this.bc.pressures[i]);
+  for (let i = 0; i < this.bc.pressures.length; i++) {
+    this.resetElementPointer(map, this.bc.pressures[i]);
   }
-  for (i = 0; i < this.bc.htcs.length; i++) {
-    resetElementPointer(map, this.bc.htcs[i]);
+  for (let i = 0; i < this.bc.htcs.length; i++) {
+    this.resetElementPointer(map, this.bc.htcs[i]);
   }
-};
+}
 
 // 材料ポインタを設定する
-FemDataModel.prototype.resetMaterialLabel = function () {
+public resetMaterialLabel(): void {
   if (this.materials.length === 0) {
-    this.materials.push(new Material(1, 1, 0.3, 1, 1, 1, 1));
+    this.materials.push(new Material(1, 1, 0.3, 1, 1, 1)); //, 1));
   }
-  var map = [], i, elements = this.mesh.elements;
-  for (i = 0; i < this.materials.length; i++) {
+  const map = [];
+  const elements = this.mesh.elements;
+  for (let i = 0; i < this.materials.length; i++) {
     map[this.materials[i].label] = i;
   }
-  for (i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     if (elements[i].material in map) {
       elements[i].material = map[elements[i].material];
     }
@@ -105,22 +106,25 @@ FemDataModel.prototype.resetMaterialLabel = function () {
         'は存在しません');
     }
   }
-};
+}
 
 // シェルパラメータ・梁パラメータのポインタを設定する
-FemDataModel.prototype.resetParameterLabel = function () {
+public resetParameterLabel(): void{
   if ((this.shellParams.length === 0) && (this.barParams.length === 0)) {
     this.hasShellBar = false;
     return;
   }
-  var map1 = [], map2 = [], i, elements = this.mesh.elements, shellbars = 0;
-  for (i = 0; i < this.shellParams.length; i++) {
+  const map1 = [];
+  const map2 = [];
+  const elements = this.mesh.elements;
+  let shellbars = 0;
+  for (let i = 0; i < this.shellParams.length; i++) {
     map1[this.shellParams[i].label] = i;
   }
-  for (i = 0; i < this.barParams.length; i++) {
+  for (let i = 0; i < this.barParams.length; i++) {
     map2[this.barParams[i].label] = i;
   }
-  for (i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     if (elements[i].isShell) {
       if (elements[i].param in map1) {
         elements[i].param = map1[elements[i].param];
@@ -144,37 +148,37 @@ FemDataModel.prototype.resetParameterLabel = function () {
   }
   this.hasShellBar = (shellbars > 0);
   if (this.hasShellBar) {		// シェル要素・梁要素を含む場合は直接解法
-    this.solver.method = LU_METHOD;
+    this.solver.method = this.solver.LU_METHOD;
   }
-};
+}
 
 // 局所座標系を設定する
-FemDataModel.prototype.resetCoordinates = function () {
+public resetCoordinates(): void {
   if (this.coordinates.length === 0) {
     return;
   }
-  var map = [], i;
-  for (i = 0; i < this.coordinates.length; i++) {
+  const map = [];
+  for (let i = 0; i < this.coordinates.length; i++) {
     map[this.coordinates[i].label] = this.coordinates[i];
   }
-  for (i = 0; i < this.bc.restraints.length; i++) {
+  for (let i = 0; i < this.bc.restraints.length; i++) {
     resetCoordinatesPointer(map, this.bc.restraints[i]);
   }
-  for (i = 0; i < this.bc.loads.length; i++) {
+  for (let i = 0; i < this.bc.loads.length; i++) {
     resetCoordinatesPointer(map, this.bc.loads[i]);
   }
-};
+}
 
 // 節点の自由度を設定する
-FemDataModel.prototype.setNodeDoF = function () {
-  var i, dof = this.bc.dof;
-  var nodeCount = this.mesh.nodes.length;
-  var elemCount = this.mesh.elements.length;
+public setNodeDoF(): void {
+  const dof = this.bc.dof;
+  const nodeCount = this.mesh.nodes.length;
+  const elemCount = this.mesh.elements.length;
   dof.length = 0;
-  for (i = 0; i < nodeCount; i++) {
+  for (let i = 0; i < nodeCount; i++) {
     dof[i] = 3;
   }
-  for (i = 0; i < elemCount; i++) {
+  for (let i = 0; i < elemCount; i++) {
     var elem = this.mesh.elements[i];
     if (elem.isShell || elem.isBar) {	// シェル要素・梁要素
       var count = elem.nodeCount();
@@ -184,12 +188,12 @@ FemDataModel.prototype.setNodeDoF = function () {
     }
   }
   this.solver.dof = this.bc.setPointerStructure(nodeCount);
-};
+}
 
 // 静解析をする
-FemDataModel.prototype.calculate = function () {
-  var t0 = new Date().getTime();
-  var calc = false;
+public calculate(): void {
+  const t0 = new Date().getTime();
+  let calc = false;
   if ((this.bc.temperature.length > 0) || (this.bc.htcs.length > 0)) {
     this.solver.dof = this.mesh.nodes.length;
     this.bc.setPointerHeat(this.solver.dof);
@@ -203,7 +207,7 @@ FemDataModel.prototype.calculate = function () {
     this.solver.createStiffnessMatrix();
     var d = this.solver.solve();
     this.result.setDisplacement(this.bc, d, this.mesh.nodes.length);
-    if (this.result.type === ELEMENT_DATA) {
+    if (this.result.type === this.result.ELEMENT_DATA) {
       this.calculateElementStress();
     }
     else {
@@ -214,31 +218,36 @@ FemDataModel.prototype.calculate = function () {
   if (!calc) {
     alert('拘束条件不足のため計算できません');
   }
-  var t1 = new Date().getTime();
+  const t1 = new Date().getTime();
   console.log('Calculation time:' + (t1 - t0) + 'ms');
-};
+}
 
 // 固有振動数・固有ベクトルを求める
 // count - 求める固有振動の数
-FemDataModel.prototype.charVib = function (count) {
-  var t0 = new Date().getTime();
+public charVib(count: number): void {
+  const t0 = new Date().getTime();
   this.result.clear();
   this.setNodeDoF();
   count = Math.min(count, this.solver.dof);
-  var n = Math.min(3 * count, this.solver.dof), i;
+  const n = Math.min(3 * count, this.solver.dof);
   this.solver.createStiffMassMatrix();
-  var eig = this.solver.eigenByLanczos(n);
-  var nodeCount = this.mesh.nodes.length;
-  for (i = count; i < n; i++) delete eig.ut[i];
-  for (i = 0; i < count; i++) {
-    var f = COEF_F_W * Math.sqrt(Math.max(eig.lambda[i], 0));
-    var uti = eig.ut[i], s = 0;
-    for (var j = 0; j < uti.length; j++) s += uti[j] * uti[j];
-    var u = numeric.mul(1 / Math.sqrt(s), uti);
-    var ev = new EigenValue(f, VIBRATION);
+  const eig = this.solver.eigenByLanczos(n);
+  const nodeCount = this.mesh.nodes.length;
+  for (let i = count; i < n; i++){
+    delete eig.ut[i];
+  }
+  for (let i = 0; i < count; i++) {
+    const f = this.COEF_F_W * Math.sqrt(Math.max(eig.lambda[i], 0));
+    const uti = eig.ut[i];
+    let s = 0;
+    for (let j = 0; j < uti.length; j++) {
+      s += uti[j] * uti[j];
+    }
+    const u = numeric.mul(1 / Math.sqrt(s), uti);
+    const ev = new EigenValue(f, this.result.VIBRATION);
     ev.setDisplacement(this.bc, u, nodeCount);
     this.result.addEigenValue(ev);
-    if (this.result.type === ELEMENT_DATA) {
+    if (this.result.type === this.result.ELEMENT_DATA) {
       this.calculateEvElementEnergy(ev);
     }
     else {
@@ -246,13 +255,13 @@ FemDataModel.prototype.charVib = function (count) {
     }
     delete eig.ut[i];
   }
-  var t1 = new Date().getTime();
+  const t1 = new Date().getTime();
   console.log('Calculation time:' + (t1 - t0) + 'ms');
-};
+}
 
 // 線形座屈解析をする
 // count - 求める固有値の数
-FemDataModel.prototype.calcBuckling = function (count) {
+public calcBuckling(count: number) {
   var t0 = new Date().getTime();
   if (this.bc.restraints.length === 0) {
     throw new Error('拘束条件がありません');
@@ -287,7 +296,7 @@ FemDataModel.prototype.calcBuckling = function (count) {
 };
 
 // 節点歪・応力・歪エネルギー密度を計算する
-FemDataModel.prototype.calculateNodeStress = function () {
+public calculateNodeStress(): void{
   var nodes = this.mesh.nodes, nodeCount = nodes.length;
   var elems = this.mesh.elements, elemCount = elems.length;
   var angle = numeric.rep([nodeCount], 0), p = [], v = [], i, j, s, eaj;
@@ -304,7 +313,7 @@ FemDataModel.prototype.calculateNodeStress = function () {
     var material = this.materials[elem.material], mat = material.matrix;
     var ea = elem.angle(p);
     if (elem.isShell) {
-      var sp = model.shellParams[elem.param], mmat;
+      var sp = this.model.shellParams[elem.param], mmat;
       if (elem.getName() === 'TriElement1') {
         mmat = mat.m2d;
       }
@@ -605,34 +614,32 @@ function resetCoordinatesPointer(map, bc) {
   else {
     throw new Error('局所座標系番号' + coords + 'は存在しません');
   }
+*/
 }
+
 
 //--------------------------------------------------------------------//
 // メッシュモデル
-var MeshModel = function () {
-  this.nodes = [];		// 節点
-  this.elements = [];		// 要素
-  this.freeFaces = [];		// 表面
-  this.faceEdges = [];		// 表面の要素辺
-};
+export class MeshModel {
 
-// 節点を返す
-// s - 節点集合
-MeshModel.prototype.getNodes = function (s) {
-  var p = [];
-  for (var i = 0; i < s.nodes.length; i++) {
-    p[i] = this.nodes[s.nodes[i]];
-  }
-  return p;
-};
+  public nodes: any[];      // 節点
+  public elements: any[];   // 要素
+  public freeFaces: any[];  // 表面
+  public faceEdges: any[];  // 表面の要素辺
+
+  constructor() {
+    this.clear();
+   }
+
 
 // データを消去する
-MeshModel.prototype.clear = function () {
-  this.nodes.length = 0;
-  this.elements.length = 0;
-  this.freeFaces.length = 0;
-  this.faceEdges.length = 0;
+public clear(): void{
+  this.nodes= new Array();	
+  this.elements= new Array();	
+  this.freeFaces= new Array();	
+  this.faceEdges= new Array();	
 };
+/*
 
 // モデルを初期化する
 MeshModel.prototype.init = function () {
@@ -824,38 +831,50 @@ MeshModel.prototype.getBarGeometry = function () {
   geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
   return geometry;
 };
+*/
+}
 
 //--------------------------------------------------------------------//
 // 節点
 // label - 節点ラベル
 // x,y,z - x,y,z座標
-var FENode = function (label, x, y, z) {
-  THREE.Vector3.call(this, x, y, z);
-  this.label = label;
-};
+export class FENode extends THREE.Vector3 { 
 
-// 節点のコピーを返す
-FENode.prototype.clone = function () {
-  return new this.constructor(this.label, this.x, this.y, this.z);
-};
+  public label: number;
 
-// 節点を表す文字列を返す
-FENode.prototype.toString = function () {
-  return 'Node\t' + this.label.toString(10) + '\t' +
-    this.x + '\t' + this.y + '\t' + this.z;
-};
+  constructor(label: number, x: number, y: number, z: number) {
+    super(x, y, z);
+    this.label = label;
+  }
+
+  // 節点のコピーを返す
+  public clone(): FENode {
+    return new FENode(this.label, this.x, this.y, this.z);
+  }
+
+  // 節点を表す文字列を返す
+  public toString(): string {
+    return 'Node\t' + this.label.toString(10) + '\t' +
+      this.x + '\t' + this.y + '\t' + this.z;
+  }
+
+}
 
 //--------------------------------------------------------------------//
 // 節点集合
 // nodes - 節点番号
-var Nodes = function (nodes) {
-  this.nodes = nodes;
-};
+export class Nodes {
 
-// 節点数を返す
-Nodes.prototype.nodeCount = function () {
-  return this.nodes.length;
-};
+  public nodes: any[];
+  constructor(nodes) {
+    this.nodes = nodes;
+  }
+
+  // 節点数を返す
+  public nodeCount(): number {
+    return this.nodes.length;
+  }
+}
 
 // 重心位置を返す
 // p - 頂点座標
@@ -925,6 +944,3 @@ function addVector(v, dv) {
   }
 }
 
-inherits(FENode, THREE.Vector3);
-
-}

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FemDataModelService } from './fem-data-model.service';
+import { ViewObjectService } from './view-object.service';
 
-describe('FemDataModelService', () => {
-  let service: FemDataModelService;
+describe('ViewObjectService', () => {
+  let service: ViewObjectService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FemDataModelService);
+    service = TestBed.inject(ViewObjectService);
   });
 
   it('should be created', () => {
