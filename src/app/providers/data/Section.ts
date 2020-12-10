@@ -148,10 +148,10 @@ export class RectSection extends Section {
           // 断面積
         this.area = b1 * h1 - b2 * h2;
           // 断面２次モーメント
-        const i11: number = b1 * b1 * b1 * h1;
-        const i12: number = b1 * h1 * h1 * h1;
-        const i21: number = b2 * b2 * b2 * h2;
-        const i22: number = b2 * h2 * h2 * h2;
+        let i11: number = b1 * b1 * b1 * h1;
+        let i12: number = b1 * h1 * h1 * h1;
+        let i21: number = b2 * b2 * b2 * h2;
+        let i22: number = b2 * h2 * h2 * h2;
         this.iy = ( i11 - i21 ) / 12;
         this.iz = ( i12 - i22 ) / 12;
         const sw1: boolean = (b1>=h1);
@@ -249,7 +249,7 @@ export class RectSection extends Section {
     const c1 = [ 0.5, -0.5, -0.5, 0.5, 0.5 ];
     const c2 = [ 0.5, 0.5, -0.5, -0.5, 0.5 ];
     for ( let j = 0; j < c1.length; j++ ) {
-      const j3 = 3 * j;
+      let j3 = 3 * j;
       pos1[ j3 ] = cx + c1[j] * this.b1 * v2.x + c2[j] * this.h1 * v3.x;
       pos1[ j3 + 1 ] = cy + c1[j] * this.b1 * v2.y + c2[j] * this.h1 * v3.y;
       pos1[ j3 + 2 ] = cz + c1[j] * this.b1 * v2.z + c2[j] * this.h1 * v3.z;

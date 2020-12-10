@@ -63,7 +63,7 @@ export class BoundaryCondition {
     }
     for(let i = 0; i < this.restraints.length; i++ ){
       const r: any = this.restraints[i];
-      const index0: number = this.nodeIndex[r.node];
+      let index0: number = this.nodeIndex[r.node];
       const rdof: number = this.dof[r.node];
       for(let j = 0; j < rdof; j++ ) {
         if ( r.rest[j] ){

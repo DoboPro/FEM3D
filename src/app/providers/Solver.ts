@@ -1,4 +1,4 @@
-import { BoundaryCondition } from './BoundaryCondition';
+import { BoundaryCondition } from './data/BoundaryCondition';
 import { FemDataModel } from './data/FemDataModel';
 
 // 連立方程式求解オブジェクト

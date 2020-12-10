@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ThreeService } from '../components/three/three.service';
 import { FemDataModel } from './data/FemDataModel';
-import { FileIOService } from './file-io.service';
+import { FileIOService } from './data/FileIO';
 
 @Injectable({
   providedIn: 'root'
