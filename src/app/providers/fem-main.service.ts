@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ThreeService } from '../components/three/three.service';
-import { FemDataModel } from './fem-data-model.service';
-import { FileIO } from './file-io.service';
+import { FemDataModel, FileIO, Solver } from './libs/Fem.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +12,8 @@ export class FemMainService {
 
   constructor(private model: FemDataModel,
               private viewModel: ThreeService,
-              private fileio: FileIO) {}
+              private fileio: FileIO,
+              private solver: Solver) {}
 
   // データを初期化する
   // fileName - データファイル名
@@ -23,6 +23,10 @@ export class FemMainService {
     if ((fileName !== null) && (fileName !== undefined)) {
       this.fileio.readServerFemFile(fileName);
     }
+  }
+
+  public calcStart(): void {
+    this.solver.calcStart();
   }
 
 }
