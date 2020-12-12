@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { StrainService } from './strain.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('StrainService', () => {
+  let service: StrainService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(StrainService);
   });
 
   it('should be created', () => {

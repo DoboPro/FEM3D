@@ -40,11 +40,13 @@ export class ThreeService {
 
   public set(points): void{
     this.box.setFromPoints(points);
+    /*
     this.center.copy(this.box.getCenter());
     this.size = Math.max(this.box.max.x - this.box.min.x,
       this.box.max.y - this.box.min.y,
       this.box.max.z - this.box.min.z);
     this.viewPoint = 2 * this.size;
+    */
   }
 
 }

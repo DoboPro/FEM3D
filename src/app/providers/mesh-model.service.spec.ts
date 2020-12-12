@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { MeshModel } from './mesh-model.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('MeshModel', () => {
+  let service: MeshModel;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(MeshModel);
   });
 
   it('should be created', () => {

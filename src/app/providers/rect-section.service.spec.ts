@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { RectSectionService } from './rect-section.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('RectSectionService', () => {
+  let service: RectSectionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(RectSectionService);
   });
 
   it('should be created', () => {

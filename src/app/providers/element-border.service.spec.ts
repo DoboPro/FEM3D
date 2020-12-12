@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { ElementBorderService } from './element-border.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('ElementBorderService', () => {
+  let service: ElementBorderService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(ElementBorderService);
   });
 
   it('should be created', () => {

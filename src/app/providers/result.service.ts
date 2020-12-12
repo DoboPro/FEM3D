@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
+import { BoundaryCondition } from './boundary-condition.service';
+import { Strain } from './strain.service';
+import { Stress } from './stress.service';
+import { Vector3R } from './vector3-r.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ResultService {
+export class Result {
 
   // データ型
   public NONE=-1;		// 空データ
@@ -105,50 +109,103 @@ export class ResultService {
     this.minValue=0;
     this.maxValue=0;
     this.type = this.NODE_DATA;
-  };
+  }
+
+
+  // 節点歪・応力を初期化する
+  // count - 節点数
+  public initStrainAndStress(count) {
+    this.strain1.length = 0;
+    this.strain2.length = 0;
+    this.stress1.length = 0;
+    this.stress2.length = 0;
+    this.sEnergy1.length = 0;
+    this.sEnergy2.length = 0;
+    const zeros = [0, 0, 0, 0, 0, 0];
+    for (let i = 0; i < count; i++) {
+      this.strain1[i] = new Strain(zeros);
+      this.strain2[i] = new Strain(zeros);
+      this.stress1[i] = new Stress(zeros);
+      this.stress2[i] = new Stress(zeros);
+      this.sEnergy1[i] = 0;
+      this.sEnergy2[i] = 0;
+    }
+  }
+
+  // 節点変位を設定する
+  // bc - 境界条件
+  // disp - 節点変位を表すベクトル
+  // nodeCount - 節点数
+  public setDisplacement(bc: BoundaryCondition, disp, nodeCount: number) {
+    this.displacement.length = 0;
+    this.dispMax = 0;
+    this.angleMax = 0;
+    const rests = bc.restraints;
+    let ii = 0;
+    for (let i = 0; i < nodeCount; i++) {
+      const v = new Vector3R(0,0,0,0,0,0);
+      const i0 = bc.nodeIndex[i];
+      const bcDof = bc.dof[i];
+      let r = -1;
+      const x: number[] = v.x;
+      for (let j = 0; j < bcDof; j++) {
+        const bcl = bc.bcList[i0 + j];
+        if (bcl < 0) {
+          x[j] = disp[ii];
+          ii++;
+        }
+        else {
+          r = Math.round(bcl / 6);
+          x[j] = rests[r].x[j];
+        }
+      }
+      if ((r >= 0) && rests[r].coords) {
+        v.x = rests[r].coords.toGlobal(x);
+      }
+      this.dispMax = Math.max(this.dispMax, v.magnitude());
+      this.angleMax = Math.max(this.angleMax, v.magnitudeR());
+      this.displacement.push(v);
+    }
+    this.calculated = true;
+  }
+
+  // 節点の構造解析結果に値を加える
+  // i - 節点のインデックス
+  // eps1,str1,se1,eps2,str2,se2 - 表面・裏面の歪，応力，歪エネルギー密度
+  public addStructureData(i, eps1, str1, se1,
+    eps2, str2, se2) {
+    this.strain1[i].add(eps1);
+    this.stress1[i].add(str1);
+    this.sEnergy1[i] += se1;
+    this.strain2[i].add(eps2);
+    this.stress2[i].add(str2);
+    this.sEnergy2[i] += se2;
+  }
+
+  // 節点の構造解析結果に値を掛ける
+  // i - 節点のインデックス
+  // coef - 計算結果に掛ける係数
+  public mulStructureData(i, coef) {
+    this.strain1[i].mul(coef);
+    this.stress1[i].mul(coef);
+    this.sEnergy1[i] *= coef;
+    this.strain2[i].mul(coef);
+    this.stress2[i].mul(coef);
+    this.sEnergy2[i] *= coef;
+  }
+
 
 /*
-// 節点変位を設定する
-// bc - 境界条件
-// disp - 節点変位を表すベクトル
-// nodeCount - 節点数
-Result.prototype.setDisplacement=function(bc,disp,nodeCount){
-  this.displacement.length=0;
-  this.dispMax=0;
-  this.angleMax=0;
-  var rests=bc.restraints,ii=0;
-  for(var i=0;i<nodeCount;i++){
-    var v=new Vector3R(),i0=bc.nodeIndex[i],bcDof=bc.dof[i],r=-1,x=v.x;
-    for(var j=0;j<bcDof;j++){
-      var bcl=bc.bcList[i0+j];
-      if(bcl<0){
-      	x[j]=disp[ii];
-      	ii++;
-      }
-      else{
-      	r=parseInt(bcl/6);
-      	x[j]=rests[r].x[j];
-      }
-    }
-    if((r>=0) && rests[r].coords){
-      v.x=rests[r].coords.toGlobal(x);
-    }
-    this.dispMax=Math.max(this.dispMax,v.magnitude());
-    this.angleMax=Math.max(this.angleMax,v.magnitudeR());
-    this.displacement.push(v);
-  }
-  this.calculated=true;
-};
 
 // 節点温度を設定する
 // bc - 境界条件
 // t - 節点温度を表すベクトル
 // nodeCount - 節点数
-Result.prototype.setTemperature=function(bc,t,nodeCount){
+public setTemperature=function(bc,t,nodeCount){
   this.temperature.length=0;
-  var temp=bc.temperature,ii=0;
-  for(var i=0;i<nodeCount;i++){
-    var tt;
+  const temp=bc.temperature,ii=0;
+  for(const i=0;i<nodeCount;i++){
+    const tt;
     if(bc.bcList[i]<0){
       tt=t[ii];
       ii++;
@@ -162,34 +219,12 @@ Result.prototype.setTemperature=function(bc,t,nodeCount){
   this.calculated=true;
 };
 
-// 節点の構造解析結果に値を加える
-// i - 節点のインデックス
-// eps1,str1,se1,eps2,str2,se2 - 表面・裏面の歪，応力，歪エネルギー密度
-Result.prototype.addStructureData=function(i,eps1,str1,se1,
-      	      	      	      	      	   eps2,str2,se2){
-  this.strain1[i].add(eps1);
-  this.stress1[i].add(str1);
-  this.sEnergy1[i]+=se1;
-  this.strain2[i].add(eps2);
-  this.stress2[i].add(str2);
-  this.sEnergy2[i]+=se2;
-};
 
-// 節点の構造解析結果に値を掛ける
-// i - 節点のインデックス
-// coef - 計算結果に掛ける係数
-Result.prototype.mulStructureData=function(i,coef){
-  this.strain1[i].mul(coef);
-  this.stress1[i].mul(coef);
-  this.sEnergy1[i]*=coef;
-  this.strain2[i].mul(coef);
-  this.stress2[i].mul(coef);
-  this.sEnergy2[i]*=coef;
-};
+
 
 // 固有値データを追加する
 // ev - 固有値
-Result.prototype.addEigenValue=function(ev){
+public addEigenValue=function(ev){
   this.eigenValue.push(ev);
   this.calculated=true;
 };
@@ -198,18 +233,18 @@ Result.prototype.addEigenValue=function(ev){
 // param - データの種類
 // component - データの成分
 // data - コンター図参照元
-Result.prototype.setContour=function(param,component,data){
+public setContour=function(param,component,data){
   if(param<0) return;
   data=data||this;
-  var dpara=[data.displacement,data.strain1,data.stress1,data.sEnergy1,
+  const dpara=[data.displacement,data.strain1,data.stress1,data.sEnergy1,
       	     data.temperature];
-  var count=dpara[param].length;
+  const count=dpara[param].length;
   if(count===0) return;
   this.value.length=0;
   this.value[0]=data.getData(param,component,0);
   this.minValue=this.value[0];
   this.maxValue=this.value[0];
-  for(var i=1;i<count;i++){
+  for(const i=1;i<count;i++){
     this.value[i]=data.getData(param,component,i);
     this.minValue=Math.min(this.minValue,this.value[i]);
     this.maxValue=Math.max(this.maxValue,this.value[i]);
@@ -220,7 +255,7 @@ Result.prototype.setContour=function(param,component,data){
 // param - データの種類
 // component - データの成分
 // index - 節点のインデックス
-Result.prototype.getData=function(param,component,index){
+public getData=function(param,component,index){
   switch(param){
     case DISPLACEMENT:
       switch(component){
@@ -268,12 +303,12 @@ Result.prototype.getData=function(param,component,index){
 // 歪・応力を取り出す
 // s - 歪 or 応力
 // component - データの成分
-Result.prototype.getTensorComp=function(s,component){
+public getTensorComp=function(s,component){
   if(component<6){
     return s.vector()[component];
   }
   else if(component<=10){
-    var pri=s.principal();
+    const pri=s.principal();
     if(component===MAX_PRINCIPAL)      return pri[0];
     else if(component===MIN_PRINCIPAL) return pri[2];
     else if(component===MID_PRINCIPAL) return pri[1];
@@ -285,31 +320,12 @@ Result.prototype.getTensorComp=function(s,component){
   return 0;
 };
 
-// 節点歪・応力を初期化する
-// count - 節点数
-Result.prototype.initStrainAndStress=function(count){
-  this.strain1.length=0;
-  this.strain2.length=0;
-  this.stress1.length=0;
-  this.stress2.length=0;
-  this.sEnergy1.length=0;
-  this.sEnergy2.length=0;
-  var zeros=[0,0,0,0,0,0];
-  for(var i=0;i<count;i++){
-    this.strain1[i]=new Strain(zeros);
-    this.strain2[i]=new Strain(zeros);
-    this.stress1[i]=new Stress(zeros);
-    this.stress2[i]=new Stress(zeros);
-    this.sEnergy1[i]=0;
-    this.sEnergy2[i]=0;
-  }
-};
 
 // データ文字列を返す
 // nodes - 節点
 // elems - 要素
-Result.prototype.toStrings=function(nodes,elems){
-  var s=[],tuple,i;
+public toStrings=function(nodes,elems){
+  const s=[],tuple,i;
   if(this.type===ELEMENT_DATA){
     s.push('ResultType\tElement');
     tuple=elems;
@@ -361,7 +377,7 @@ Result.prototype.toStrings=function(nodes,elems){
 // 固有値
 // value - 固有値・固有振動数
 // type - 解析種類
-var EigenValue=function(value,type){
+const EigenValue=function(value,type){
   this.value=value;
   this.type=type;
   this.displacement=[];		// 変位
@@ -379,11 +395,11 @@ EigenValue.prototype.setDisplacement=function(bc,disp,nodeCount){
   this.displacement.length=0;
   this.dispMax=0;
   this.angleMax=0;
-  var rests=bc.restraints,ii=0;
-  for(var i=0;i<nodeCount;i++){
-    var v=new Vector3R(),i0=bc.nodeIndex[i],bcDof=bc.dof[i],r=-1,x=v.x;
-    for(var j=0;j<bcDof;j++){
-      var bcl=bc.bcList[i0+j];
+  const rests=bc.restraints,ii=0;
+  for(const i=0;i<nodeCount;i++){
+    const v=new Vector3R(),i0=bc.nodeIndex[i],bcDof=bc.dof[i],r=-1,x=v.x;
+    for(const j=0;j<bcDof;j++){
+      const bcl=bc.bcList[i0+j];
       if(bcl<0){
       	x[j]=disp[ii];
       	ii++;
@@ -437,7 +453,7 @@ EigenValue.prototype.getData=function(param,component,index){
 EigenValue.prototype.initStrainEnergy=function(count){
   this.sEnergy1.length=0;
   this.sEnergy2.length=0;
-  for(var i=0;i<count;i++){
+  for(const i=0;i<count;i++){
     this.sEnergy1[i]=0;
     this.sEnergy2[i]=0;
   }
@@ -447,7 +463,7 @@ EigenValue.prototype.initStrainEnergy=function(count){
 // nodes - 節点
 // tuple - 節点or要素
 EigenValue.prototype.toStrings=function(nodes,tuple){
-  var s=[],i;
+  const s=[],i;
   s.push('EigenValue\t'+this.type+'\t'+this.value);
   for(i=0;i<this.displacement.length;i++){
     s.push('Displacement\t'+nodes[i].label.toString(10)+'\t'+
@@ -467,7 +483,7 @@ EigenValue.prototype.toStrings=function(nodes,tuple){
 //--------------------------------------------------------------------//
 // ３次元対称テンソル
 // s - 成分
-var SymmetricTensor3=function(s){
+const SymmetricTensor3=function(s){
   this.xx=s[0];
   this.yy=s[1];
   this.zz=s[2];
@@ -511,13 +527,13 @@ SymmetricTensor3.prototype.principal=function(){
 // テンソルを回転させる
 // d - 方向余弦マトリックス
 SymmetricTensor3.prototype.rotate=function(d){
-  var mat=[[this.xx,this.xy,this.zx],[this.xy,this.yy,this.yz],
+  const mat=[[this.xx,this.xy,this.zx],[this.xy,this.yy,this.yz],
       	   [this.zx,this.yz,this.zz]];
-  var s=[0,0,0,0,0,0];
-  for(var i=0;i<3;i++){
-    for(var j=0;j<3;j++){
-      var mij=mat[i][j];
-      for(var k=0;k<3;k++){
+  const s=[0,0,0,0,0,0];
+  for(const i=0;i<3;i++){
+    for(const j=0;j<3;j++){
+      const mij=mat[i][j];
+      for(const k=0;k<3;k++){
       	s[k]+=d[k][i]*d[k][j]*mij;
       	s[k+3]+=d[k][i]*d[(k+1)%3][j]*mij;
       }
@@ -543,7 +559,7 @@ SymmetricTensor3.prototype.innerProduct=function(t){
 // st - 対称テンソル
 // iterMax - 反復回数の最大値
 function eigenvalue(st,iterMax){
-  var m=[[st.xx,st.xy,st.zx],[st.xy,st.yy,st.yz],
+  const m=[[st.xx,st.xy,st.zx],[st.xy,st.yy,st.yz],
       	 [st.zx,st.yz,st.zz]];
   return eigenByJacob(m,iterMax);
 }
@@ -552,21 +568,21 @@ function eigenvalue(st,iterMax){
 // m - 対称行列
 // iterMax - 反復回数の最大値
 function eigenByJacob(m,iterMax){
-  var size=m.length,abs=Math.abs,i,j,iter,dataMax=0;
-  var ev=numeric.identity(size);
+  const size=m.length,abs=Math.abs,i,j,iter,dataMax=0;
+  const ev=numeric.identity(size);
   for(i=0;i<size;i++){
     for(j=i;j<size;j++){
       dataMax=Math.max(dataMax,abs(m[i][j]));
     }
   }
-  var tolerance=EIG_EPS*dataMax;
+  const tolerance=EIG_EPS*dataMax;
 // 値が0の場合
   if(dataMax===0) return {lambda:numeric.getDiag(m),ev:ev};
   for(iter=0;iter<iterMax;iter++){
-    var im=0,jm=0,ndMax=0;
+    const im=0,jm=0,ndMax=0;
     for(i=0;i<2;i++){
       for(j=i+1;j<3;j++){
-      	var absm=abs(m[i][j]);
+      	const absm=abs(m[i][j]);
       	if(absm>ndMax){
       	  ndMax=absm;
       	  im=i;
@@ -575,17 +591,17 @@ function eigenByJacob(m,iterMax){
       }
     }
     if(ndMax<tolerance) break;
-    var mim=m[im],mjm=m[jm];
-    var alpha=0.5*(mim[im]-mjm[jm]);
-    var beta=0.5/Math.sqrt(alpha*alpha+ndMax*ndMax);
-    var cc2=0.5+abs(alpha)*beta,cs=-beta*mim[jm];
+    const mim=m[im],mjm=m[jm];
+    const alpha=0.5*(mim[im]-mjm[jm]);
+    const beta=0.5/Math.sqrt(alpha*alpha+ndMax*ndMax);
+    const cc2=0.5+abs(alpha)*beta,cs=-beta*mim[jm];
     if(alpha<0) cs=-cs;
-    var cc=Math.sqrt(cc2),ss=cs/cc;
-    var aij=2*(alpha*cc2-mim[jm]*cs),aii=mjm[jm]+aij,ajj=mim[im]-aij;
+    const cc=Math.sqrt(cc2),ss=cs/cc;
+    const aij=2*(alpha*cc2-mim[jm]*cs),aii=mjm[jm]+aij,ajj=mim[im]-aij;
     for(i=0;i<3;i++){
-      var mi=m[i],evi=ev[i];
-      var a1=mi[im]*cc-mi[jm]*ss;
-      var a2=mi[im]*ss+mi[jm]*cc;
+      const mi=m[i],evi=ev[i];
+      const a1=mi[im]*cc-mi[jm]*ss;
+      const a2=mi[im]*ss+mi[jm]*cc;
       mi[im]=a1;
       mi[jm]=a2;
       mim[i]=a1;
@@ -602,7 +618,7 @@ function eigenByJacob(m,iterMax){
   }
   m=numeric.getDiag(m);
 // 固有値を大きい順に入れ替える
-  var eig=[];
+  const eig=[];
   ev=numeric.transpose(ev);
   for(i=0;i<size;i++) eig.push([m[i],ev[i]]);
   eig.sort(function(v1,v2){return v2[0]-v1[0];});
@@ -616,7 +632,7 @@ function eigenByJacob(m,iterMax){
 //--------------------------------------------------------------------//
 // 歪
 // s - 成分
-var Strain=function(s){
+const Strain=function(s){
   SymmetricTensor3.call(this,s);
   this.xy=0.5*s[3];
   this.yz=0.5*s[4];
@@ -631,21 +647,21 @@ Strain.prototype.vector=function(){
 //--------------------------------------------------------------------//
 // 応力
 // s - 成分
-var Stress=function(s){
+const Stress=function(s){
   SymmetricTensor3.call(this,s);
 };
 
 // ミーゼス応力を返す
 Stress.prototype.mises=function(){
-  var dxy=this.xx-this.yy,dyz=this.yy-this.zz,dzx=this.zz-this.xx;
-  var ss=dxy*dxy+dyz*dyz+dzx*dzx;
-  var tt=this.xy*this.xy+this.yz*this.yz+this.zx*this.zx;
+  const dxy=this.xx-this.yy,dyz=this.yy-this.zz,dzx=this.zz-this.xx;
+  const ss=dxy*dxy+dyz*dyz+dzx*dzx;
+  const tt=this.xy*this.xy+this.yz*this.yz+this.zx*this.zx;
   return Math.sqrt(0.5*ss+3*tt);
 };
 
 //--------------------------------------------------------------------//
 // 結果表示設定
-var ResultView=function(){
+const ResultView=function(){
   this.dispCoef=document.getElementById('dispcoef');	// 変形表示倍率
   this.eigen=document.getElementById('eigenvalue');	// 固有値データ
   this.contour=document.getElementById('contour');	// コンター図表示データ
@@ -662,8 +678,8 @@ ResultView.prototype.setInitStatic=function(){
 // 固有値解析の設定を初期化する
 ResultView.prototype.setInitEigen=function(){
   removeOptions(this.eigen);
-  var eigenValue=model.result.eigenValue;
-  for(var i=0;i<eigenValue.length;i++){
+  const eigenValue=model.result.eigenValue;
+  for(const i=0;i<eigenValue.length;i++){
     this.eigen.appendChild(createOption('固有値'+(i+1),i));
   }
   removeOptions(this.contour);
@@ -742,12 +758,12 @@ ResultView.prototype.setResComp=function(){
 
 // 設定を表示に反映させる
 ResultView.prototype.setConfig=function(){
-  var eigen=parseInt(this.eigen.value);
-  var dcoef=parseFloat(this.dispCoef.value);
-  var param=parseInt(this.contour.value);
-  var coef,comp,minValue,maxValue;
+  const eigen=parseInt(this.eigen.value);
+  const dcoef=parseFloat(this.dispCoef.value);
+  const param=parseInt(this.contour.value);
+  const coef,comp,minValue,maxValue;
   if(isFinite(eigen)){
-    var eigenValue=model.result.eigenValue[eigen];
+    const eigenValue=model.result.eigenValue[eigen];
     coef=dcoef*Math.min(bounds.size/eigenValue.dispMax,
       	      	      	1/eigenValue.angleMax);
     viewObj.setDisplacement(eigenValue.displacement,coef);
@@ -807,7 +823,7 @@ ResultView.prototype.stock=function(){
   this.coef0=this.dispCoef.value;
   this.contour0=[];
   this.comp0=[];
-  var i;
+  const i;
   for(i=0;i<this.contour.childNodes.length;i++){
     this.contour0[i]=this.contour.childNodes[i];
   }
@@ -823,7 +839,7 @@ ResultView.prototype.reset=function(){
   this.dispCoef.value=this.coef0;
   removeOptions(this.contour);
   removeOptions(this.component);
-  var i;
+  const i;
   for(i=0;i<this.contour0.length;i++){
     this.contour.appendChild(this.contour0[i]);
   }
@@ -839,8 +855,8 @@ ResultView.prototype.reset=function(){
 // component - 成分
 // data - データ番号（1:表面,2:裏面,-1:番号なし）
 function setOptions(sel,component,data){
-  for(var i=0;i<component.length;i++){
-    var c=component[i];
+  for(const i=0;i<component.length;i++){
+    const c=component[i];
     if(data>0) c+=' '+data;
     sel.appendChild(createOption(c,COMP_MAP[c]));
   }
@@ -850,7 +866,7 @@ function setOptions(sel,component,data){
 // text - オプションのテキスト
 // value - オプションの値
 function createOption(text,value){
-  var opt=document.createElement('option');
+  const opt=document.createElement('option');
   opt.value=value;
   opt.text=text;
   return opt;

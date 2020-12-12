@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { EdgeBorder1Service } from './edge-border1.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('EdgeBorder1Service', () => {
+  let service: EdgeBorder1Service;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(EdgeBorder1Service);
   });
 
   it('should be created', () => {

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { FileIO } from './file-io.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('FileIO', () => {
+  let service: FileIO;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(FileIO);
   });
 
   it('should be created', () => {

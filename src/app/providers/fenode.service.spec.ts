@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { FENodeService } from './fenode.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('FENodeService', () => {
+  let service: FENodeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(FENodeService);
   });
 
   it('should be created', () => {

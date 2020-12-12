@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { RestraintService } from './restraint.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('RestraintService', () => {
+  let service: RestraintService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(RestraintService);
   });
 
   it('should be created', () => {

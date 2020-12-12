@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Result } from './result.service';
+import { ShellElementService } from './shell-element.service';
 
-describe('Result', () => {
-  let service: Result;
+describe('ShellElementService', () => {
+  let service: ShellElementService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Result);
+    service = TestBed.inject(ShellElementService);
   });
 
   it('should be created', () => {
