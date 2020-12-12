@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BoundaryCondition } from './boundary-condition.service';
-import { MeshModel } from './mesh-model.service';
-import { Material } from './material.service';
+import { BoundaryCondition } from './boundary/boundary-condition.service';
+import { MeshModel } from './mesh/mesh-model.service';
+import { Material } from './material/material.service';
 import { Result } from './result.service';
 import { Solver } from './solver.service';
-import { ShellParameter } from './shell-parameter.service';
+import { ShellParameter } from './parameter/shell-parameter.service';
 import { numeric } from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
@@ -210,7 +210,7 @@ export class FemDataModel {
     for (let i = 0; i < elemCount; i++) {
       const elem = this.mesh.elements[i];
       if (elem.isShell || elem.isBar) {	// シェル要素・梁要素
-        const count = elem.nodeCount();
+        const count = elem.nodeCount;
         for (let j = 0; j < count; j++) {
           dof[elem.nodes[j]] = 6;
         }

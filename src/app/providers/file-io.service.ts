@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Load } from './load.service';
-import { Restraint } from './restraint.service';
-import { FENode } from './fenode.service';
-import { Material } from './material.service';
-import { ShellParameter } from './shell-parameter.service';
-import { QuadElement1 } from './quad-element1.service';
-import { TriElement1 } from './tri-element1.service';
+import { Load } from './load_restaint/load.service';
+import { Restraint } from './load_restaint/restraint.service';
+import { FENode } from './mesh/fenode.service';
+import { Material } from './material/material.service';
+import { ShellParameter } from './parameter/shell-parameter.service';
+import { QuadElement1 } from './elements/quad-element1.service';
+import { TriElement1 } from './elements/tri-element1.service';
 import { FemDataModel } from './fem-data-model.service';
-import { Coordinates } from './coordinates.service';
+import { Coordinates } from './load_restaint/coordinates.service';
 
 @Injectable({
   providedIn: 'root'

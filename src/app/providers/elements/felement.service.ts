@@ -36,6 +36,14 @@ export class FElement {
     this.isBar = false;		// 梁要素ではない
   }
 
+  // 節点を入れ替える
+  // i1,i2 - 節点インデックス
+  public swap(nodes, i1, i2){
+    const t=nodes[i1];
+    nodes[i1]=nodes[i2];
+    nodes[i2]=t;
+  }
+
   /*
   // 要素境界を返す
   // element - 要素ラベル
@@ -51,7 +59,7 @@ export class FElement {
   // coef - 係数
   public stiffPart(d, b, coef) {
     const size1 = b.length, size2 = d.length, a = [], k = [], j;
-    for (const i = 0; i < size1; i++) {
+    for (let i = 0; i < size1; i++) {
       a.length = 0;
       const bi = b[i];
       for (j = 0; j < size2; j++) {
@@ -71,9 +79,9 @@ export class FElement {
   // dof - 節点自由度
   public toArray(u, dof) {
     const count = this.nodeCount(), v = [];
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const ux = u[i].x;
-      for (const j = 0; j < dof; j++) {
+      for (let j  = 0; j < dof; j++) {
         v.push(ux[j]);
       }
     }
@@ -85,7 +93,7 @@ export class FElement {
   // d - 方向余弦マトリックス
   public toLocalArray(u, d) {
     const v = [], j;
-    for (const i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
       const ux = u[i].x;
       for (j = 0; j < 3; j++) {
         v.push(d[0][j] * ux[0] + d[1][j] * ux[1] + d[2][j] * ux[2]);
@@ -180,9 +188,9 @@ export class FElement {
   // k - 剛性マトリックス
   public toDir(d, k) {
     const a = numeric.dot(d, k);
-    for (const i = 0; i < k.length; i++) {
+    for (let i = 0; i < k.length; i++) {
       const ki = k[i], ai = a[i];
-      for (const j = 0; j < ki.length; j++) {
+      for (let j  = 0; j < ki.length; j++) {
         ki[j] = numeric.dotVV(ai, d[j]);
       }
     }
@@ -193,8 +201,8 @@ export class FElement {
   // k - 剛性マトリックス
   public toDir3(d, k) {
     const i1, j1, a = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], ai;
-    for (const i = 0; i < k.length; i += 3) {
-      for (const j = 0; j < k[i].length; j += 3) {
+    for (let i = 0; i < k.length; i += 3) {
+      for (let j  = 0; j < k[i].length; j += 3) {
         for (i1 = 0; i1 < 3; i1++) {
           ai = a[i1];
           const di = d[i1];

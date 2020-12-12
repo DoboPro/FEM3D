@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Restraint } from './restraint.service';
+import { Restraint } from '../load_restaint/restraint.service';
 
 @Injectable({
   providedIn: 'root'

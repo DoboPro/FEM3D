@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { EdgeBorder1 } from '../border/edge-border1.service';
+import { TriangleBorder1 } from '../border/triangle-border1.service';
 import { ShellElement } from './shell-element.service';
 
+import { numeric } from '../libs/numeric-1.2.6.min.js';
 @Injectable({
   providedIn: 'root'
 })
@@ -33,7 +36,6 @@ export class TriElement1 extends ShellElement {
                      [this.GTRI2[0], this.GTRI2[1], this.C1_6]];
   }
 
-  /*
   
   // 要素名称を返す
   public getName() {
@@ -44,6 +46,7 @@ export class TriElement1 extends ShellElement {
   public nodeCount() {
     return 3;
   }
+  
 
   // 要素境界を返す
   // element - 要素ラベル
@@ -79,7 +82,7 @@ export class TriElement1 extends ShellElement {
 
   // 要素を鏡像反転する
   public mirror() {
-    swap(this.nodes, 1, 2);
+    this.swap(this.nodes, 1, 2);
   }
 
   // １次の形状関数行列 [ Ni dNi/dξ dNi/dη ] を返す
@@ -121,10 +124,10 @@ export class TriElement1 extends ShellElement {
     const d1 = [0.75 * l[0] * x[0] * y[0], 0.75 * l[1] * x[1] * y[1], 0.75 * l[2] * x[2] * y[2]];
     const e = [0.25 - 0.75 * l[0] * y[0] * y[0], 0.25 - 0.75 * l[1] * y[1] * y[1],
     0.25 - 0.75 * l[2] * y[2] * y[2]];
-    for (const i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       const i1 = (i + 2) % 3;
       const i3 = 3 * i;
-      for (const j = 0; j < 3; j++) {
+      for (let j  = 0; j < 3; j++) {
         const j2 = 2 * j;
         m[i3][j2] = a[i1] * sf2[3 + i1][j] - a[i] * sf2[3 + i][j];
         m[i3][j2 + 1] = b[i1] * sf2[3 + i1][j] - b[i] * sf2[3 + i][j];
@@ -148,52 +151,15 @@ export class TriElement1 extends ShellElement {
     return Math.sqrt(j1 * j1 + j2 * j2 + j3 * j3);
   }
 
-  // 質量マトリックスを返す
-  // p - 要素節点
-  // dens - 材料の密度
-  // t - 要素厚さ
-  public massMatrix(p, dens, t) {
-    const count = this.nodeCount(), m = numeric.rep([6 * count, 6 * count], 0);
-    const mb = numeric.rep([3 * count, 3 * count], 0), d = dirMatrix(p);
-    const djt = dens * t * this.jacobian(p), tt = C1_12 * t * t, dm = C1_12 * djt, i, j;
-
-    for (const k = 0; k < 3; k++) {
-      const ipi = TRI2_INT[k], sf3 = this.shapeFunction3(p, d, ipi[0], ipi[1]);
-      const sf = this.shapeFunction(ipi[0], ipi[1]);
-      const hz = [sf[0][0], 0, 0, sf[1][0], 0, 0, sf[2][0], 0, 0], cfm = djt * ipi[2];
-      for (i = 0; i < 3 * count; i++) {
-        for (j = 0; j < 3 * count; j++) {
-          const hxhy = sf3[i][0] * sf3[j][0] + sf3[i][1] * sf3[j][1];
-          mb[i][j] += cfm * (tt * hxhy + hz[i] * hz[j]);
-        }
-      }
-    }
-
-    for (i = 0; i < count; i++) {
-      const i3 = 3 * i, i6 = 6 * i;
-      for (j = 0; j < count; j++) {
-        const j3 = 3 * j, j6 = 6 * j, cf1 = TRI1_MASS1[i][j];
-        const dme = cf1 * dm;
-        m[i6][j6] = dme;
-        m[i6 + 1][j6 + 1] = dme;
-        for (const i1 = 0; i1 < 3; i1++) {
-          for (const j1 = 0; j1 < 3; j1++) {
-            m[i6 + 2 + i1][j6 + 2 + j1] = mb[i3 + i1][j3 + j1];
-          }
-        }
-        m[i6 + 5][j6 + 5] = 1e-5 * dm * tt;
-      }
-    }
-    toDir3(d, m);
-    return m;
-  }
 
   // 剛性マトリックスを返す
   // p - 要素節点
   // d1 - 応力 - 歪マトリックス
   // sp - シェルパラメータ
   public stiffnessMatrix(p, d1, sp) {
-    const d = dirMatrix(p), n = normalVector(p), t = sp.thickness, i, j, ii, jj;
+    const d = dirMatrix(p);
+    const n = normalVector(p);
+    const t = sp.thickness;
 
     const sf1 = this.shapeFunction(C1_3, C1_3);
     const ja1 = this.jacobianMatrix(p, sf1, n, t);
@@ -202,33 +168,36 @@ export class TriElement1 extends ShellElement {
     const b1 = this.strainMatrix1(sf1, jinv);
     const k1 = this.stiffPart(d1, b1, Math.abs(jac1));
 
-    const count = this.nodeCount(), k2 = numeric.rep([3 * count, 3 * count], 0);
+    const count = this.nodeCount();
+    const k2 = numeric.rep([3 * count, 3 * count], 0);
     const coef = t * t * Math.abs(jac1) / 36;
-    for (i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       const ipi = TRI2_INT[i], sf3 = this.shapeFunction3(p, d, ipi[0], ipi[1]);
       const b2 = this.strainMatrix2(sf3, jinv);
       addMatrix(k2, this.stiffPart(d1, b2, coef));
     }
 
-    const ce1 = 1e-3 * t * t * Math.abs(jac1) * d1[2][2], ce2 = -ce1 / 2;
-    const kk = numeric.rep([6 * count, 6 * count], 0), ks = numeric.rep([6, 6], 0);
+    const ce1 = 1e-3 * t * t * Math.abs(jac1) * d1[2][2];
+    const ce2 = -ce1 / 2;
+    const kk = numeric.rep([6 * count, 6 * count], 0);
+    const ks = numeric.rep([6, 6], 0);
     const dir = numeric.rep([6, 6], 0);
-    for (i = 0; i < 3; i++) {
-      for (j = 0; j < 3; j++) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
         dir[i][j] = d[i][j];
         dir[i + 3][j + 3] = d[i][j];
       }
     }
-    for (i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       const i2 = 2 * i;
       const i3 = 3 * i;
       const i6 = 6 * i;
-      for (j = 0; j < count; j++) {
+      for (let j = 0; j < count; j++) {
         const j2 = 2 * j;
         const j3 = 3 * j;
         const j6 = 6 * j;
-        for (ii = 0; ii < 6; ii++) {
-          for (jj = 0; jj < 6; jj++) {
+        for (let ii = 0; ii < 6; ii++) {
+          for (let jj = 0; jj < 6; jj++) {
             ks[ii][jj] = 0;
           }
         }
@@ -236,16 +205,16 @@ export class TriElement1 extends ShellElement {
         ks[0][1] = k1[i2][j2 + 1];
         ks[1][0] = k1[i2 + 1][j2];
         ks[1][1] = k1[i2 + 1][j2 + 1];
-        for (ii = 0; ii < 3; ii++) {
-          for (jj = 0; jj < 3; jj++) {
+        for (let ii = 0; ii < 3; ii++) {
+          for (let jj = 0; jj < 3; jj++) {
             ks[2 + ii][2 + jj] = k2[i3 + ii][j3 + jj];
           }
         }
         if (i == j) ks[5][5] = ce1;
         else ks[5][5] = ce2;
         toDir(dir, ks);
-        for (ii = 0; ii < 6; ii++) {
-          for (jj = 0; jj < 6; jj++) {
+        for (let ii = 0; ii < 6; ii++) {
+          for (let jj = 0; jj < 6; jj++) {
             kk[i6 + ii][j6 + jj] = ks[ii][jj];
           }
         }
@@ -260,7 +229,7 @@ export class TriElement1 extends ShellElement {
   public strainMatrix1(sf, jinv) {
     const count = this.nodeCount(), b = numeric.rep([2 * count, 3], 0);
     const ji = jinv.elements;
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const sfi = sf[i];
       const dndx = ji[0] * sfi[1] + ji[3] * sfi[2];
       const dndy = ji[1] * sfi[1] + ji[4] * sfi[2];
@@ -279,7 +248,7 @@ export class TriElement1 extends ShellElement {
   public strainMatrix2(sf, jinv) {
     const count = 3 * this.nodeCount(), b = [];
     const ji = jinv.elements;
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const sfi = sf[i];
       const hxx = ji[0] * sfi[2] + ji[3] * sfi[4];
       const hxy = ji[1] * sfi[2] + ji[4] * sfi[4];
@@ -297,7 +266,7 @@ export class TriElement1 extends ShellElement {
   public shapeFunctionMatrix(p, coef, t) {
     const ds = coef * this.jacobian(p) / 12;
     const count = 3 * this.nodeCount(), s = numeric.rep([count], 0.5 * ds);
-    for (const i = 0; i < count; i++) s[i][i] = ds;
+    for (let i = 0; i < count; i++) s[i][i] = ds;
     return s;
   }
 
@@ -321,7 +290,7 @@ export class TriElement1 extends ShellElement {
     const w = Math.abs(ja.determinant());
     for (const i1 = 0; i1 < count; i1++) {
       const i6 = 6 * i1, gri = gr[i1];
-      for (const j1 = 0; j1 < count; j1++) {
+      for (let j 1 = 0; j1 < count; j1++) {
         const j6 = 6 * j1, grj = gr[j1];
         const s = w * (gri[0] * (str.xx * grj[0] + str.xy * grj[1] + str.zx * grj[2]) +
           gri[1] * (str.xy * grj[0] + str.yy * grj[1] + str.yz * grj[2]) +
@@ -364,7 +333,7 @@ export class TriElement1 extends ShellElement {
     const b2 = this.strainMatrix2(sf3, jinv);
     const count = this.nodeCount(), m1 = numeric.rep([3, 6], 0);
     const matrix = numeric.rep([6 * count, 3], 0), z = 0.5 * t * zeta, i1;
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const i2 = 2 * i;
       const i3 = 3 * i;
       const i6 = 6 * i;
@@ -378,7 +347,7 @@ export class TriElement1 extends ShellElement {
       }
       for (i1 = 0; i1 < 3; i1++) {
         const m1i = m1[i1];
-        for (const j1 = 0; j1 < 3; j1++) {
+        for (let j 1 = 0; j1 < 3; j1++) {
           const dj = d[j1], s1 = 0, s2 = 0;
           for (const k1 = 0; k1 < 3; k1++) {
             s1 += m1i[k1] * dj[k1];
@@ -404,6 +373,48 @@ export class TriElement1 extends ShellElement {
     return new Stress([s[0], s[1], 0, s[2], 0, 0]);
   }
 
+  /*
 
+
+  // 質量マトリックスを返す
+  // p - 要素節点
+  // dens - 材料の密度
+  // t - 要素厚さ
+  public massMatrix(p, dens, t) {
+    const count = this.nodeCount(), m = numeric.rep([6 * count, 6 * count], 0);
+    const mb = numeric.rep([3 * count, 3 * count], 0), d = dirMatrix(p);
+    const djt = dens * t * this.jacobian(p), tt = C1_12 * t * t, dm = C1_12 * djt, i, j;
+
+    for (const k = 0; k < 3; k++) {
+      const ipi = TRI2_INT[k], sf3 = this.shapeFunction3(p, d, ipi[0], ipi[1]);
+      const sf = this.shapeFunction(ipi[0], ipi[1]);
+      const hz = [sf[0][0], 0, 0, sf[1][0], 0, 0, sf[2][0], 0, 0], cfm = djt * ipi[2];
+      for (i = 0; i < 3 * count; i++) {
+        for (j = 0; j < 3 * count; j++) {
+          const hxhy = sf3[i][0] * sf3[j][0] + sf3[i][1] * sf3[j][1];
+          mb[i][j] += cfm * (tt * hxhy + hz[i] * hz[j]);
+        }
+      }
+    }
+
+    for (i = 0; i < count; i++) {
+      const i3 = 3 * i, i6 = 6 * i;
+      for (j = 0; j < count; j++) {
+        const j3 = 3 * j, j6 = 6 * j, cf1 = TRI1_MASS1[i][j];
+        const dme = cf1 * dm;
+        m[i6][j6] = dme;
+        m[i6 + 1][j6 + 1] = dme;
+        for (const i1 = 0; i1 < 3; i1++) {
+          for (let j 1 = 0; j1 < 3; j1++) {
+            m[i6 + 2 + i1][j6 + 2 + j1] = mb[i3 + i1][j3 + j1];
+          }
+        }
+        m[i6 + 5][j6 + 5] = 1e-5 * dm * tt;
+      }
+    }
+    toDir3(d, m);
+    return m;
+  }
   */
+
 }

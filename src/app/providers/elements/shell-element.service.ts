@@ -110,9 +110,9 @@ export class ShellElement extends FElement {
   public strainMatrix1(ja, sf, d) {
     const count = this.nodeCount(), m = numeric.rep([count, 4], 0);
     const ji = this.jacobInv(ja, d).elements;
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const mi = m[i], sfi = sf[i];
-      for (const j = 0; j < 3; j++) {
+      for (let j  = 0; j < 3; j++) {
         mi[j] = ji[j] * sfi[1] + ji[j + 3] * sfi[2];
       }
       mi[3] = ji[8] * sfi[0];
@@ -176,9 +176,9 @@ export class ShellElement extends FElement {
     const ja = this.jacobianMatrix(p, sf, normalVector(p), t);
     const count = this.nodeCount(), matrix = [];
     const coef = 2 * w * Math.abs(ja.determinant());
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const matr = [], cf2 = coef * sf[i][0];
-      for (const j = 0; j < count; j++) {
+      for (let j  = 0; j < count; j++) {
         matr[j] = cf2 * sf[j][0];
       }
       matrix[i] = matr;
@@ -197,10 +197,10 @@ export class ShellElement extends FElement {
     const gr = this.grad(p, ja, sf, dirMatrix(p), t);
     const count = this.nodeCount(), matrix = [];
     const coef = 2 * w * Math.abs(ja.determinant());
-    for (const i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
       const matr = [], gri = gr[i];
       const c1 = coef * gri[0], c2 = coef * gri[1], c3 = coef * gri[2];
-      for (const j = 0; j < count; j++) {
+      for (let j  = 0; j < count; j++) {
         const grj = gr[j];
         matr[j] = c1 * grj[0] + c2 * grj[1] + c3 * grj[2];
       }
@@ -216,7 +216,7 @@ export class ShellElement extends FElement {
   public shapeFunctionMatrix(p, coef, sp) {
     const count = this.nodeCount(), s = numeric.rep([count, count], 0);
     const t = sp.thickness;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       addMatrix(s, this.shapePart(p, this.intP[i], coef * this.intP[i][2], t));
     }
     return s;
@@ -229,7 +229,7 @@ export class ShellElement extends FElement {
   public gradMatrix(p, coef, sp) {
     const count = this.nodeCount(), g = numeric.rep([count, count], 0);
     const t = sp.thickness;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       addMatrix(g, this.gradPart(p, this.intP[i], coef * this.intP[i][2], t));
     }
     return g;
@@ -244,7 +244,7 @@ export class ShellElement extends FElement {
     const count = this.nodeCount(), kk = numeric.rep([6 * count, 6 * count], 0);
     const d = dirMatrix(p), n = normalVector(p);
     const v = this.toArray(u, 6), t = sp.thickness;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       const ip = this.intP[i];
       const sf = this.shapeFunction(ip[0], ip[1]);
       const ja = this.jacobianMatrix(p, sf, n, t);
@@ -254,7 +254,7 @@ export class ShellElement extends FElement {
       const w = 2 * ip[2] * Math.abs(ja.determinant());
       for (const i1 = 0; i1 < count; i1++) {
         const i6 = 6 * i1, gri = gr[i1];
-        for (const j1 = 0; j1 < count; j1++) {
+        for (let j 1 = 0; j1 < count; j1++) {
           const j6 = 6 * j1, grj = gr[j1];
           const s = w * (gri[0] * (str.xx * grj[0] + str.xy * grj[1] + str.zx * grj[2]) +
             gri[1] * (str.xy * grj[0] + str.yy * grj[1] + str.yz * grj[2]) +
@@ -320,7 +320,7 @@ export class ShellElement extends FElement {
     const t = sp.thickness, cf = 1 / this.intP.length;
     const strain1 = [0, 0, 0, 0, 0, 0], stress1 = [0, 0, 0, 0, 0, 0], energy1 = 0;
     const strain2 = [0, 0, 0, 0, 0, 0], stress2 = [0, 0, 0, 0, 0, 0], energy2 = 0;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       const ip = this.intP[i];
       const eps1 = this.strainPart(p, v, n, d, ip[0], ip[1], 1, t);
       const eps2 = this.strainPart(p, v, n, d, ip[0], ip[1], -1, t);
@@ -363,7 +363,7 @@ export class ShellElement extends FElement {
     const s = this.getName() + '\t' + this.label.toString(10) + '\t' +
       materials[this.material].label.toString(10) + '\t' +
       params[this.param].label.toString(10);
-    for (const i = 0; i < this.nodes.length; i++) {
+    for (let i = 0; i < this.nodes.length; i++) {
       s += '\t' + p[this.nodes[i]].label.toString(10);
     }
     return s;

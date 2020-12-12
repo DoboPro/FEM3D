@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as THREE from 'three';
-import { EdgeBorder1 } from './edge-border1.service';
+import { EdgeBorder1 } from '../border/edge-border1.service';
+import { FENode } from './fenode.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { EdgeBorder1 } from './edge-border1.service';
 export class MeshModel {
 
 
-  public nodes: any[];      // 節点
+  public nodes: FENode[];      // 節点
   public elements: any[];   // 要素
   public freeFaces: any[];  // 表面
   public faceEdges: any[];  // 表面の要素辺

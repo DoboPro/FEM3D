@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QuadangleBorder1 } from './quadangle-border1.service';
+import { QuadangleBorder1 } from '../border/quadangle-border1.service';
 import { ShellElement } from './shell-element.service';
 
 @Injectable({
@@ -51,7 +51,6 @@ export class QuadElement1 extends ShellElement {
     }
   }
 
-  /*
   
   // 要素名称を返す
   public getName() {
@@ -61,8 +60,9 @@ export class QuadElement1 extends ShellElement {
   // 節点数を返す
   public nodeCount() {
     return 4;
-  };
+  }
  
+  /*
  
   // 要素境界辺を返す
   // element - 要素ラベル
@@ -104,14 +104,14 @@ export class QuadElement1 extends ShellElement {
   public massMatrix(p, dens, t) {
     const count = this.nodeCount(), m = numeric.rep([6 * count, 6 * count], 0);
     const d = dirMatrix(p), n = normalVector(p), tt = C1_12 * t * t;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       const ipi = this.intP[i], sf = this.shapeFunction(ipi[0], ipi[1]);
       const nn = [sf[0][0], sf[1][0], sf[2][0], sf[3][0]];
       const jac = Math.abs(this.jacobianMatrix(p, sf, n, t).determinant());
       jac *= 2 * ipi[2];
       for (const i1 = 0; i1 < count; i1++) {
         const i6 = 6 * i1, nja = nn[i1] * jac;
-        for (const j1 = 0; j1 < count; j1++) {
+        for (let j 1 = 0; j1 < count; j1++) {
           const j6 = 6 * j1, nnja = nja * nn[j1], dm = dens * nnja, dii = tt * dm;
           m[i6][j6] += dm;
           m[i6 + 1][j6 + 1] += dm;
@@ -133,7 +133,7 @@ export class QuadElement1 extends ShellElement {
   public stiffnessMatrix(p, d1, sp) {
     const size = 6 * this.nodeCount(), kk = numeric.rep([size, size], 0);
     const n = normalVector(p), t = sp.thickness;
-    for (const i = 0; i < this.intP.length; i++) {
+    for (let i = 0; i < this.intP.length; i++) {
       const ks = this.stiffPart(p, d1, n, this.intP[i][0], this.intP[i][1], t);
       addMatrix(kk, ks);
     }

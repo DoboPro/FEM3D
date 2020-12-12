@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { BoundaryCondition } from './boundary-condition.service';
+import { BoundaryCondition } from './boundary/boundary-condition.service';
 import { FemDataModel } from './fem-data-model.service';
 import { Result } from './result.service';
+import { MeshModel } from './mesh/mesh-model.service';
 
 import { numeric } from './libs/numeric-1.2.6.min.js';
 
@@ -102,7 +103,7 @@ export class Solver {
   // 剛性マトリックスを作成する
   // dof - モデル自由度
   public stiffnessMatrix(dof) {
-    const mesh = this.model.mesh;
+    const mesh: MeshModel = this.model.mesh;
     const elements = mesh.elements;
     const matrix = [];
     let km = 0;
@@ -249,7 +250,7 @@ export class Solver {
     const col = [];
     let i1 = 0;
     let j1 = 0;
-    for (const j in mrow) {
+    for (let j  in mrow) {
       if (mrow.hasOwnProperty(j)) {
         col.push(parseInt(j));
       }
