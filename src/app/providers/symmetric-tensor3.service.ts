@@ -35,7 +35,7 @@ export class SymmetricTensor3 {
 
   // テンソルを加える
   // t - 加えるテンソル
-  public add(t: number[]) {
+  public add(t: any) {
     this.xx += t.xx;
     this.yy += t.yy;
     this.zz += t.zz;
@@ -66,10 +66,10 @@ export class SymmetricTensor3 {
     const mat = [[this.xx, this.xy, this.zx], [this.xy, this.yy, this.yz],
     [this.zx, this.yz, this.zz]];
     const s = [0, 0, 0, 0, 0, 0];
-    for (const i = 0; i < 3; i++) {
-      for (const j = 0; j < 3; j++) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
         const mij = mat[i][j];
-        for (const k = 0; k < 3; k++) {
+        for (let k = 0; k < 3; k++) {
           s[k] += d[k][i] * d[k][j] * mij;
           s[k + 3] += d[k][i] * d[(k + 1) % 3][j] * mij;
         }
@@ -116,7 +116,7 @@ export class SymmetricTensor3 {
         dataMax = Math.max(dataMax, abs(m[i][j]));
       }
     }
-    const tolerance = EIG_EPS * dataMax;
+    const tolerance = this.EIG_EPS * dataMax;
     // 値が0の場合
     if (dataMax === 0) return { lambda: numeric.getDiag(m), ev: ev };
     for (let iter = 0; iter < iterMax; iter++) {
