@@ -4,6 +4,7 @@ import * as THREE from 'three';
 @Injectable({
   providedIn: 'root'
 })
+
 // 局所座標系
 export class Coordinates {
 
@@ -106,13 +107,4 @@ export class Coordinates {
     }
   }
 
-  /*
-
-  // 局所座標系を表す文字列を返す
-  public toString(): string {
-    return 'Coordinates\t' + this.label.toString(10) + '\t' +
-      this.c.elements.join('\t');
-  }
-
-  */
 }

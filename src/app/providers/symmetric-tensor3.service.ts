@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { numeric } from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -6,7 +7,7 @@ import { Injectable } from '@angular/core';
 //--------------------------------------------------------------------//
 // ３次元対称テンソル
 // s - 成分
-export class SymmetricTensor3Service {
+export class SymmetricTensor3 {
   
   public EIG_EPS = 1e-10;		// 固有値計算の収束閾値
 

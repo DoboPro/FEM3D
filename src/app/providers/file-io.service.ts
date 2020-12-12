@@ -8,6 +8,7 @@ import { ShellParameter } from './shell-parameter.service';
 import { QuadElement1 } from './quad-element1.service';
 import { TriElement1 } from './tri-element1.service';
 import { FemDataModel } from './fem-data-model.service';
+import { Coordinates } from './coordinates.service';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,10 @@ export class FileIO {
         else if ((keyWord === 'shellparameter') && (ss.length > 2)) {
           this.model.shellParams.push
             (new ShellParameter(parseInt(ss[1]), parseFloat(ss[2])));
+        }
+        // 局所座標系
+        else if((keyWord=='coordinates') && (ss.length>10)){
+          this.model.coordinates.push(this.readCoordinates(ss));
         }
         // 節点
         else if ((keyWord == 'node') && (ss.length > 4)) {
@@ -112,6 +117,28 @@ export class FileIO {
       vertex[j] = parseInt(ss[is + j]);
     }
     return vertex;
+  }
+
+  // 局所座標系を読み込む
+  // ss - データ文字列配列
+  private readCoordinates(ss){
+    const c=[[parseFloat(ss[2]),parseFloat(ss[3]),parseFloat(ss[4])],
+             [parseFloat(ss[5]),parseFloat(ss[6]),parseFloat(ss[7])],
+             [parseFloat(ss[8]),parseFloat(ss[9]),parseFloat(ss[10])]];
+    for(let i=0;i<3;i++){
+      const ci=c[i];
+      let cf=ci[0]*ci[0]+ci[1]*ci[1]+ci[2]*ci[2];
+      if(cf===0){
+        throw new Error('座標系'+ss[2]+'の軸方向ベクトルが0です');
+      }
+      cf=1/Math.sqrt(cf);
+      ci[0]*=cf;
+      ci[1]*=cf;
+      ci[2]*=cf;
+    }
+    return new Coordinates(parseInt(ss[1]),c[0][0],c[1][0],c[2][0],
+                          c[0][1],c[1][1],c[2][1],
+                          c[0][2],c[1][2],c[2][2]);
   }
 
   // 拘束条件を読み込む

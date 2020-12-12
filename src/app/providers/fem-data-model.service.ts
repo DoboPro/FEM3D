@@ -5,6 +5,7 @@ import { Material } from './material.service';
 import { Result } from './result.service';
 import { Solver } from './solver.service';
 import { ShellParameter } from './shell-parameter.service';
+import { numeric } from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class FemDataModel {
   public materials: Material[];     // 材料
   public shellParams: ShellParameter[];        // シェルパラメータ
   // public barParams: any[];          // 梁パラメータ
-  // public coordinates: any[];        // 局所座標系
+  public coordinates: any[];        // 局所座標系
   public hasShellBar: boolean;      // シェル要素または梁要素を含まない
 
   constructor(public mesh: MeshModel,
@@ -29,7 +30,7 @@ export class FemDataModel {
     this.materials = new Array();
     this.shellParams = new Array();
     // this.barParams = new Array();
-    // this.coordinates = new Array();
+    this.coordinates = new Array();
     this.mesh.clear(); // メッシュモデル
     this.bc.clear();    // 境界条件
     this.result.clear(); // 計算結果
@@ -44,7 +45,7 @@ export class FemDataModel {
     this.reNumbering();
     this.resetMaterialLabel();
     this.resetParameterLabel();
-    // this.resetCoordinates();
+    this.resetCoordinates();
     this.mesh.checkChirality();
     this.mesh.getFreeFaces();
     this.mesh.getFaceEdges();
@@ -331,7 +332,6 @@ export class FemDataModel {
   }
 
 
-  /*
 
   // 局所座標系を設定する
   public resetCoordinates(): void {
@@ -366,6 +366,7 @@ export class FemDataModel {
   }
   
 
+  /*
 
   // 固有振動数・固有ベクトルを求める
   // count - 求める固有振動の数

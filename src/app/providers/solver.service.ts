@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { BoundaryCondition } from './boundary-condition.service';
 import { FemDataModel } from './fem-data-model.service';
 import { Result } from './result.service';
-import { Coordinates } from './coordinates.service';
+
+import { numeric } from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -142,7 +143,7 @@ export class Solver {
       }
     }
     // 絶対値が小さい成分を除去する
-    const eps = PRECISION * kmax;
+    const eps = this.PRECISION * kmax;
     for (let i = 0; i < dof; i++) {
       const mrow = matrix[i];
       for (let j of mrow) {
