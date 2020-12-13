@@ -5,13 +5,13 @@ import { Material } from './material/material.service';
 import { Result } from './result.service';
 import { Solver } from './solver.service';
 import { ShellParameter } from './parameter/shell-parameter.service';
-import { numeric } from './libs/numeric-1.2.6.min.js';
+import * as numeric from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FemDataModel {
-
+  
   public COEF_F_W = 0.5 / Math.PI;	// f/ω比 1/2π
   
   public materials: Material[];     // 材料
@@ -210,7 +210,7 @@ export class FemDataModel {
     for (let i = 0; i < elemCount; i++) {
       const elem = this.mesh.elements[i];
       if (elem.isShell || elem.isBar) {	// シェル要素・梁要素
-        const count = elem.nodeCount;
+        const count = elem.nodeCount();
         for (let j = 0; j < count; j++) {
           dof[elem.nodes[j]] = 6;
         }
@@ -278,7 +278,7 @@ export class FemDataModel {
       }
       const material = this.materials[elem.material];
       const mat = material.matrix;
-      const ea = elem.angle(p);
+      const ea = elem.angle(p, elem.nodeCount());
       if (elem.isShell) {
         const sp = this.shellParams[elem.param];
         let mmat: any;
@@ -600,16 +600,7 @@ export class FemDataModel {
 
 
 
-  // 行列の和を計算する
-  // a - 基準行列
-  // da - 加える行列
-  public addMatrix(a, da) {
-    for (let i = 0; i < a.length; i++) {
-      for (let j = 0; j < a[i].length; j++) {
-        a[i][j] += da[i][j];
-      }
-    }
-  }
+
 
   // ベクトルの和を計算する
   // v - 基準ベクトル

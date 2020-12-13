@@ -155,7 +155,7 @@ export class Result {
           ii++;
         }
         else {
-          r = Math.round(bcl / 6);
+          r = Math.floor(bcl / 6);
           x[j] = rests[r].x[j];
         }
       }

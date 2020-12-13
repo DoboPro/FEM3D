@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QuadangleBorder1 } from '../border/quadangle-border1.service';
 import { ShellElement } from './shell-element.service';
+import  * as numeric from '../libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,10 @@ export class QuadElement1 extends ShellElement {
     
     this.QUAD1_NODE = this.nodeP;  // 四角形1次要素の節点のξ,η座標
     this.QUAD1_INT = this.intP;    // 四角形1次要素の積分点のξ,η座標,重み係数
+
+    this.count = this.nodeCount();
+    this.shapeFunction = this.shapeFunction1;
+
   }
 
 
@@ -62,93 +67,34 @@ export class QuadElement1 extends ShellElement {
     return 4;
   }
  
-  /*
- 
-  // 要素境界辺を返す
-  // element - 要素ラベル
-  // index - 要素境界辺のインデックス
-  public borderEdge(element, index) {
-    const p = this.nodes;
-    switch (index) {
-      default:
-        return null;
-      case 0:
-        return new EdgeBorder1(element, [p[0], p[1]]);
-      case 1:
-        return new EdgeBorder1(element, [p[1], p[2]]);
-      case 2:
-        return new EdgeBorder1(element, [p[2], p[3]]);
-      case 3:
-        return new EdgeBorder1(element, [p[3], p[0]]);
-    }
-  };
- 
-  // 要素を鏡像反転する
-  public mirror() {
-    this.swap(this.nodes, 1, 3);
-  };
- 
-  // 形状関数行列 [ Ni dNi/dξ dNi/dη ] を返す
-  // xsi,eta - 要素内部ξ,η座標
-  public shapeFunction(xsi, eta) {
-    return [[0.25 * (1 - xsi) * (1 - eta), -0.25 * (1 - eta), -0.25 * (1 - xsi)],
-    [0.25 * (1 + xsi) * (1 - eta), 0.25 * (1 - eta), -0.25 * (1 + xsi)],
-    [0.25 * (1 + xsi) * (1 + eta), 0.25 * (1 + eta), 0.25 * (1 + xsi)],
-    [0.25 * (1 - xsi) * (1 + eta), -0.25 * (1 + eta), 0.25 * (1 - xsi)]];
-  };
- 
-  // 質量マトリックスを返す
-  // p - 要素節点
-  // dens - 材料の密度
-  // t - 要素厚さ
-  public massMatrix(p, dens, t) {
-    const count = this.nodeCount(), m = numeric.rep([6 * count, 6 * count], 0);
-    const d = dirMatrix(p), n = normalVector(p), tt = C1_12 * t * t;
-    for (let i = 0; i < this.intP.length; i++) {
-      const ipi = this.intP[i], sf = this.shapeFunction(ipi[0], ipi[1]);
-      const nn = [sf[0][0], sf[1][0], sf[2][0], sf[3][0]];
-      const jac = Math.abs(this.jacobianMatrix(p, sf, n, t).determinant());
-      jac *= 2 * ipi[2];
-      for (const i1 = 0; i1 < count; i1++) {
-        const i6 = 6 * i1, nja = nn[i1] * jac;
-        for (let j 1 = 0; j1 < count; j1++) {
-          const j6 = 6 * j1, nnja = nja * nn[j1], dm = dens * nnja, dii = tt * dm;
-          m[i6][j6] += dm;
-          m[i6 + 1][j6 + 1] += dm;
-          m[i6 + 2][j6 + 2] += dm;
-          m[i6 + 3][j6 + 3] += dii;
-          m[i6 + 4][j6 + 4] += dii;
-          m[i6 + 5][j6 + 5] += 1e-4 * dii;
-        }
-      }
-    }
-    toDir3(d, m);
-    return m;
-  }
- 
+
   // 剛性マトリックスを返す
   // p - 要素節点
   // d1 - 応力 - 歪マトリックス
   // sp - シェルパラメータ
-  public stiffnessMatrix(p, d1, sp) {
-    const size = 6 * this.nodeCount(), kk = numeric.rep([size, size], 0);
-    const n = normalVector(p), t = sp.thickness;
+  public stiffnessMatrix(p, d1, sp): number[][] {
+    const size = 6 * this.nodeCount();
+    const kk: number[][] = numeric.rep([size, size], 0);
+    const n = this.normalVector(p);
+    const t = sp.thickness;
     for (let i = 0; i < this.intP.length; i++) {
-      const ks = this.stiffPart(p, d1, n, this.intP[i][0], this.intP[i][1], t);
-      addMatrix(kk, ks);
+      const ks = this.quadstiffPart(p, d1, n, this.intP[i][0], this.intP[i][1], t);
+      this.addMatrix(kk, ks);
     }
     return kk;
   }
- 
+
+  
   // 積分点の剛性マトリックスを返す
   // p - 要素節点
   // d1 - 応力 - 歪マトリックス
   // n - 法線ベクトル
   // xsi,eta - 要素内部ξ,η座標
   // t - 要素厚さ
-  public stiffPart(p, d1, n, xsi, eta, t) {
-    const d = dirMatrix(p);
+  public quadstiffPart(p, d1, n, xsi, eta, t) {
+    const d = this.dirMatrix(p);
     const sf = this.shapeFunction(xsi, eta);
+    const count = this.nodeCount();
     const ja = this.jacobianMatrix(p, sf, n, t);
     const bc0 = this.strainMatrix1(ja, sf, d);
     const sf1 = this.shapeFunction(xsi, 0);
@@ -156,7 +102,6 @@ export class QuadElement1 extends ShellElement {
     const sf2 = this.shapeFunction(0, eta);
     const ja2 = this.jacobianMatrix(p, sf2, n, t);
     const bc = [this.strainMatrix1(ja1, sf1, d), this.strainMatrix1(ja2, sf2, d)];
-    const count = this.nodeCount();
     const kk = numeric.rep([6 * count, 6 * count], 0);
     const jacob = Math.abs(ja.determinant());
  
@@ -225,6 +170,74 @@ export class QuadElement1 extends ShellElement {
     }
     return kk;
   }
+
+  // 形状関数行列 [ Ni dNi/dξ dNi/dη ] を返す
+  // xsi,eta - 要素内部ξ,η座標
+  public shapeFunction1(xsi: number, eta: number) {
+    return [[0.25 * (1 - xsi) * (1 - eta), -0.25 * (1 - eta), -0.25 * (1 - xsi)],
+    [0.25 * (1 + xsi) * (1 - eta), 0.25 * (1 - eta), -0.25 * (1 + xsi)],
+    [0.25 * (1 + xsi) * (1 + eta), 0.25 * (1 + eta), 0.25 * (1 + xsi)],
+    [0.25 * (1 - xsi) * (1 + eta), -0.25 * (1 + eta), 0.25 * (1 - xsi)]];
+  }
+
+  /*
+ 
+  // 要素境界辺を返す
+  // element - 要素ラベル
+  // index - 要素境界辺のインデックス
+  public borderEdge(element, index) {
+    const p = this.nodes;
+    switch (index) {
+      default:
+        return null;
+      case 0:
+        return new EdgeBorder1(element, [p[0], p[1]]);
+      case 1:
+        return new EdgeBorder1(element, [p[1], p[2]]);
+      case 2:
+        return new EdgeBorder1(element, [p[2], p[3]]);
+      case 3:
+        return new EdgeBorder1(element, [p[3], p[0]]);
+    }
+  };
+ 
+  // 要素を鏡像反転する
+  public mirror() {
+    this.swap(this.nodes, 1, 3);
+  };
+ 
+
+ 
+  // 質量マトリックスを返す
+  // p - 要素節点
+  // dens - 材料の密度
+  // t - 要素厚さ
+  public massMatrix(p, dens, t) {
+    const count = this.nodeCount(), m = numeric.rep([6 * count, 6 * count], 0);
+    const d = dirMatrix(p), n = normalVector(p), tt = C1_12 * t * t;
+    for (let i = 0; i < this.intP.length; i++) {
+      const ipi = this.intP[i], sf = this.shapeFunction(ipi[0], ipi[1]);
+      const nn = [sf[0][0], sf[1][0], sf[2][0], sf[3][0]];
+      const jac = Math.abs(this.jacobianMatrix(p, sf, n, t, count).determinant());
+      jac *= 2 * ipi[2];
+      for (const i1 = 0; i1 < count; i1++) {
+        const i6 = 6 * i1, nja = nn[i1] * jac;
+        for (let j 1 = 0; j1 < count; j1++) {
+          const j6 = 6 * j1, nnja = nja * nn[j1], dm = dens * nnja, dii = tt * dm;
+          m[i6][j6] += dm;
+          m[i6 + 1][j6 + 1] += dm;
+          m[i6 + 2][j6 + 2] += dm;
+          m[i6 + 3][j6 + 3] += dii;
+          m[i6 + 4][j6 + 4] += dii;
+          m[i6 + 5][j6 + 5] += 1e-4 * dii;
+        }
+      }
+    }
+    toDir3(d, m);
+    return m;
+  }
+
+ 
  
   */
 

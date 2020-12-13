@@ -6,7 +6,6 @@ import { FENode } from './mesh/fenode.service';
 import { Material } from './material/material.service';
 import { ShellParameter } from './parameter/shell-parameter.service';
 import { QuadElement1 } from './elements/quad-element1.service';
-import { TriElement1 } from './elements/tri-element1.service';
 import { FemDataModel } from './fem-data-model.service';
 import { Coordinates } from './load_restaint/coordinates.service';
 
@@ -68,11 +67,6 @@ export class FileIO {
             parseFloat(ss[4])));
         }
         // 要素
-        else if ((keyWord == 'trielement1') && (ss.length > 6)) {
-          mesh.elements.push(new TriElement1
-            (parseInt(ss[1]), parseInt(ss[2]), parseInt(ss[3]),
-              this.readVertex(ss, 4, 3)));
-        }
         else if ((keyWord == 'quadelement1') && (ss.length > 7)) {
           mesh.elements.push(new QuadElement1
             (parseInt(ss[1]), parseInt(ss[2]), parseInt(ss[3]),

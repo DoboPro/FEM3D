@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { numeric } from '../libs/numeric-1.2.6.min.js';
+import * as numeric from '../libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'

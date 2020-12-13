@@ -5,7 +5,7 @@ import { FemDataModel } from './fem-data-model.service';
 import { Result } from './result.service';
 import { MeshModel } from './mesh/mesh-model.service';
 
-import { numeric } from './libs/numeric-1.2.6.min.js';
+import * as numeric from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import { numeric } from './libs/numeric-1.2.6.min.js';
 
 // 連立方程式求解オブジェクト
 export class Solver {
-
+  
   public PRECISION = 1e-10;	// マトリックス精度
   public LU_METHOD = 0;	    // LU分解法
   public ILUCG_METHOD = 1;	// 不完全LU分解共役勾配法
@@ -71,7 +71,6 @@ export class Solver {
 
   // 剛性マトリックス・荷重ベクトルを作成する
   public createStiffnessMatrix(): void {
-    let i: number;
     const bc: BoundaryCondition = this.model.bc;
     const bcList = bc.bcList;
     const reducedList = new Array();
@@ -106,7 +105,7 @@ export class Solver {
     const mesh: MeshModel = this.model.mesh;
     const elements = mesh.elements;
     const matrix = [];
-    let km = 0;
+    let km: number[][];
     let kmax = 0;
     for (let i = 0; i < dof; i++) matrix[i] = [];
     for (let i = 0; i < elements.length; i++) {
@@ -165,7 +164,7 @@ export class Solver {
   // matrix - 全体剛性マトリックス
   // km - 要素の剛性マトリックス
   // kmax - 成分の絶対値の最大値
-  public setElementMatrix(element, dof, matrix, km, kmax) {
+  public setElementMatrix(element: any, dof: number, matrix: number[][], km: number[][], kmax) {
     const nodeCount = element.nodeCount();
     const index = this.model.bc.nodeIndex;
     const nodes = element.nodes;
@@ -176,8 +175,8 @@ export class Solver {
         const column0 = index[nodes[j]];
         const j0 = dof * j;
         for (let i1 = 0; i1 < dof; i1++) {
-          const mrow = matrix[row0 + i1];
-          const krow = km[i0 + i1];
+          const mrow: number[] = matrix[row0 + i1];
+          const krow: number[] = km[i0 + i1];
           for (let j1 = 0; j1 < dof; j1++) {
             const cj1 = column0 + j1;
             if (cj1 in mrow) {

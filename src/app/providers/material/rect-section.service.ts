@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as THREE from 'three';
+import * as THREE from '../libs/three.min.js';
 import { Material } from './material.service';
 
 @Injectable({
