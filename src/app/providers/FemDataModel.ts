@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BoundaryCondition } from './boundary/boundary-condition.service';
-import { MeshModel } from './mesh/mesh-model.service';
-import { Material } from './material/material.service';
-import { Result } from './result.service';
-import { Solver } from './solver.service';
-import { ShellParameter } from './parameter/shell-parameter.service';
+import { BoundaryCondition } from './boundary/BoundaryCondition';
+import { MeshModel } from './mesh/MeshModel';
+import { Material } from './material/Material';
+import { Result } from './Result';
+import { Solver } from './Solver';
+import { ShellParameter } from './parameter/ShellParameter';
 import * as numeric from './libs/numeric-1.2.6.min.js';
 
 @Injectable({

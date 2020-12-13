@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as THREE from '../libs/three.min.js';
 import * as numeric from '../libs/numeric-1.2.6.min.js';
-import { FElement } from './felement.service';
-import { Strain } from '../stress/strain.service.js';
-import { Stress } from '../stress/stress.service.js';
+import { FElement } from './FElement';
+import { Strain } from '../stress/Strain';
+import { Stress } from '../stress/Stress';
 
 @Injectable({
   providedIn: 'root'

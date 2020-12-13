@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import * as THREE from '../libs/three.min.js';
 import * as numeric from '../libs/numeric-1.2.6.min.js';
 
-import { HelperService } from '../helper.service';
-import { FENode } from '../mesh/fenode.service.js';
+import { Comon } from '../Comon';
+import { FENode } from '../mesh/FENode.js';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import { FENode } from '../mesh/fenode.service.js';
 // label - 要素ラベル
 // material - 材料のインデックス
 // nodes - 節点番号
-export class FElement extends HelperService {
+export class FElement extends Comon {
   
   // 三角形2次要素のガウス積分の積分点座標
   public GTRI2 = [1 / 6, 2 / 3];

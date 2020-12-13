@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { BoundaryCondition } from './boundary/boundary-condition.service';
-import { FemDataModel } from './fem-data-model.service';
-import { Result } from './result.service';
-import { MeshModel } from './mesh/mesh-model.service';
+import { BoundaryCondition } from './boundary/BoundaryCondition';
+import { FemDataModel } from './FemDataModel';
+import { Result } from './Result';
+import { MeshModel } from './mesh/MeshModel';
 
 import * as numeric from './libs/numeric-1.2.6.min.js';
 

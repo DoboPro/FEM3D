@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SymmetricTensor3 } from './symmetric-tensor3.service';
+import { SymmetricTensor3 } from './SymmetricTensor3';
 
 @Injectable({
   providedIn: 'root'

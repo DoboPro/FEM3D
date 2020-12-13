@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Vector3R } from './vector3-r.service';
-import { Coordinates } from'./coordinates.service';
+import { Vector3R } from './Vector3R';
+import { Coordinates } from'./Coordinates';
 
 @Injectable({
   providedIn: 'root'

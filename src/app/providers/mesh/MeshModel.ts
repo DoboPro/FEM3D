@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import * as THREE from '../libs/three.min.js';
-import { EdgeBorder1 } from '../border/edge-border1.service';
-import { HelperService } from '../helper.service';
-import { FENode } from './fenode.service';
+import { EdgeBorder1 } from '../border/EdgeBorder1';
+import { Comon } from '../Comon';
+import { FENode } from './FENode';
 
 @Injectable({
   providedIn: 'root'
 })
   
 // メッシュモデル
-export class MeshModel extends HelperService {
+export class MeshModel extends Comon {
 
 
   public nodes: FENode[];      // 節点

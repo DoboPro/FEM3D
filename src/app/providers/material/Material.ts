@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RectSection } from './rect-section.service';
+import { RectSection } from './RectSection';
 
 @Injectable({
   providedIn: 'root'

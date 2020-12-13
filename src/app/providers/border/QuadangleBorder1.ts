@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ElementBorder } from './element-border.service';
-import { TriangleBorder1 } from './triangle-border1.service';
+import { ElementBorder } from './ElementBorder';
+import { TriangleBorder1 } from './TriangleBorder1';
 
 @Injectable({
   providedIn: 'root'

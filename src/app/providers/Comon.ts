@@ -4,7 +4,7 @@ import * as THREE from './libs/three.min.js';
 @Injectable({
   providedIn: 'root'
 })
-export class HelperService {
+export class Comon {
 
   constructor() { }
 

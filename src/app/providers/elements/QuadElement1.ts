@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { QuadangleBorder1 } from '../border/quadangle-border1.service';
-import { ShellElement } from './shell-element.service';
+import { QuadangleBorder1 } from '../border/QuadangleBorder1';
+import { ShellElement } from './ShellElement';
 import  * as numeric from '../libs/numeric-1.2.6.min.js';
 
 @Injectable({

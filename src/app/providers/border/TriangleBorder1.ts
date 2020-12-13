@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ElementBorder } from './element-border.service';
+import { ElementBorder } from './ElementBorder';
 
 @Injectable({
   providedIn: 'root'

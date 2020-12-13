@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BoundaryCondition } from './boundary/boundary-condition.service';
-import { Strain } from './stress/strain.service';
-import { Stress } from './stress/stress.service';
-import { Vector3R } from './load_restaint/vector3-r.service';
+import { BoundaryCondition } from './boundary/BoundaryCondition';
+import { Strain } from './stress/Strain';
+import { Stress } from './stress/Stress';
+import { Vector3R } from './load_restaint/Vector3R';
 
 @Injectable({
   providedIn: 'root'
