@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FemMainService } from 'src/app/providers/fem-main.service';
-import { Solver } from 'src/app/providers/solver.service';
+import { FemMainService } from 'src/app/providers/FemMain';
+import { Solver } from 'src/app/providers/Solver';
 import { ThreeService } from '../three/three.service';
 
 @Component({
