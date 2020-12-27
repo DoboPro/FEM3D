@@ -12,7 +12,7 @@ import { FENode } from './FENode';
 export class MeshModel extends Comon {
 
 
-  public nodes: FENode[];      // 節点
+  public nodes: FENode[];   z// 節点
   public elements: any[];   // 要素
   public freeFaces: any[];  // 表面
   public faceEdges: any[];  // 表面の要素辺

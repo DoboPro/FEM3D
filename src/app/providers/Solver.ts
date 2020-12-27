@@ -104,10 +104,11 @@ export class Solver {
   public stiffnessMatrix(dof) {
     const mesh: MeshModel = this.model.mesh;
     const elements = mesh.elements;
-    const matrix = [];
+    const matrix = numeric.rep([dof, dof], 0);//[];
     let km: number[][];
     let kmax = 0;
-    for (let i = 0; i < dof; i++) matrix[i] = [];
+    let iiii = 0;
+    // for (let i = 0; i < dof; i++) matrix[i] = [];
     for (let i = 0; i < elements.length; i++) {
       const elem = elements[i];
       const material = this.model.materials[elem.material];
@@ -120,7 +121,9 @@ export class Solver {
         else {
           km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.msh, sp);
         }
-        kmax = this.setElementMatrix(elem, 6, matrix, km, kmax);
+        const abc = this.setElementMatrix(elem, 6, matrix, km, kmax, iiii);
+        kmax = abc[0];
+        iiii = abc[1];
       }
       //else if (elem.isBar) {
       //  const sect = this.model.barParams[elem.param].section;
@@ -129,7 +132,9 @@ export class Solver {
       //}
       else {
         km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
-        kmax = this.setElementMatrix(elem, 3, matrix, km, kmax);
+        const abc = this.setElementMatrix(elem, 3, matrix, km, kmax, iiii);
+        kmax = abc[0];
+        iiii = abc[1];
       }
     }
     // 座標変換
@@ -142,6 +147,7 @@ export class Solver {
         ri.coords.transMatrix(matrix, dof, index[ri.node], bcdof[i]);
       }
     }
+    /*
     // 絶対値が小さい成分を除去する
     const eps = this.PRECISION * kmax;
     for (let i = 0; i < dof; i++) {
@@ -155,6 +161,7 @@ export class Solver {
         }
       }
     }
+    */
     return matrix;
   }
 
@@ -164,7 +171,8 @@ export class Solver {
   // matrix - 全体剛性マトリックス
   // km - 要素の剛性マトリックス
   // kmax - 成分の絶対値の最大値
-  public setElementMatrix(element: any, dof: number, matrix: number[][], km: number[][], kmax) {
+  public setElementMatrix(element: any, dof: number, matrix: number[][], km: number[][], kmax, iiii) {
+    
     const nodeCount = element.nodeCount();
     const index = this.model.bc.nodeIndex;
     const nodes = element.nodes;
@@ -180,18 +188,23 @@ export class Solver {
           for (let j1 = 0; j1 < dof; j1++) {
             const cj1 = column0 + j1;
             if (cj1 in mrow) {
+              // console.log(iiii, '. row:', row0 + i1, ',col:', cj1, 'mrow:', mrow[cj1], '+', krow[j0 + j1], '=', mrow[cj1] + krow[j0 + j1]);
+
               mrow[cj1] += krow[j0 + j1];
               kmax = Math.max(kmax, Math.abs(mrow[cj1]));
             }
             else {
+              // console.log(iiii, '. row:', row0 + i1, ',col:', cj1, 'mrow:', 0, '+', krow[j0 + j1], '=', krow[j0 + j1]);
+
               mrow[cj1] = krow[j0 + j1];
               kmax = Math.max(kmax, Math.abs(mrow[cj1]));
             }
+            iiii++;
           }
         }
       }
     }
-    return kmax;
+    return [kmax, iiii];
   }
 
   // 連立方程式を解く

@@ -20,6 +20,12 @@ export class Comon {
         (new THREE.Vector3().subVectors(p[2], p[0])).normalize();
     }
     else if ((p.length == 4) || (p.length == 8)) {
+      
+      const a = new THREE.Vector3().subVectors(p[2], p[0])
+      const b = new THREE.Vector3().subVectors(p[3], p[1])
+      const c = a.cross(b)
+      const d = c.normalize()
+
       return new THREE.Vector3().subVectors(p[2], p[0]).cross
         (new THREE.Vector3().subVectors(p[3], p[1])).normalize();
     }

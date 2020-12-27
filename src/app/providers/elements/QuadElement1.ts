@@ -93,17 +93,18 @@ export class QuadElement1 extends ShellElement {
   // t - 要素厚さ
   public quadstiffPart(p, d1, n, xsi, eta, t) {
     const d = this.dirMatrix(p);
-    const sf = this.shapeFunction(xsi, eta);
+    const sf = this.shapeFunction1(xsi, eta);
     const count = this.nodeCount();
     const ja = this.jacobianMatrix(p, sf, n, t);
     const bc0 = this.strainMatrix1(ja, sf, d);
-    const sf1 = this.shapeFunction(xsi, 0);
+    const sf1 = this.shapeFunction1(xsi, 0);
     const ja1 = this.jacobianMatrix(p, sf1, n, t);
-    const sf2 = this.shapeFunction(0, eta);
+    const sf2 = this.shapeFunction1(0, eta);
     const ja2 = this.jacobianMatrix(p, sf2, n, t);
     const bc = [this.strainMatrix1(ja1, sf1, d), this.strainMatrix1(ja2, sf2, d)];
     const kk = numeric.rep([6 * count, 6 * count], 0);
-    const jacob = Math.abs(ja.determinant());
+    const dete = ja.determinant();
+    const jacob = Math.abs(dete);
  
     const tt6 = t * t / 6.0, ce1 = 1e-3 * t * t * d1[3][3]
     const ce2 = -ce1 / (count - 1);

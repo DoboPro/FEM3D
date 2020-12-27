@@ -61,7 +61,8 @@ export class ShellElement extends FElement {
     jac[2] = 0.5 * t * n.x;
     jac[5] = 0.5 * t * n.y;
     jac[8] = 0.5 * t * n.z;
-    return new THREE.Matrix3().fromArray(jac);
+    const m = new THREE.Matrix3().fromArray(jac);
+    return m;
   }
   
 
@@ -78,7 +79,8 @@ export class ShellElement extends FElement {
         e1[1] * d[0][1] + e1[4] * d[1][1] + e1[7] * d[2][1],
         e1[1] * d[0][2] + e1[4] * d[1][2] + e1[7] * d[2][2],
         0, 0, e1[2] * d[0][2] + e1[5] * d[1][2] + e1[8] * d[2][2]);
-    return new THREE.Matrix3().getInverse(jd, true);
+    const m = new THREE.Matrix3().getInverse(jd, true);
+    return m;
   }
 
   // 形状関数の勾配 [ dNi/dx dNi/dy ] を返す
