@@ -1,6 +1,5 @@
 # FEM3D
 
-<<<<<<< HEAD
 ## このサイトのコピー
 
 http://www7b.biglobe.ne.jp/~khiguchi/Tech/fem/femHtml5.html
@@ -14,6 +13,3 @@ http://www7b.biglobe.ne.jp/~khiguchi/Tech/fem/femHtml5.html
 			プログラムファイルはsrcフォルダ内のファイルを単純に結合したものです
 ・FileFormat.pdf	入力データファイルの書式の説明文です
 
-=======
-inspired by http://www7b.biglobe.ne.jp/~khiguchi/Tech/fem/femHtml5.html
->>>>>>> c2df6774a922c650422d6a7339b99d9b2be6b3a9
