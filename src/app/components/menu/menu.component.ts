@@ -25,7 +25,7 @@ export class MenuComponent implements OnInit {
 
   // 新規作成
   public renew(): void {
-    this.InputData.initModel('assets/shell/shellBeamQuad1.fem');
+    this.InputData.initModel('assets/beam/sampleBeamHexa1.fem');
   }
 
 

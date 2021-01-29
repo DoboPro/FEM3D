@@ -6321,10 +6321,7 @@ function setElementMatrix(element,dof,matrix,km,kmax){
     for(var j=0;j<nodeCount;j++){
       var column0=index[nodes[j]],j0=dof*j;
       for(var i1=0;i1<dof;i1++){
-        var mrow = matrix[row0 + i1], krow = km[i0 + i1];
-        if (row0 == 96 && i1 == 3){ //(mrow == undefined) {
-          console.log('undefin だって！！');
-        }
+      	var mrow=matrix[row0+i1],krow=km[i0+i1];
       	for(var j1=0;j1<dof;j1++){
       	  var cj1=column0+j1;
       	  if(cj1 in mrow){

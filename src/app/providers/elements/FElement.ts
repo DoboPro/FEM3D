@@ -208,6 +208,24 @@ export class FElement extends Comon {
     return Math.acos(Math.min(Math.max(v1.dot(v2), 0), 1));
   }
 
+
+  // 三角形の立体角を球面過剰から求める
+  // p0 - 基点
+  // p1,p2,p3 - 頂点
+  public solidAngle(p0, p1, p2, p3) {
+    const v1 = p1.clone().sub(p0);
+    const v2 = p2.clone().sub(p0);
+    const v3 = p3.clone().sub(p0);
+    const v12 = v1.clone().cross(v2).normalize();
+    const v23 = v2.clone().cross(v3).normalize();
+    const v31 = v3.clone().cross(v1).normalize();
+    const max = Math.max, min = Math.min, acos = Math.acos;
+    const a1 = max(min(-v12.dot(v31), 1), -1);
+    const a2 = max(min(-v23.dot(v12), 1), -1);
+    const a3 = max(min(-v31.dot(v23), 1), -1);
+    return acos(a1) + acos(a2) + acos(a3) - Math.PI;
+  }
+  
   
   /*
   // 要素境界を返す
@@ -246,22 +264,6 @@ export class FElement extends Comon {
   }
 
 
-  // 三角形の立体角を球面過剰から求める
-  // p0 - 基点
-  // p1,p2,p3 - 頂点
-  public solidAngle(p0, p1, p2, p3) {
-    const v1 = p1.clone().sub(p0);
-    const v2 = p2.clone().sub(p0);
-    const v3 = p3.clone().sub(p0);
-    const v12 = v1.clone().cross(v2).normalize();
-    const v23 = v2.clone().cross(v3).normalize();
-    const v31 = v3.clone().cross(v1).normalize();
-    const max = Math.max, min = Math.min, acos = Math.acos;
-    const a1 = max(min(-v12.dot(v31), 1), -1);
-    const a2 = max(min(-v23.dot(v12), 1), -1);
-    const a3 = max(min(-v31.dot(v23), 1), -1);
-    return acos(a1) + acos(a2) + acos(a3) - Math.PI;
-  }
 
 
 

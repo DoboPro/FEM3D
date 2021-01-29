@@ -8,6 +8,7 @@ import { ShellParameter } from './parameter/ShellParameter';
 import { QuadElement1 } from './elements/QuadElement1';
 import { FemDataModel } from './FemDataModel';
 import { Coordinates } from './load_restaint/Coordinates';
+import { HexaElement1 } from './elements/HexaElement1';
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +72,10 @@ export class FileIO {
           mesh.elements.push(new QuadElement1
             (parseInt(ss[1]), parseInt(ss[2]), parseInt(ss[3]),
               this.readVertex(ss, 4, 4)));
+        }
+        else if ((keyWord == 'hexaelement1') && (ss.length > 10)) {
+          mesh.elements.push(new HexaElement1
+            (parseInt(ss[1]), parseInt(ss[2]), this.readVertex(ss, 3, 8)));
         }
         // 境界条件
         else if ((keyWord == 'restraint') && (ss.length > 7)) {
