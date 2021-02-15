@@ -137,7 +137,7 @@ export class SceneService {
   public onResize(deviceRatio: number,
     Width: number,
     Height: number): void {
-    this.camera.aspect = deviceRatio;
+    // this.camera.aspect = deviceRatio;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
     this.render();

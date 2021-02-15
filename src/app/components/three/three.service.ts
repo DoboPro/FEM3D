@@ -3,11 +3,15 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { ViewObjectService } from './geometry/view-object.service';
 import { SceneService } from './scene.service';
+import { FemMainService } from '../../providers/FemMain'
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThreeService {
+  update() {
+    throw new Error('Method not implemented.');
+  }
 
   public box: THREE.Box3;
   public center: THREE.Vector3;
@@ -48,5 +52,39 @@ export class ThreeService {
     this.viewPoint = 2 * this.size;
     */
   }
+
+// 表示モデル
+// canvasId - 表示領域ID
+  ViewModel(canvasId){
+  // this.canvasFrame=document.getElementById(canvasId);		// 描画フレーム
+  // this.renderer=new THREE.WebGLRenderer({antialias:true});	// レンダラ―
+  // if(!this.renderer){
+  //   alert("three.js の初期化に失敗しました");
+  // }
+
+  // this.renderer.setSize(this.canvasFrame.clientWidth,
+  //     	      	      	this.canvasFrame.clientHeight);
+  // this.canvasFrame.appendChild(this.renderer.domElement);
+
+  // this.renderer.setClearColor(0x000000,1);
+  // this.scene=new THREE.Scene();					// シーン
+  // this.initLight();
+  // this.initCamera();
+  // this.axis=null;
+};
+
+// 光源を初期化する
+initLight=function(){
+  // 平行光源
+    this.directionalLight=new THREE.DirectionalLight(0xffffff,1);
+    //bounds.setLightPosition(this.directionalLight.position);
+    this.scene.add(this.directionalLight);
+  // 環境光源
+    this.ambientLight=new THREE.AmbientLight(0x999999);
+    this.scene.add(this.ambientLight);
+  };
+
+
+
 
 }

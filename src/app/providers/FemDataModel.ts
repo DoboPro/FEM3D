@@ -22,7 +22,7 @@ export class FemDataModel {
 
   constructor(public mesh: MeshModel,
     public bc: BoundaryCondition,
-    private result: Result) {
+    public result: Result) {
   }
 
   // データを消去する

@@ -9,6 +9,7 @@ import { QuadElement1 } from './elements/QuadElement1';
 import { FemDataModel } from './FemDataModel';
 import { Coordinates } from './load_restaint/Coordinates';
 import { HexaElement1 } from './elements/HexaElement1';
+import { RoundService } from '../components/three/geometry/round.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,15 +17,18 @@ import { HexaElement1 } from './elements/HexaElement1';
 export class FileIO {
 
   constructor(private http: HttpClient,
-              private model: FemDataModel) { }
+              private model: FemDataModel,
+              private round: RoundService) { }
 
   // サーバー上のFEMデータファイルを読み込む
   // fileName - データファイル名
   public readServerFemFile(fileName: string) {
 
+    
     this.http.get(fileName, { responseType: 'text' }).subscribe(
       responseText => {
         this.readFemModel(responseText.split(/\r?\n/g));
+        this.round.changeData(this.model);
       },
       error => {
         console.log(error);

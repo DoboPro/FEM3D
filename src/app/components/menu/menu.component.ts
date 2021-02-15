@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FemMainService } from 'src/app/providers/FemMain';
+import { FemObjectService } from '../three/geometry/fem-object.service'
 import { Solver } from 'src/app/providers/Solver';
 import { ThreeService } from '../three/three.service';
 
@@ -10,7 +11,7 @@ import { ThreeService } from '../three/three.service';
 })
 export class MenuComponent implements OnInit {
 
-  constructor(public InputData: FemMainService,
+  constructor(public InputData: FemObjectService,
               public Solver: Solver) { }
 
   ngOnInit(): void {
@@ -18,14 +19,14 @@ export class MenuComponent implements OnInit {
   }
 
   // 計算
-  public calcrate() {
+  public calcurate() {
     this.Solver.calcStart();
   }
 
 
   // 新規作成
   public renew(): void {
-    this.InputData.initModel('assets/beam/sampleBeamHexa1.fem');
+    this.InputData.readLocalFile('assets/beam/sampleBeamHexa1.fem');
   }
 
 

@@ -8,6 +8,14 @@ import { Vector3R } from './load_restaint/Vector3R';
   providedIn: 'root'
 })
 export class Result {
+  static split: any;
+
+  setInitStatic() {
+    throw new Error('Method not implemented.');
+  }
+  setInitEigen() {
+    throw new Error('Method not implemented.');
+  }
 
   // データ型
   public NONE=-1;		// 空データ

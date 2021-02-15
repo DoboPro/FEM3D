@@ -6,6 +6,7 @@ import * as THREE from 'three';
 })
 export class BoundsService {
 
+
   public box: THREE.Box3;
   public center: THREE.Vector3;
   public size: number;
@@ -17,12 +18,15 @@ export class BoundsService {
     this.size=1;
     this.viewPoint=1;
   }
-
+  changeData() {
+    throw new Error('Method not implemented.');
+  }
 
   // モデル境界を設定する
   public set(): void{
-    this.box.setFromPoints(model.mesh.nodes);
-    this.center.copy(this.box.getCenter());
+    
+    // this.box.setFromPoints(model.mesh.nodes);
+    // this.center.copy(this.box.getCenter());
     this.size=Math.max(this.box.max.x-this.box.min.x,
                       this.box.max.y-this.box.min.y,
                       this.box.max.z-this.box.min.z);
