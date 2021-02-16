@@ -20,7 +20,8 @@ export class FileIO {
   constructor(private http: HttpClient,
               private model: FemDataModel,
               private plane: PlaneService,
-              private viewObject: ViewObjectService) { }
+              private viewObj : ViewObjectService,
+          ) { }
 
   // サーバー上のFEMデータファイルを読み込む
   // fileName - データファイル名
@@ -30,7 +31,7 @@ export class FileIO {
       responseText => {
         this.readFemModel(responseText.split(/\r?\n/g));
         this.plane.changeData(this.model);
-        this.viewObject.changeData(this.model);
+        this.viewObj.create();
       },
       error => {
         console.log(error);

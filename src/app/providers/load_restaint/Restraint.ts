@@ -49,4 +49,53 @@ export class Restraint extends Vector3R {
     }
     return s;
   }
+
+  
+  // 拘束条件表示オブジェクト
+// rest - 拘束条件
+// size - 表示サイズ
+// RestraintHelper(rest,size){
+//   THREE.Group.call(this);
+//   var geom;
+//   if(rest.rest[0]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+//     geom.translate(0,-0.5*size,0);
+//     geom.rotateZ(0.5*Math.PI);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.rest[1]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+//     geom.translate(0,-0.5*size,0);
+//     geom.rotateX(Math.PI);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.rest[2]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+//     geom.translate(0,-0.5*size,0);
+//     geom.rotateX(-0.5*Math.PI);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.rest[3]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.3*size,2*size,5,1);
+//     geom.translate(0,size,0);
+//     geom.rotateZ(-0.5*Math.PI);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.rest[4]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.3*size,2*size,5,1);
+//     geom.translate(0,size,0);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.rest[5]){
+//     geom=new THREE.CylinderBufferGeometry(0,0.3*size,2*size,5,1);
+//     geom.translate(0,size,0);
+//     geom.rotateX(0.5*Math.PI);
+//     this.add(new THREE.Mesh(geom,REST_MAT));
+//   }
+//   if(rest.coords){
+//     var e=rest.coords.c.elements;
+//     var e2=[e[0],e[1],e[2],0,e[3],e[4],e[5],0,e[6],e[7],e[8],0,0,0,0,1];
+//     this.applyMatrix(new THREE.Matrix4().fromArray(e2));
+//   }
+// };
 }
