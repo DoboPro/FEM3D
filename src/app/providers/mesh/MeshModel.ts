@@ -10,14 +10,14 @@ import { FENode } from './FENode';
   
 // メッシュモデル
 export class MeshModel extends Comon {
-
+  meshColors:number[]=[0.9,0.9,0.9];
 
   public nodes: FENode[];      // 節点
   public elements: any[];   // 要素
   public freeFaces: any[];  // 表面
   public faceEdges: any[];  // 表面の要素辺
 
-  constructor() {
+  constructor(private comon:Comon) {
     super();
     this.clear();
   }
@@ -132,11 +132,12 @@ export class MeshModel extends Comon {
     return new THREE.Vector3(cc * x, cc * y, cc * z);
   }
 
-  /*
+
 
   // 形状データを取り出す
   public getGeometry() {
     const sb = [];
+    
     for (let i = 0; i < this.freeFaces.length; i++) {
       Array.prototype.push.apply(sb, this.freeFaces[i].splitBorder());
     }
@@ -152,7 +153,7 @@ export class MeshModel extends Comon {
       const v = sb[i].nodes
       const elem = sb[i].element;
       const p = [this.nodes[v[0]], this.nodes[v[1]], this.nodes[v[2]]];
-      const n = normalVector(p);
+      const n = this.comon.normalVector(p);
       for (let j = 0; j < 3; j++) {
         let j3 = i9 + 3 * j;
         geometry.elements[3 * i + j] = elem;
@@ -163,9 +164,9 @@ export class MeshModel extends Comon {
         norm[j3] = n.x;
         norm[j3 + 1] = n.y;
         norm[j3 + 2] = n.z;
-        colors[j3] = meshColors[0];
-        colors[j3 + 1] = meshColors[1];
-        colors[j3 + 2] = meshColors[2];
+        colors[j3] =     this.meshColors[0];
+        colors[j3 + 1] = this.meshColors[1];
+        colors[j3 + 2] = this.meshColors[2];
         geometry.angle[j3] = 0;
         geometry.angle[j3 + 1] = 0;
         geometry.angle[j3 + 2] = 0;
@@ -177,6 +178,7 @@ export class MeshModel extends Comon {
     return geometry;
   }
 
+  /*
   // 要素辺の形状データを取り出す
   public getEdgeGeometry() {
     const edges = this.faceEdges;
