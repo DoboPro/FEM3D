@@ -9,6 +9,7 @@ import { QuadElement1 } from './elements/QuadElement1';
 import { FemDataModel } from './FemDataModel';
 import { Coordinates } from './load_restaint/Coordinates';
 import { HexaElement1 } from './elements/HexaElement1';
+import { PlaneService } from '../components/three/geometry/plane.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ import { HexaElement1 } from './elements/HexaElement1';
 export class FileIO {
 
   constructor(private http: HttpClient,
-              private model: FemDataModel) { }
+              private model: FemDataModel,
+              private plane: PlaneService) { }
 
   // サーバー上のFEMデータファイルを読み込む
   // fileName - データファイル名
@@ -25,6 +27,7 @@ export class FileIO {
     this.http.get(fileName, { responseType: 'text' }).subscribe(
       responseText => {
         this.readFemModel(responseText.split(/\r?\n/g));
+        this.plane.changeData(this.model);
       },
       error => {
         console.log(error);
