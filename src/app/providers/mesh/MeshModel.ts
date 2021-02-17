@@ -188,7 +188,7 @@ export class MeshModel extends Comon {
   public getEdgeGeometry() {
     const edges = this.faceEdges;
     const pos = new Float32Array(6 * edges.length);
-    const geometry_edge = new THREE.BufferGeometry();
+    this.geometry_edge = new THREE.BufferGeometry();
     this.geometry_edge.nodes = new Int32Array(2 * edges.length);
     this.geometry_edge.angle = new Float32Array(6 * edges.length);
     for (let i = 0; i < edges.length; i++) {
