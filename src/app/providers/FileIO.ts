@@ -30,8 +30,8 @@ export class FileIO {
     this.http.get(fileName, { responseType: 'text' }).subscribe(
       responseText => {
         this.readFemModel(responseText.split(/\r?\n/g));
-        this.plane.changeData(this.model);
         this.viewObj.create();
+        
       },
       error => {
         console.log(error);

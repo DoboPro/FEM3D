@@ -194,6 +194,8 @@ export class Result {
     this.sEnergy2[i] *= coef;
   }
 
+ 
+
 
 /*
 

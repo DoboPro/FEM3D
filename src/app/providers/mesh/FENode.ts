@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as THREE from '../libs/three.min.js';
+import * as THREE from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +22,10 @@ export class FENode extends THREE.Vector3 {
   }
 
   // 節点のコピーを返す
-  public clone(): FENode {
-    return Object.create(this);
-    // return new FENode(this.label, this.x, this.y, this.z);
-  }
+  // public clone(): FENode {
+  //   return Object.create(this);
+  //   // return new FENode(this.label, this.x, this.y, this.z);
+  // }
 
   
   // 節点を表す文字列を返す
