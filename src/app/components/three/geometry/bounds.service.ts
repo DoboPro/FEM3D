@@ -21,8 +21,8 @@ export class BoundsService {
 
   // モデル境界を設定する
   public set(): void{
-    this.box.setFromPoints(model.mesh.nodes);
-    this.center.copy(this.box.getCenter());
+    // this.box.setFromPoints(model.mesh.nodes);
+    // this.center.copy(this.box.getCenter());
     this.size=Math.max(this.box.max.x-this.box.min.x,
                       this.box.max.y-this.box.min.y,
                       this.box.max.z-this.box.min.z);

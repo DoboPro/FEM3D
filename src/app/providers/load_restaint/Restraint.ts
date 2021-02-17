@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Vector3R } from './Vector3R';
 import { Coordinates } from'./Coordinates';
+import * as THREE from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -49,4 +50,39 @@ export class Restraint extends Vector3R {
     }
     return s;
   }
+
+  
+  //拘束条件表示オブジェクト
+//rest - 拘束条件
+//size - 表示サイズ
+RestraintHelper(rest,size){
+  THREE.Group.call(this);
+  var geom;
+  // 拘束条件表示マテリアル
+  const REST_MAT=new THREE.MeshBasicMaterial({color:0x0066ff});
+  if(rest.rest[0]){
+    geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+    geom.translate(0,-0.5*size,0);
+    geom.rotateZ(0.5*Math.PI);
+    const rest1 = new THREE.Mesh(geom,REST_MAT);
+  }
+  if(rest.rest[1]){
+    geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+    geom.translate(0,-0.5*size,0);
+    geom.rotateX(Math.PI);
+    const rest2 = new THREE.Mesh(geom,REST_MAT);
+  }
+  if(rest.rest[2]){
+    geom=new THREE.CylinderBufferGeometry(0,0.5*size,size,5,1);
+    geom.translate(0,-0.5*size,0);
+    geom.rotateX(-0.5*Math.PI);
+    const rest3 = new THREE.Mesh(geom,REST_MAT);
+  }
+  if(rest.rest[3]){
+    geom=new THREE.CylinderBufferGeometry(0,0.3*size,2*size,5,1);
+    geom.translate(0,size,0);
+    geom.rotateZ(-0.5*Math.PI);
+    const rest4 = new THREE.Mesh(geom,REST_MAT);
+  }
+};
 }
