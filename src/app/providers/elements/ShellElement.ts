@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as THREE from '../libs/three.min.js';
+import * as THREE from 'three';
 import * as numeric from '../libs/numeric-1.2.6.min.js';
 import { FElement } from './FElement';
 import { Strain } from '../stress/Strain';
@@ -78,7 +78,8 @@ export class ShellElement extends FElement {
         e1[1] * d[0][1] + e1[4] * d[1][1] + e1[7] * d[2][1],
         e1[1] * d[0][2] + e1[4] * d[1][2] + e1[7] * d[2][2],
         0, 0, e1[2] * d[0][2] + e1[5] * d[1][2] + e1[8] * d[2][2]);
-    return new THREE.Matrix3().getInverse(jd, true);
+   // return new THREE.Matrix3().getInverse(jd, true);
+   return new THREE.Matrix3().getInverse(d, true);
   }
 
   // 形状関数の勾配 [ dNi/dx dNi/dy ] を返す

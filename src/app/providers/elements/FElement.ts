@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as THREE from '../libs/three.min.js';
+import * as THREE from 'three';
 import * as numeric from '../libs/numeric-1.2.6.min.js';
 
 import { Comon } from '../Comon';
