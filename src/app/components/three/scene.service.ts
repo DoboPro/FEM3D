@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
+import { ThreeComponent } from './three.component';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,7 @@ export class SceneService {
   cone2: any;
 
   // 初期化
-  public constructor() {
+  public constructor(private three:ThreeComponent) {
     // シーンを作成
     this.scene = new THREE.Scene();
     // シーンの背景を白に設定

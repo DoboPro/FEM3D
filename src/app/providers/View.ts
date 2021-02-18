@@ -22,6 +22,10 @@ export class View {
   public dof: number; // モデル自由度
   public method: number; // 方程式解法
 
+  disp:any;
+  minValue:number;
+  maxValue:number;
+
   constructor(
     private model: FemDataModel,
     private mesh: MeshModel,
@@ -75,4 +79,12 @@ export class View {
     }
     geometry_edge.attributes.position.needsUpdate = true;
   }
+
+  public setContour(disp,minValue,maxValue){
+    var coef=1;
+    if(maxValue!==minValue) coef=1/(maxValue-minValue);
+   // setGeomContour(this.mesh.geometry,value,minValue,coef,type);
+   // this.bar.setContour(value,minValue,coef,type);
+  };
+  
 }

@@ -3,6 +3,8 @@ import { BoundaryCondition } from './boundary/BoundaryCondition';
 import { Strain } from './stress/Strain';
 import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
+import { View } from './View';
+import { ColorBar } from './ColorBar';
 
 @Injectable({
   providedIn: 'root',
@@ -130,8 +132,15 @@ export class Result {
   public minValue: number; // コンター図データ最小値
   public maxValue: number; // コンター図データ最大値
   public type: number; // データ保持形態：節点データ
+  
+  // カンタ―
+  public contour:string = "6";
+  public component:string = "0";
 
-  constructor() {}
+  constructor(
+      private view:View,
+      private colorBar:ColorBar,
+  ) {}
 
   // 計算結果を消去する
   public clear(): void {
@@ -233,6 +242,60 @@ export class Result {
     this.stress2[i].mul(coef);
     this.sEnergy2[i] *= coef;
   }
+
+
+  // 設定を表示に反映させる
+setConfig(disp,contour,component){
+  //const dcoef=parseFloat(this.dispCoef.value);
+  const param=parseInt(contour);
+  const  comp=parseInt(component);
+ // const coef,comp,minValue,maxValue;
+     //coef=dcoef*Math.min(bounds.size/model.result.dispMax,
+     // 	      	      	1/model.result.angleMax);
+    // if(param<0){
+    //   viewObj.clearContour();
+    //   colorBar.clear();
+    // }
+      this.setContour(param,comp,0);
+      this.minValue=this.minValue;
+      this.maxValue=this.maxValue;
+      switch(param){
+      	case this.DISPLACEMENT:
+      	case this.TEMPERATURE:
+      	  this.view.setContour(disp,this.minValue,this.maxValue);
+      	  break;
+      	default:
+          console.log("da")
+      	  // this.view.setContour(disp,this.minValue,this.maxValue,
+      	  //     	      	     model.result.type);
+      	  // break;
+      }
+      this.colorBar.draw(this.minValue,this.maxValue);
+    
+};
+
+
+// コンター図データを設定する
+// param - データの種類
+// component - データの成分
+// data - コンター図参照
+ setContour(param,component,data){
+  if(param<0) return;
+  data=data||this;
+  const dpara=[data.displacement,data.strain1,data.stress1,data.sEnergy1,
+      	     data.temperature];
+  const count=dpara[param].length;
+  if(count===0) return;
+  this.value.length=0;
+  this.value[0]=data.getData(param,component,0);
+  this.minValue=this.value[0];
+  this.maxValue=this.value[0];
+  for(let i=1;i<count;i++){
+    this.value[i]=data.getData(param,component,i);
+    this.minValue=Math.min(this.minValue,this.value[i]);
+    this.maxValue=Math.max(this.maxValue,this.value[i]);
+  }
+};
 
   /*
 
