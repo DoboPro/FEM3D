@@ -13,25 +13,22 @@ import { MeshModel } from '../../../providers/mesh/MeshModel';
 
 // 表示オブジェクト
 export class ViewObjectService {
-  public nodes: FENode[];      // 節点
-  public elements: any[];   // 要素
-  public freeFaces: any[];  // 表面
-  public faceEdges: any[];  // 表面の要素辺
-  
+  public nodes: FENode[]; // 節点
+  public elements: any[]; // 要素
+  public freeFaces: any[]; // 表面
+  public faceEdges: any[]; // 表面の要素辺
+
   constructor(
     public scene: SceneService,
     public mesh: MeshModel,
-    public model: FemDataModel,
-    //public rest:Restraint
+    public model: FemDataModel //public rest:Restraint
   ) {}
 
   public create(): void {
-
-
-
-// 要素表示マテリアル
+    const geometry1 = this.mesh.getGeometry();
+    // 要素表示マテリアル
     const elemMat = new THREE.MeshStandardMaterial({
-      color: 0xff0000,
+      color: 0xf5f5f5,
       roughness: 0.2,
       metalness: 0.5,
       transparent: true,
@@ -39,34 +36,28 @@ export class ViewObjectService {
       // vertexColors:THREE.VertexColors,
       side: THREE.DoubleSide,
     });
-    const geometry1 = this.mesh.getGeometry();
     const meshMaterial = new THREE.Mesh(geometry1, elemMat);
     this.scene.add(meshMaterial);
 
-
     // 要素辺の表示マテリアル
-    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xff0000 });//color: 0xffffff });
+    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0x000000 }); //color: 0xffffff });
     const geometry2 = this.mesh.getEdgeGeometry();
     const edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
     this.scene.add(edgeMaterial);
-
   }
 
-  public createRestraint():void{
+  public createRestraint(): void {
     // var hs=0.02*bounds.size,
     let hs = 1;
-    const rests:any[] =this.model.bc.restraints;
-    const restMaterial =new THREE.Group();
-    for(var i=0;i<rests.length;i++){
-     // let r=this.rest.RestraintHelper(rests[i],hs);
+    const rests: any[] = this.model.bc.restraints;
+    const restMaterial = new THREE.Group();
+    for (let i = 0; i < rests.length; i++) {
+      // let r=this.rest.RestraintHelper(rests[i],hs);
       // r.position.copy(this.model.mesh.nodes[rests[i].node]);
       // restMaterial.add(r);
     }
     this.scene.add(restMaterial);
   }
-
-
-
 
   // public changeData(model: any): void {
   //   //

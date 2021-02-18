@@ -37,15 +37,15 @@ export class View {
 
   public setGeomDisplacement1(geometry_mesh, disp) {
     const coef = 0.1;
-    var label = geometry_mesh.nodes,
+    const label = geometry_mesh.nodes,
       nodes = this.model.mesh.nodes,
       angle = geometry_mesh.angle;
-    var pos = geometry_mesh.attributes.position.array;
-    for (var i = 0; i < label.length; i++) {
-      var i3 = 3 * i,
+    const pos = geometry_mesh.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
         p = nodes[label[i]],
         dx = disp[label[i]].x;
-        console.log(pos[i3])
+      console.log(pos[i3]);
       pos[i3] = p.x + coef * dx[0];
       pos[i3 + 1] = p.y + coef * dx[1];
       pos[i3 + 2] = p.z + coef * dx[2];
@@ -58,12 +58,12 @@ export class View {
 
   public setGeomDisplacement2(geometry_edge, disp) {
     const coef = 0.1;
-    var label = geometry_edge.nodes,
+    const label = geometry_edge.nodes,
       nodes = this.model.mesh.nodes,
       angle = geometry_edge.angle;
-    var pos = geometry_edge.attributes.position.array;
-    for (var i = 0; i < label.length; i++) {
-      var i3 = 3 * i,
+    const pos = geometry_edge.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
         p = nodes[label[i]],
         dx = disp[label[i]].x;
       pos[i3] = p.x + coef * dx[0];
