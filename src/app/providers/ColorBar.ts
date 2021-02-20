@@ -5,8 +5,6 @@ import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
 import { View } from './View';
 import { SceneService } from '../components/three/scene.service';
-import { ThreeComponent } from '../components/three/three.component';
-import { Scene } from 'three';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +20,7 @@ export class ColorBar {
   maxPos: any;
   minPos: any;
 
-  constructor(private three: ThreeComponent, private scene: SceneService) {}
+  constructor(private scene: SceneService) {}
 
   public OnInit(): void {
     this.scene.createRender(
@@ -61,7 +59,7 @@ export class ColorBar {
   }
 
   draw(minValue, maxValue) {
-    this.OnInit();
+    //this.OnInit();
     var FG_COLOR = '#ffffff'; // 前景色
     this.context.clearRect(0, 0, this.Width, this.Height);
     this.context.fillStyle = this.gradient;

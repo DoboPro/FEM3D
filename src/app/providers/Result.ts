@@ -262,13 +262,12 @@ setConfig(disp,contour,component){
       switch(param){
       	case this.DISPLACEMENT:
       	case this.TEMPERATURE:
-      	  this.view.setContour(disp,this.minValue,this.maxValue);
+      	  this.view.setContour(this.value,this.minValue,this.maxValue);
       	  break;
       	default:
           console.log("da")
-      	  // this.view.setContour(disp,this.minValue,this.maxValue,
-      	  //     	      	     model.result.type);
-      	  // break;
+      	  this.view.setContour(this.value,this.minValue,this.maxValue);
+      	   break;
       }
       this.colorBar.draw(this.minValue,this.maxValue);
     
@@ -297,6 +296,92 @@ setConfig(disp,contour,component){
   }
 };
 
+
+// データを取り出す
+// param - データの種類
+// component - データの成分
+// index - 節点のインデックス
+getData(param,component,index){
+  switch(param){
+    case this.DISPLACEMENT:
+      switch(component){
+      	case this.X:
+      	case this.Y:
+      	case this.Z:
+      	case this.RX:
+      	case this.RY:
+      	case this.RZ:
+      	  return this.displacement[index].x[component];
+      	case this.MAGNITUDE:
+      	  return this.displacement[index].magnitude();
+      }
+      break;
+    // case this.STRAIN:
+    //   if(component<this.SHIFT){
+    //   	return this.getTensorComp(this.strain1[index],component);
+    //   }
+    //   else{
+    //   	return this.getTensorComp(this.strain2[index],component-this.SHIFT);
+    //   }
+    //   break;
+    // case this.STRESS:
+    //   if(component<this.SHIFT){
+    //   	return this.getTensorComp(this.stress1[index],component);
+    //   }
+    //   else{
+    //   	return this.getTensorComp(this.stress2[index],component-this.SHIFT);
+    //   }
+    //   break;
+    // case this.S_ENERGY:
+    //   if(component===0){
+    //   	return this.sEnergy1[index];
+    //   }
+    //   else{
+    //   	return this.sEnergy2[index];
+    //   }
+    //   break;
+    case this.TEMPERATURE:
+      return this.temperature[index];
+  }
+  return 0;
+};
+
+
+// // 歪・応力を取り出す
+// // s - 歪 or 応力
+// // component - データの成分
+// getTensorComp(s,component){
+//   if(component<6){
+//     return s.vector()[component];
+//   }
+//   else if(component<=10){
+//     const pri=s.principal();
+//     if(component===     this.MAX_PRINCIPAL)      return pri[0];
+//     else if(component===this.MIN_PRINCIPAL) return pri[2];
+//     else if(component===this.MID_PRINCIPAL) return pri[1];
+//     else if(component===this.MAX_SHARE)     return 0.5*(pri[0]-pri[2]);
+//   }
+//   else if(component===this.VON_MISES){
+//     return s.mises();
+//   }
+//   return 0;
+// };
+
+// // 固有値を返す
+// principal(){
+//   return eigenvalue(this,100).lambda;
+// };
+
+// // 固有値データを追加する
+// // ev - 固有値
+// public addEigenValue=function(ev){
+//   this.eigenValue.push(ev);
+//   this.calculated=true;
+// };
+
+
+
+
   /*
 
 // 節点温度を設定する
@@ -322,15 +407,6 @@ public setTemperature=function(bc,t,nodeCount){
 };
 
 
-
-
-// 固有値データを追加する
-// ev - 固有値
-public addEigenValue=function(ev){
-  this.eigenValue.push(ev);
-  this.calculated=true;
-};
-
 // コンター図データを設定する
 // param - データの種類
 // component - データの成分
@@ -351,75 +427,6 @@ public setContour=function(param,component,data){
     this.minValue=Math.min(this.minValue,this.value[i]);
     this.maxValue=Math.max(this.maxValue,this.value[i]);
   }
-};
-
-// データを取り出す
-// param - データの種類
-// component - データの成分
-// index - 節点のインデックス
-public getData=function(param,component,index){
-  switch(param){
-    case DISPLACEMENT:
-      switch(component){
-      	case X:
-      	case Y:
-      	case Z:
-      	case RX:
-      	case RY:
-      	case RZ:
-      	  return this.displacement[index].x[component];
-      	case MAGNITUDE:
-      	  return this.displacement[index].magnitude();
-      }
-      break;
-    case STRAIN:
-      if(component<SHIFT){
-      	return this.getTensorComp(this.strain1[index],component);
-      }
-      else{
-      	return this.getTensorComp(this.strain2[index],component-SHIFT);
-      }
-      break;
-    case STRESS:
-      if(component<SHIFT){
-      	return this.getTensorComp(this.stress1[index],component);
-      }
-      else{
-      	return this.getTensorComp(this.stress2[index],component-SHIFT);
-      }
-      break;
-    case S_ENERGY:
-      if(component===0){
-      	return this.sEnergy1[index];
-      }
-      else{
-      	return this.sEnergy2[index];
-      }
-      break;
-    case TEMPERATURE:
-      return this.temperature[index];
-  }
-  return 0;
-};
-
-// 歪・応力を取り出す
-// s - 歪 or 応力
-// component - データの成分
-public getTensorComp=function(s,component){
-  if(component<6){
-    return s.vector()[component];
-  }
-  else if(component<=10){
-    const pri=s.principal();
-    if(component===MAX_PRINCIPAL)      return pri[0];
-    else if(component===MIN_PRINCIPAL) return pri[2];
-    else if(component===MID_PRINCIPAL) return pri[1];
-    else if(component===MAX_SHARE)     return 0.5*(pri[0]-pri[2]);
-  }
-  else if(component===VON_MISES){
-    return s.mises();
-  }
-  return 0;
 };
 
 
@@ -621,10 +628,6 @@ SymmetricTensor3.prototype.mul=function(a){
   this.zx*=a;
 };
 
-// 固有値を返す
-SymmetricTensor3.prototype.principal=function(){
-  return eigenvalue(this,100).lambda;
-};
 
 // テンソルを回転させる
 // d - 方向余弦マトリックス

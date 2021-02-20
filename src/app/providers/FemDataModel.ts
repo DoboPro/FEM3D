@@ -3,7 +3,6 @@ import { BoundaryCondition } from './boundary/BoundaryCondition';
 import { MeshModel } from './mesh/MeshModel';
 import { Material } from './material/Material';
 import { Result } from './Result';
-import { Solver } from './Solver';
 import { ShellParameter } from './parameter/ShellParameter';
 import * as numeric from './libs/numeric-1.2.6.min.js';
 

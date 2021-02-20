@@ -71,7 +71,7 @@ export class Solver {
       const t1 = new Date().getTime();
       const disp = this.result.displacement;
       this.view.setDisplacement(disp);
-      this.result.setConfig(disp,"6","0");
+      this.result.setConfig(disp,"0","6");
       // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
     } catch (ex) {

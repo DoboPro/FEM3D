@@ -140,8 +140,6 @@ export class MeshModel extends Comon {
 
   // 形状データを取り出す
   public getGeometry() {
-    
-
     const sb = [];
 
     for (let i = 0; i < this.freeFaces.length; i++) {
