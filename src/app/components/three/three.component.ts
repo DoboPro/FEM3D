@@ -50,6 +50,10 @@ export class ThreeComponent implements AfterViewInit {
     const element = this.scene.RendererDomElement();
     const div = <HTMLCanvasElement>document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
+
+    this.scene.canvasElement = div;
+
+    
     // レンダリングする
     this.animate();   
   }

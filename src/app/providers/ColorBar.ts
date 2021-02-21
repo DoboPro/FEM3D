@@ -41,7 +41,9 @@ export class ColorBar {
       height: parseInt(g),
     };
 
-    const canvas2 = <HTMLCanvasElement>document.getElementById('myCanvas');
+    const canvas2 = this.scene.canvasElement;
+
+    //const canvas2 = <HTMLCanvasElement>document.getElementById('myCanvas');
     const ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
     console.log(ctx);
 

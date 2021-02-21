@@ -29,7 +29,7 @@ export class SceneService {
 
   //
 
-  private canvasElement: HTMLCanvasElement;
+  public canvasElement: HTMLCanvasElement;
   private Width: number;
   private Height: number;
 
