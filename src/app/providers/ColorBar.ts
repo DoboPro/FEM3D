@@ -4,7 +4,9 @@ import { Strain } from './stress/Strain';
 import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
 import { View } from './View';
+import * as THREE from 'three';
 import { SceneService } from '../components/three/scene.service';
+import { Stats } from '../components/three/libs/stats.module.js';
 
 @Injectable({
   providedIn: 'root',
@@ -12,34 +14,39 @@ import { SceneService } from '../components/three/scene.service';
 export class ColorBar {
   canvasElement: HTMLCanvasElement;
   deviceRatio: number;
-  context: any;
   Width: number;
   Height: number;
   gradient: any;
   rect: any;
   maxPos: any;
   minPos: any;
+  aspectRatio: number;
+  context: any;
+  a: any;
+  b: any;
+  c: any;
+  d: any;
 
-  constructor(private scene: SceneService) {}
+  constructor(private scene:SceneService) {}
 
   public OnInit(): void {
-    this.scene.createRender(
-      this.canvasElement,
-      this.deviceRatio,
-      this.Width,
-      this.Height
-    );
-    const d = (this.Width / 5).toString();
-    const e = (this.Height / 10).toString();
-    const f = (this.Width * (3 / 10)).toString();
-    const g = (this.Height * (4 / 5)).toString();
+    const d = (this.b / 5).toString();
+    const e = (this.c / 10).toString();
+    const f = (this.b * (3 / 10)).toString();
+    const g = (this.c * (4 / 5)).toString();
     this.rect = {
       x: parseInt(d), // カラーバーの描画領域
       y: parseInt(e),
       width: parseInt(f),
       height: parseInt(g),
     };
-    this.gradient = this.context.createLinearGradient(
+
+    const canvas2 = <HTMLCanvasElement>document.getElementById('myCanvas');
+    const ctx: CanvasRenderingContext2D = canvas2.getContext('2d');
+    console.log(ctx);
+
+    const context = this.canvasElement.getContext('2d');
+    this.gradient = context.createLinearGradient(
       this.rect.x,
       this.rect.y + this.rect.height,
       this.rect.x,
@@ -59,7 +66,9 @@ export class ColorBar {
   }
 
   draw(minValue, maxValue) {
-    //this.OnInit();
+   // this.OnInit();
+    const z = this.scene.draw(this.a,this.b,this.c);
+    console.log(z)
     var FG_COLOR = '#ffffff'; // 前景色
     this.context.clearRect(0, 0, this.Width, this.Height);
     this.context.fillStyle = this.gradient;
@@ -77,22 +86,27 @@ export class ColorBar {
       this.rect.height
     );
     this.context.fillStyle = FG_COLOR;
-    this.context.fillText(this.numString(maxValue), this.maxPos.x, this.maxPos.y);
-    this.context.fillText(this.numString(minValue), this.minPos.x, this.minPos.y);
+    this.context.fillText(
+      this.numString(maxValue),
+      this.maxPos.x,
+      this.maxPos.y
+    );
+    this.context.fillText(
+      this.numString(minValue),
+      this.minPos.x,
+      this.minPos.y
+    );
   }
 
-   numString(value){
-    var vabs=Math.abs(value);
-    if(vabs>=1.0E5){
+  numString(value) {
+    var vabs = Math.abs(value);
+    if (vabs >= 1.0e5) {
       return value.toExponential(4);
-    }
-    else if((vabs>=1) || (vabs===0)){
+    } else if (vabs >= 1 || vabs === 0) {
       return value.toFixed(3);
-    }
-    else if(vabs>=0.01){
+    } else if (vabs >= 0.01) {
       return value.toFixed(4);
-    }
-    else{
+    } else {
       return value.toExponential(4);
     }
   }

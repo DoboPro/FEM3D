@@ -12,12 +12,25 @@ import { ThreeService } from './three.service';
 })
 export class ThreeComponent implements AfterViewInit {
   rect:any;
+  a:any;
+  b:any;
+  c:any;
+  canvas2:any;
 
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
 
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
+
+  private get context(): CanvasRenderingContext2D {
+    const canvass: any = this.canvasRef.nativeElement;
+    return HTMLCanvasElement.prototype.getContext('2d');
+  };
+
+  // private get context(): HTMLCanvasElement{
+  //   return this.canvasRef.nativeElement.getContext("2d");
+  // }
 
   constructor(private ngZone: NgZone,
               private scene: SceneService,
@@ -28,17 +41,17 @@ export class ThreeComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.scene.OnInit(this.getAspectRatio(),
       this.canvas,
+      // this.context,
       devicePixelRatio,
       window.innerWidth,
       window.innerHeight);
 
     // ラベルを表示する用のレンダラーを HTML に配置する
     const element = this.scene.RendererDomElement();
-    const div = document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
+    const div = <HTMLCanvasElement>document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
-
     // レンダリングする
-    this.animate();
+    this.animate();   
   }
 
   animate(): void {
@@ -96,19 +109,5 @@ export class ThreeComponent implements AfterViewInit {
     }
     return this.canvas.clientWidth / this.canvas.clientHeight;
   }
-
-  
-  colorbar(d,e,f){
-    const a = this.canvas;
-    const b = window.innerWidth;
-    const c = window.innerHeight;
-    // this.context= a.getContext('2d');		// コンテキスト
-    // this.context.font=CBAR_FONT;
-    // this.context.textBaseline='top';
-   
-    return {a,b,c}
-    
-  }
-
 
 }

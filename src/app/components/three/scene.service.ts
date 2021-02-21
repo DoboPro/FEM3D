@@ -29,6 +29,9 @@ export class SceneService {
 
   //
 
+  private canvasElement: HTMLCanvasElement;
+  private Width: number;
+  private Height: number;
 
   // 初期化
   public constructor() {
@@ -48,6 +51,7 @@ export class SceneService {
   public OnInit(
     aspectRatio: number,
     canvasElement: HTMLCanvasElement,
+    // context: HTMLCanvasElement,
     deviceRatio: number,
     Width: number,
     Height: number
@@ -58,6 +62,7 @@ export class SceneService {
     this.add(new THREE.AmbientLight(0xf0f0f0));
     // レンダラー
     this.createRender(canvasElement, deviceRatio, Width, Height);
+    this.draw(canvasElement, Width, Height);
     // コントロール
     this.addControls();
 
@@ -112,18 +117,28 @@ export class SceneService {
   // レンダラーを初期化する
   public createRender(
     canvasElement: HTMLCanvasElement,
+    //context: HTMLCanvasElement,
     deviceRatio: number,
     Width: number,
     Height: number
   ): void {
     this.renderer = new THREE.WebGLRenderer({
       canvas: canvasElement,
+      // context:context,
       alpha: true, // transparent background
       antialias: true, // smooth edges
     });
     this.renderer.setPixelRatio(deviceRatio);
     this.renderer.setSize(Width, Height);
     this.renderer.shadowMap.enabled = true;
+  }
+
+  public draw(a: HTMLCanvasElement,b: number,c: number) {
+    this.OnInit;
+    const d = a;
+    const e = b;
+    const f = c;
+    return {d,e,f}
   }
 
   public RendererDomElement(): Node {
