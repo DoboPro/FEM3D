@@ -71,13 +71,17 @@ export class Solver {
       const t1 = new Date().getTime();
       const disp = this.result.displacement;
       this.view.setDisplacement(disp);
-      this.result.setConfig(disp,"0","6");
+    //  this.result.setConfig(disp,"6","0");
       // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
     } catch (ex) {
       alert(ex);
     }
   }
+
+  // public contStart(){
+  //   this.result.setConfig(0,"0","6");
+  // }
 
   // 剛性マトリックス・荷重ベクトルを作成する
   public createStiffnessMatrix(): void {

@@ -10,6 +10,10 @@ exports.ThreeComponent = void 0;
 var core_1 = require("@angular/core");
 var THREE = require("three");
 var ThreeComponent = /** @class */ (function () {
+    // private get context(): CanvasRenderingContext2D {
+    //   const canvass: any = this.canvasRef.nativeElement;
+    //   return HTMLCanvasElement.prototype.getContext('2d');
+    // };
     // private get context(): HTMLCanvasElement{
     //   return this.canvasRef.nativeElement.getContext("2d");
     // }
@@ -26,15 +30,6 @@ var ThreeComponent = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(ThreeComponent.prototype, "context", {
-        get: function () {
-            var canvass = this.canvasRef.nativeElement;
-            return HTMLCanvasElement.prototype.getContext('2d');
-        },
-        enumerable: false,
-        configurable: true
-    });
-    ;
     ThreeComponent.prototype.ngAfterViewInit = function () {
         this.scene.OnInit(this.getAspectRatio(), this.canvas, 
         // this.context,
@@ -43,6 +38,7 @@ var ThreeComponent = /** @class */ (function () {
         var element = this.scene.RendererDomElement();
         var div = document.getElementById('myCanvas'); // ボタンを置きたい場所の手前の要素を取得
         div.parentNode.insertBefore(element, div.nextSibling); // ボタンを置きたい場所にaタグを追加
+        //this.scene.canvasElement = div;
         // レンダリングする
         this.animate();
     };

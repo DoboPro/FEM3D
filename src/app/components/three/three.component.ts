@@ -23,10 +23,10 @@ export class ThreeComponent implements AfterViewInit {
     return this.canvasRef.nativeElement;
   }
 
-  private get context(): CanvasRenderingContext2D {
-    const canvass: any = this.canvasRef.nativeElement;
-    return HTMLCanvasElement.prototype.getContext('2d');
-  };
+  // private get context(): CanvasRenderingContext2D {
+  //   const canvass: any = this.canvasRef.nativeElement;
+  //   return HTMLCanvasElement.prototype.getContext('2d');
+  // };
 
   // private get context(): HTMLCanvasElement{
   //   return this.canvasRef.nativeElement.getContext("2d");
@@ -51,7 +51,7 @@ export class ThreeComponent implements AfterViewInit {
     const div = <HTMLCanvasElement>document.getElementById('myCanvas');        // ボタンを置きたい場所の手前の要素を取得
     div.parentNode.insertBefore(element, div.nextSibling);  // ボタンを置きたい場所にaタグを追加
 
-    this.scene.canvasElement = div;
+    //this.scene.canvasElement = div;
 
     
     // レンダリングする

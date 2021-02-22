@@ -13,6 +13,10 @@ var dat_gui_module_js_1 = require("./libs/dat.gui.module.js");
 var OrbitControls_js_1 = require("./libs/OrbitControls.js");
 //import { ThreeComponent } from './three.component';
 var SceneService = /** @class */ (function () {
+    //
+    // public canvasElement: HTMLCanvasElement;
+    // private Width: number;
+    // private Height: number;
     // 初期化
     function SceneService() {
         // シーンを作成
@@ -36,7 +40,7 @@ var SceneService = /** @class */ (function () {
         this.add(new THREE.AmbientLight(0xf0f0f0));
         // レンダラー
         this.createRender(canvasElement, deviceRatio, Width, Height);
-        this.draw(canvasElement, Width, Height);
+        // this.draw(canvasElement, Width, Height);
         // コントロール
         this.addControls();
         // 床面を生成する
@@ -94,13 +98,13 @@ var SceneService = /** @class */ (function () {
         this.renderer.setSize(Width, Height);
         this.renderer.shadowMap.enabled = true;
     };
-    SceneService.prototype.draw = function (a, b, c) {
-        this.OnInit;
-        var d = a;
-        var e = b;
-        var f = c;
-        return { d: d, e: e, f: f };
-    };
+    // public draw(a: HTMLCanvasElement,b: number,c: number) {
+    //   this.OnInit;
+    //   const d = a;
+    //   const e = b;
+    //   const f = c;
+    //   return {d,e,f}
+    // }
     SceneService.prototype.RendererDomElement = function () {
         return this.renderer.domElement;
     };

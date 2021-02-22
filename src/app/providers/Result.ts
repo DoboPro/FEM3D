@@ -4,7 +4,7 @@ import { Strain } from './stress/Strain';
 import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
 import { View } from './View';
-import { ColorBar } from './ColorBar';
+// import { ColorBar } from './ColorBar';
 
 @Injectable({
   providedIn: 'root',
@@ -139,7 +139,7 @@ export class Result {
 
   constructor(
       private view:View,
-      private colorBar:ColorBar,
+      // private colorBar:ColorBar,
   ) {}
 
   // 計算結果を消去する
@@ -263,14 +263,14 @@ setConfig(disp,contour,component){
       	case this.DISPLACEMENT:
       	case this.TEMPERATURE:
       	  this.view.setContour(this.value,this.minValue,this.maxValue);
+          console.log("fdsa")
       	  break;
       	default:
+          this.view.setContour(this.value,this.minValue,this.maxValue);
           console.log("da")
-      	  this.view.setContour(this.value,this.minValue,this.maxValue);
       	   break;
       }
-      this.colorBar.draw(this.minValue,this.maxValue);
-    
+      //this.colorBar.draw(this.minValue,this.maxValue);
 };
 
 

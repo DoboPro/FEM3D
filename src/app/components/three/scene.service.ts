@@ -29,9 +29,9 @@ export class SceneService {
 
   //
 
-  public canvasElement: HTMLCanvasElement;
-  private Width: number;
-  private Height: number;
+  // public canvasElement: HTMLCanvasElement;
+  // private Width: number;
+  // private Height: number;
 
   // 初期化
   public constructor() {
@@ -62,7 +62,7 @@ export class SceneService {
     this.add(new THREE.AmbientLight(0xf0f0f0));
     // レンダラー
     this.createRender(canvasElement, deviceRatio, Width, Height);
-    this.draw(canvasElement, Width, Height);
+   // this.draw(canvasElement, Width, Height);
     // コントロール
     this.addControls();
 
@@ -133,13 +133,13 @@ export class SceneService {
     this.renderer.shadowMap.enabled = true;
   }
 
-  public draw(a: HTMLCanvasElement,b: number,c: number) {
-    this.OnInit;
-    const d = a;
-    const e = b;
-    const f = c;
-    return {d,e,f}
-  }
+  // public draw(a: HTMLCanvasElement,b: number,c: number) {
+  //   this.OnInit;
+  //   const d = a;
+  //   const e = b;
+  //   const f = c;
+  //   return {d,e,f}
+  // }
 
   public RendererDomElement(): Node {
     return this.renderer.domElement;
