@@ -20,6 +20,12 @@ export class MenuComponent implements OnInit {
     this.Solver.calcStart();
   }
 
+
+   // コンター
+   public conter() {
+    this.Solver.conterStart();
+  }
+
   // 新規作成
   public renew(): void {
     this.InputData.initModel('assets/beam/sampleBeamHexa1.fem');
