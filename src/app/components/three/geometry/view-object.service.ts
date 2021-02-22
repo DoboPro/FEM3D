@@ -33,8 +33,8 @@ export class ViewObjectService {
       metalness: 0.5,
       transparent: true,
       opacity: 0.8,
-      // vertexColors:THREE.VertexColors,
-      side: THREE.DoubleSide,
+      vertexColors:true,
+            side: THREE.DoubleSide,
     });
     const meshMaterial = new THREE.Mesh(geometry1, elemMat);
     this.scene.add(meshMaterial);

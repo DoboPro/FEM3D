@@ -134,8 +134,8 @@ export class Result {
   public type: number; // データ保持形態：節点データ
   
   // カンタ―
-  public contour:string = "6";
-  public component:string = "0";
+  public contour:string = "0";
+  public component:string = "6";
 
   constructor(
       private view:View,
@@ -266,9 +266,9 @@ setConfig(disp,contour,component){
       	  break;
       	default:
           console.log("da")
-      	  // this.view.setContour(disp,this.minValue,this.maxValue,
-      	  //     	      	     model.result.type);
-      	  // break;
+      	   this.view.setContour(disp,this.minValue,this.maxValue,
+      	       	      	    );
+      	   break;
       }
       // this.colorBar.draw(this.minValue,this.maxValue);
     
@@ -296,6 +296,56 @@ setConfig(disp,contour,component){
     this.maxValue=Math.max(this.maxValue,this.value[i]);
   }
 };
+
+// データを取り出す
+// param - データの種類
+// component - データの成分
+// index - 節点のインデックス
+public getData=function(param,component,index){
+  switch(param){
+    case this.DISPLACEMENT:
+      switch(component){
+      	case this.X:
+      	case this.Y:
+      	case this.Z:
+      	case this.RX:
+      	case this.RY:
+      	case this.RZ:
+      	  return this.displacement[index].x[component];
+      	case this.MAGNITUDE:
+      	  return this.displacement[index].magnitude();
+      }
+      break;
+    // case STRAIN:
+    //   if(component<SHIFT){
+    //   	return this.getTensorComp(this.strain1[index],component);
+    //   }
+    //   else{
+    //   	return this.getTensorComp(this.strain2[index],component-SHIFT);
+    //   }
+    //   break;
+    // case STRESS:
+    //   if(component<SHIFT){
+    //   	return this.getTensorComp(this.stress1[index],component);
+    //   }
+    //   else{
+    //   	return this.getTensorComp(this.stress2[index],component-SHIFT);
+    //   }
+    //   break;
+    // case S_ENERGY:
+    //   if(component===0){
+    //   	return this.sEnergy1[index];
+    //   }
+    //   else{
+    //   	return this.sEnergy2[index];
+    //   }
+    //   break;
+    case this.TEMPERATURE:
+      return this.temperature[index];
+  }
+  return 0;
+};
+
 
   /*
 
@@ -351,55 +401,6 @@ public setContour=function(param,component,data){
     this.minValue=Math.min(this.minValue,this.value[i]);
     this.maxValue=Math.max(this.maxValue,this.value[i]);
   }
-};
-
-// データを取り出す
-// param - データの種類
-// component - データの成分
-// index - 節点のインデックス
-public getData=function(param,component,index){
-  switch(param){
-    case DISPLACEMENT:
-      switch(component){
-      	case X:
-      	case Y:
-      	case Z:
-      	case RX:
-      	case RY:
-      	case RZ:
-      	  return this.displacement[index].x[component];
-      	case MAGNITUDE:
-      	  return this.displacement[index].magnitude();
-      }
-      break;
-    case STRAIN:
-      if(component<SHIFT){
-      	return this.getTensorComp(this.strain1[index],component);
-      }
-      else{
-      	return this.getTensorComp(this.strain2[index],component-SHIFT);
-      }
-      break;
-    case STRESS:
-      if(component<SHIFT){
-      	return this.getTensorComp(this.stress1[index],component);
-      }
-      else{
-      	return this.getTensorComp(this.stress2[index],component-SHIFT);
-      }
-      break;
-    case S_ENERGY:
-      if(component===0){
-      	return this.sEnergy1[index];
-      }
-      else{
-      	return this.sEnergy2[index];
-      }
-      break;
-    case TEMPERATURE:
-      return this.temperature[index];
-  }
-  return 0;
 };
 
 // 歪・応力を取り出す
