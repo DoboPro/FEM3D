@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { BoundaryCondition } from './boundary/BoundaryCondition';
-import { FemDataModel } from './FemDataModel';
-import { Result } from './Result';
+// import { FemDataModel } from './FemDataModel';
+// import { Result } from './Result';
 import { MeshModel } from './mesh/MeshModel';
-import { SceneService } from '../components/three/scene.service';
+// import { SceneService } from '../components/three/scene.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,10 +27,10 @@ export class View {
   maxValue:number;
 
   constructor(
-    private model: FemDataModel,
+    // private model: FemDataModel,
     private mesh: MeshModel,
-    private scene: SceneService,
-    private result: Result
+    // private scene: SceneService,
+    // private result: Result
   ) {}
 
   public setDisplacement(disp) {
@@ -42,7 +42,7 @@ export class View {
   public setGeomDisplacement1(geometry_mesh, disp) {
     const coef = 0.1;
     const label = geometry_mesh.nodes,
-      nodes = this.model.mesh.nodes,
+      nodes = this.mesh.nodes,
       angle = geometry_mesh.angle;
     const pos = geometry_mesh.attributes.position.array;
     for (let i = 0; i < label.length; i++) {
@@ -63,7 +63,7 @@ export class View {
   public setGeomDisplacement2(geometry_edge, disp) {
     const coef = 0.1;
     const label = geometry_edge.nodes,
-      nodes = this.model.mesh.nodes,
+      nodes = this.mesh.nodes,
       angle = geometry_edge.angle;
     const pos = geometry_edge.attributes.position.array;
     for (let i = 0; i < label.length; i++) {
