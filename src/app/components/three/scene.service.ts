@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { GUI } from './libs/dat.gui.module.js';
 import { OrbitControls } from './libs/OrbitControls.js';
+//import { ThreeComponent } from './three.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SceneService {
-
   // シーン
   private scene: THREE.Scene;
 
@@ -23,7 +23,7 @@ export class SceneService {
 
   // gui
   public gui: GUI;
-  private params: any;          // GridHelperの表示制御
+  private params: any; // GridHelperの表示制御
   cone1: any;
   cone2: any;
 
@@ -38,24 +38,23 @@ export class SceneService {
 
     // gui
     this.params = {
-      GridHelper: true
+      GridHelper: true,
     };
   }
 
-  public OnInit(aspectRatio: number,
+  public OnInit(
+    aspectRatio: number,
     canvasElement: HTMLCanvasElement,
     deviceRatio: number,
     Width: number,
-    Height: number): void {
+    Height: number
+  ): void {
     // カメラ
     this.createCamera(aspectRatio);
     // 環境光源
     this.add(new THREE.AmbientLight(0xf0f0f0));
     // レンダラー
-    this.createRender(canvasElement,
-      deviceRatio,
-      Width,
-      Height);
+    this.createRender(canvasElement, deviceRatio, Width, Height);
     // コントロール
     this.addControls();
 
@@ -84,7 +83,6 @@ export class SceneService {
     this.GridHelper.material['opacity'] = 0.2;
     this.GridHelper.material['transparent'] = true;
     this.scene.add(this.GridHelper);
-
   }
 
   // コントロール
@@ -103,25 +101,22 @@ export class SceneService {
 
   // カメラの初期化
   public createCamera(aspectRatio: number) {
-    this.camera = new THREE.PerspectiveCamera(
-      70,
-      aspectRatio,
-      0.1,
-      1000
-    );
+    this.camera = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
     this.camera.position.set(0, -50, 20);
     this.scene.add(this.camera);
   }
 
   // レンダラーを初期化する
-  public createRender(canvasElement: HTMLCanvasElement,
+  public createRender(
+    canvasElement: HTMLCanvasElement,
     deviceRatio: number,
     Width: number,
-    Height: number): void {
+    Height: number
+  ): void {
     this.renderer = new THREE.WebGLRenderer({
       canvas: canvasElement,
-      alpha: true,    // transparent background
-      antialias: true // smooth edges
+      alpha: true, // transparent background
+      antialias: true, // smooth edges
     });
     this.renderer.setPixelRatio(deviceRatio);
     this.renderer.setSize(Width, Height);
@@ -132,11 +127,8 @@ export class SceneService {
     return this.renderer.domElement;
   }
 
-
   // リサイズ
-  public onResize(deviceRatio: number,
-    Width: number,
-    Height: number): void {
+  public onResize(deviceRatio: number, Width: number, Height: number): void {
     this.camera.aspect = deviceRatio;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(Width, Height);
@@ -185,8 +177,7 @@ export class SceneService {
         x: this.camera.position.x,
         y: this.camera.position.y,
         z: this.camera.position.z,
-      }
+      },
     };
   }
-
 }

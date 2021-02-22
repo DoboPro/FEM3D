@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { BoundaryCondition } from './boundary/BoundaryCondition';
-import { FemDataModel } from './FemDataModel';
-import { Result } from './Result';
+// import { FemDataModel } from './FemDataModel';
+// import { Result } from './Result';
 import { MeshModel } from './mesh/MeshModel';
-import { SceneService } from '../components/three/scene.service';
+// import { SceneService } from '../components/three/scene.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,11 +22,15 @@ export class View {
   public dof: number; // モデル自由度
   public method: number; // 方程式解法
 
+  disp:any;
+  minValue:number;
+  maxValue:number;
+
   constructor(
-    private model: FemDataModel,
+    // private model: FemDataModel,
     private mesh: MeshModel,
-    private scene: SceneService,
-    private result: Result
+    // private scene: SceneService,
+    // private result: Result
   ) {}
 
   public setDisplacement(disp) {
@@ -37,15 +41,15 @@ export class View {
 
   public setGeomDisplacement1(geometry_mesh, disp) {
     const coef = 0.1;
-    var label = geometry_mesh.nodes,
-      nodes = this.model.mesh.nodes,
+    const label = geometry_mesh.nodes,
+      nodes = this.mesh.nodes,
       angle = geometry_mesh.angle;
-    var pos = geometry_mesh.attributes.position.array;
-    for (var i = 0; i < label.length; i++) {
-      var i3 = 3 * i,
+    const pos = geometry_mesh.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
         p = nodes[label[i]],
         dx = disp[label[i]].x;
-        console.log(pos[i3])
+      console.log(pos[i3]);
       pos[i3] = p.x + coef * dx[0];
       pos[i3 + 1] = p.y + coef * dx[1];
       pos[i3 + 2] = p.z + coef * dx[2];
@@ -58,12 +62,12 @@ export class View {
 
   public setGeomDisplacement2(geometry_edge, disp) {
     const coef = 0.1;
-    var label = geometry_edge.nodes,
-      nodes = this.model.mesh.nodes,
+    const label = geometry_edge.nodes,
+      nodes = this.mesh.nodes,
       angle = geometry_edge.angle;
-    var pos = geometry_edge.attributes.position.array;
-    for (var i = 0; i < label.length; i++) {
-      var i3 = 3 * i,
+    const pos = geometry_edge.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
         p = nodes[label[i]],
         dx = disp[label[i]].x;
       pos[i3] = p.x + coef * dx[0];
@@ -75,4 +79,12 @@ export class View {
     }
     geometry_edge.attributes.position.needsUpdate = true;
   }
+
+  public setContour(disp,minValue,maxValue){
+    var coef=1;
+    if(maxValue!==minValue) coef=1/(maxValue-minValue);
+   // setGeomContour(this.mesh.geometry,value,minValue,coef,type);
+   // this.bar.setContour(value,minValue,coef,type);
+  };
+  
 }
