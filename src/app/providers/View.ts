@@ -104,8 +104,9 @@ export class View {
     const label_mesh = geometry_mesh.nodes;
 
     for (var i = 0; i < label_mesh.length; i++) {
-      let i3 = 3 * i,
-        d1 = coef * (value[label_mesh[i]] - minValue);
+      let i3 = 3 * i;
+      let d0 = value[label_mesh[i]] - minValue;
+      let d1 = coef * d0;
       this.cls1 = this.contourColor_mesh(d1);
       colors_mesh[i3] =     this.cls1[0];
       colors_mesh[i3 + 1] = this.cls1[1];

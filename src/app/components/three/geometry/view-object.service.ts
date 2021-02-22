@@ -28,19 +28,19 @@ export class ViewObjectService {
     const geometry1 = this.mesh.getGeometry();
     // 要素表示マテリアル
     const elemMat = new THREE.MeshStandardMaterial({
-      color: 0xf5f5f5,
+      color: 0x00ff00,
+      vertexColors:THREE.VertexColors,
       roughness: 0.2,
       metalness: 0.5,
       transparent: true,
       opacity: 0.8,
-      vertexColors:true,
-            side: THREE.DoubleSide,
+      side: THREE.DoubleSide,
     });
     const meshMaterial = new THREE.Mesh(geometry1, elemMat);
     this.scene.add(meshMaterial);
 
     // 要素辺の表示マテリアル
-    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0x000000 }); //color: 0xffffff });
+    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xffffff }); //color: 0xffffff });
     const geometry2 = this.mesh.getEdgeGeometry();
     const edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
     this.scene.add(edgeMaterial);

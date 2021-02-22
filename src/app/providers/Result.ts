@@ -262,11 +262,11 @@ setConfig(disp,contour,component){
       switch(param){
       	case this.DISPLACEMENT:
       	case this.TEMPERATURE:
-      	  this.view.setContour(disp,this.minValue,this.maxValue);
+      	  this.view.setContour(this.value,this.minValue,this.maxValue);
       	  break;
       	default:
           console.log("da")
-      	   this.view.setContour(disp,this.minValue,this.maxValue,
+      	   this.view.setContour(this.value,this.minValue,this.maxValue,
       	       	      	    );
       	   break;
       }
