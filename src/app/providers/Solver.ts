@@ -7,6 +7,7 @@ import { MeshModel } from './mesh/MeshModel';
 
 import * as numeric from './libs/numeric-1.2.6.min.js';
 import { View } from './View';
+import { Bounds } from './Bounds';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,8 @@ export class Solver {
   constructor(
     private model: FemDataModel,
     private view: View,
-    private result: Result
+    private result: Result,
+    private bounds: Bounds
   ) {
     this.clear();
     this.method = this.LU_METHOD;
@@ -70,7 +72,11 @@ export class Solver {
       }
       const t1 = new Date().getTime();
       const disp = this.result.displacement;
-      this.view.setDisplacement(disp);
+      const dcoef = 10;
+      const dispMax = this.result.dispMax;
+      const angleMax = this.result.angleMax;
+      const coef = dcoef * Math.min(this.bounds.size / dispMax, 1 / angleMax);
+      this.view.setDisplacement(disp,coef);
       //this.result.setConfig(disp,"0","6");
       // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
@@ -78,12 +84,12 @@ export class Solver {
       alert(ex);
     }
   }
-  
+
   //コンター
   public conterStart() {
     try {
       const disp = 0;
-      this.result.setConfig(disp,"0","6");
+      this.result.setConfig(disp, '0', '6');
     } catch (ex1) {
       alert(ex1);
     }
