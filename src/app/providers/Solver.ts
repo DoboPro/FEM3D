@@ -69,11 +69,23 @@ export class Solver {
         alert('拘束条件不足のため計算できません');
       }
       const t1 = new Date().getTime();
-      var disp = this.result.displacement;
+      const disp = this.result.displacement;
       this.view.setDisplacement(disp);
+      //this.result.setConfig(disp,"0","6");
+      // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
     } catch (ex) {
       alert(ex);
+    }
+  }
+  
+  //コンター
+  public conterStart() {
+    try {
+      const disp = 0;
+      this.result.setConfig(disp,"0","6");
+    } catch (ex1) {
+      alert(ex1);
     }
   }
 

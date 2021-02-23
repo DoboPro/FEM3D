@@ -6,12 +6,10 @@ import { ThreeService } from '../three/three.service';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit {
-
-  constructor(public InputData: FemMainService,
-              public Solver: Solver) { }
+  constructor(public InputData: FemMainService, public Solver: Solver) {}
 
   ngOnInit(): void {
     this.renew();
@@ -23,10 +21,13 @@ export class MenuComponent implements OnInit {
   }
 
 
+   // コンター
+   public conter() {
+    this.Solver.conterStart();
+  }
+
   // 新規作成
   public renew(): void {
     this.InputData.initModel('assets/beam/sampleBeamHexa1.fem');
   }
-
-
 }
