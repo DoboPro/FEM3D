@@ -29,7 +29,7 @@ export class ViewObjectService {
     // 要素表示マテリアル
     const elemMat = new THREE.MeshStandardMaterial({
       color: 0x00ff00,
-      vertexColors:THREE.VertexColors,
+      vertexColors:true,
       roughness: 0.2,
       metalness: 0.5,
       transparent: true,
