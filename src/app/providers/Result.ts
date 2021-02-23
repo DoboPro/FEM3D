@@ -4,6 +4,7 @@ import { Strain } from './stress/Strain';
 import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
 import { View } from './View';
+import { Bounds } from './Bounds';
 // //import { ColorBar } from './ColorBar';
 
 @Injectable({
@@ -132,14 +133,16 @@ export class Result {
   public minValue: number; // コンター図データ最小値
   public maxValue: number; // コンター図データ最大値
   public type: number; // データ保持形態：節点データ
-  
+
   // カンタ―
-  public contour:string = "0";
-  public component:string = "6";
+  public contour: string = '0';
+  public component: string = '6';
+  public dispCoef: string = '10';
 
   constructor(
-      private view:View,
-      //private colorBar:ColorBar,
+    private view: View,
+    //private colorBar:ColorBar,
+    private bounds: Bounds
   ) {}
 
   // 計算結果を消去する
@@ -243,109 +246,110 @@ export class Result {
     this.sEnergy2[i] *= coef;
   }
 
-
   // 設定を表示に反映させる
-setConfig(disp,contour,component){
-  //const dcoef=parseFloat(this.dispCoef.value);
-  const param=parseInt(contour);
-  const  comp=parseInt(component);
- // const coef,comp,minValue,maxValue;
-     //coef=dcoef*Math.min(bounds.size/model.result.dispMax,
-     // 	      	      	1/model.result.angleMax);
+  setConfig(disp, contour, component) {
+    const dcoef = parseFloat(this.dispCoef);
+    const param = parseInt(contour);
+    const comp = parseInt(component);
+    const coef =
+      dcoef * Math.min(this.bounds.size / this.dispMax, 1 / this.angleMax);
     // if(param<0){
     //   viewObj.clearContour();
     //   colorBar.clear();
     // }
-      this.setContour(param,comp,0);
-      this.minValue=this.minValue;
-      this.maxValue=this.maxValue;
-      switch(param){
-      	case this.DISPLACEMENT:
-      	case this.TEMPERATURE:
-      	  this.view.setContour(this.value,this.minValue,this.maxValue);
-      	  break;
-      	default:
-          console.log("da")
-      	   this.view.setContour(this.value,this.minValue,this.maxValue,
-      	       	      	    );
-      	   break;
-      }
-      // this.colorBar.draw(this.minValue,this.maxValue);
-    
-};
+    this.view.setDisplacement(this.displacement, coef);
 
-
-// コンター図データを設定する
-// param - データの種類
-// component - データの成分
-// data - コンター図参照
- setContour(param,component,data){
-  if(param<0) return;
-  data=data||this;
-  const dpara=[data.displacement,data.strain1,data.stress1,data.sEnergy1,
-      	     data.temperature];
-  const count=dpara[param].length;
-  if(count===0) return;
-  this.value.length=0;
-  this.value[0]=data.getData(param,component,0);
-  this.minValue=this.value[0];
-  this.maxValue=this.value[0];
-  for(let i=1;i<count;i++){
-    this.value[i]=data.getData(param,component,i);
-    this.minValue=Math.min(this.minValue,this.value[i]);
-    this.maxValue=Math.max(this.maxValue,this.value[i]);
+    this.setContour(param, comp, 0);
+    this.minValue = this.minValue;
+    this.maxValue = this.maxValue;
+    switch (param) {
+      case this.DISPLACEMENT:
+      case this.TEMPERATURE:
+        this.view.setContour(this.value, this.minValue, this.maxValue);
+        break;
+      default:
+        console.log('da');
+        this.view.setContour(this.value, this.minValue, this.maxValue);
+        break;
+    }
+    // this.colorBar.draw(this.minValue,this.maxValue);
   }
-};
 
-// データを取り出す
-// param - データの種類
-// component - データの成分
-// index - 節点のインデックス
-public getData=function(param,component,index){
-  switch(param){
-    case this.DISPLACEMENT:
-      switch(component){
-      	case this.X:
-      	case this.Y:
-      	case this.Z:
-      	case this.RX:
-      	case this.RY:
-      	case this.RZ:
-      	  return this.displacement[index].x[component];
-      	case this.MAGNITUDE:
-      	  return this.displacement[index].magnitude();
-      }
-      break;
-    // case STRAIN:
-    //   if(component<SHIFT){
-    //   	return this.getTensorComp(this.strain1[index],component);
-    //   }
-    //   else{
-    //   	return this.getTensorComp(this.strain2[index],component-SHIFT);
-    //   }
-    //   break;
-    // case STRESS:
-    //   if(component<SHIFT){
-    //   	return this.getTensorComp(this.stress1[index],component);
-    //   }
-    //   else{
-    //   	return this.getTensorComp(this.stress2[index],component-SHIFT);
-    //   }
-    //   break;
-    // case S_ENERGY:
-    //   if(component===0){
-    //   	return this.sEnergy1[index];
-    //   }
-    //   else{
-    //   	return this.sEnergy2[index];
-    //   }
-    //   break;
-    case this.TEMPERATURE:
-      return this.temperature[index];
+  // コンター図データを設定する
+  // param - データの種類
+  // component - データの成分
+  // data - コンター図参照
+  setContour(param, component, data) {
+    if (param < 0) return;
+    data = data || this;
+    const dpara = [
+      data.displacement,
+      data.strain1,
+      data.stress1,
+      data.sEnergy1,
+      data.temperature,
+    ];
+    const count = dpara[param].length;
+    if (count === 0) return;
+    this.value.length = 0;
+    this.value[0] = data.getData(param, component, 0);
+    this.minValue = this.value[0];
+    this.maxValue = this.value[0];
+    for (let i = 1; i < count; i++) {
+      this.value[i] = data.getData(param, component, i);
+      this.minValue = Math.min(this.minValue, this.value[i]);
+      this.maxValue = Math.max(this.maxValue, this.value[i]);
+    }
   }
-  return 0;
-};
 
+  // データを取り出す
+  // param - データの種類
+  // component - データの成分
+  // index - 節点のインデックス
+  public getData = function (param, component, index) {
+    switch (param) {
+      case this.DISPLACEMENT:
+        switch (component) {
+          case this.X:
+          case this.Y:
+          case this.Z:
+          case this.RX:
+          case this.RY:
+          case this.RZ:
+            return this.displacement[index].x[component];
+          case this.MAGNITUDE:
+            return this.displacement[index].magnitude();
+        }
+        break;
+      // case STRAIN:
+      //   if(component<SHIFT){
+      //   	return this.getTensorComp(this.strain1[index],component);
+      //   }
+      //   else{
+      //   	return this.getTensorComp(this.strain2[index],component-SHIFT);
+      //   }
+      //   break;
+      // case STRESS:
+      //   if(component<SHIFT){
+      //   	return this.getTensorComp(this.stress1[index],component);
+      //   }
+      //   else{
+      //   	return this.getTensorComp(this.stress2[index],component-SHIFT);
+      //   }
+      //   break;
+      // case S_ENERGY:
+      //   if(component===0){
+      //   	return this.sEnergy1[index];
+      //   }
+      //   else{
+      //   	return this.sEnergy2[index];
+      //   }
+      //   break;
+      case this.TEMPERATURE:
+        return this.temperature[index];
+    }
+    return 0;
+  };
 
   /*
 
