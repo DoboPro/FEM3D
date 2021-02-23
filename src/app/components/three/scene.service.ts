@@ -101,7 +101,13 @@ export class SceneService {
 
   // カメラの初期化
   public createCamera(aspectRatio: number) {
-    this.camera = new THREE.PerspectiveCamera(70, aspectRatio, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(
+      30,
+      aspectRatio,
+      0.1,
+      1000
+    );
+
     this.camera.position.set(0, -50, 20);
     this.scene.add(this.camera);
   }
