@@ -11,7 +11,8 @@ import { ThreeService } from './three.service';
   styleUrls: ['./three.component.scss']
 })
 export class ThreeComponent implements AfterViewInit {
-  
+  rect:any;
+
   @ViewChild('myCanvas', { static: true }) private canvasRef: ElementRef;
 
   private get canvas(): HTMLCanvasElement {
@@ -95,5 +96,19 @@ export class ThreeComponent implements AfterViewInit {
     }
     return this.canvas.clientWidth / this.canvas.clientHeight;
   }
+
+  
+  colorbar(d,e,f){
+    const a = this.canvas;
+    const b = window.innerWidth;
+    const c = window.innerHeight;
+    // this.context= a.getContext('2d');		// コンテキスト
+    // this.context.font=CBAR_FONT;
+    // this.context.textBaseline='top';
+   
+    return {a,b,c}
+    
+  }
+
 
 }

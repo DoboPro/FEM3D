@@ -1,6 +1,20 @@
-.control{
-  top:380px;
-  padding:2pt 0 2pt 0;
-  background-color:#ffffff;
-  position:absolute;
+.control {
+    top: 380px;
+    padding: 2pt 0 2pt 0;
+    background-color: #ffffff;
+    position: absolute;
+}
+
+.button {
+    width: 160px;
+    margin: 8px;
+    padding: 8px;
+    color: #ffffff;
+    background: #669987;
+    border-radius: 4px;
+    font-size: 16px;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.7;
+    }
 }

@@ -6,27 +6,31 @@ import { Result } from './Result';
 import { MeshModel } from './mesh/MeshModel';
 
 import * as numeric from './libs/numeric-1.2.6.min.js';
+import { View } from './View';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 
 // 連立方程式求解オブジェクト
 export class Solver {
-  
-  public PRECISION = 1e-10;	// マトリックス精度
-  public LU_METHOD = 0;	    // LU分解法
-  public ILUCG_METHOD = 1;	// 不完全LU分解共役勾配法
+  public PRECISION = 1e-10; // マトリックス精度
+  public LU_METHOD = 0; // LU分解法
+  public ILUCG_METHOD = 1; // 不完全LU分解共役勾配法
 
-  public matrix: any[];		// 行列
-  public matrix2: any[];  // 第２行列
-  public vector: any[];		// ベクトル
-  public dof: number;			// モデル自由度
-  public method: number;	// 方程式解法
+  public matrix: any[]; // 行列
+  public matrix2: any[]; // 第２行列
+  public vector: any[]; // ベクトル
+  public dof: number; // モデル自由度
+  public method: number; // 方程式解法
 
+  public d: number;
 
-  constructor(private model: FemDataModel,
-              private result: Result) {
+  constructor(
+    private model: FemDataModel,
+    private view: View,
+    private result: Result
+  ) {
     this.clear();
     this.method = this.LU_METHOD;
   }
@@ -48,12 +52,15 @@ export class Solver {
       if (this.model.bc.restraints.length > 0) {
         this.dof = this.model.setNodeDoF();
         this.createStiffnessMatrix();
-        const d = this.solve();
-        this.result.setDisplacement(this.model.bc, d, this.model.mesh.nodes.length);
+        this.d = this.solve();
+        this.result.setDisplacement(
+          this.model.bc,
+          this.d,
+          this.model.mesh.nodes.length
+        );
         if (this.result.type === this.result.ELEMENT_DATA) {
           this.model.calculateElementStress();
-        }
-        else {
+        } else {
           this.model.calculateNodeStress();
         }
         calc = true;
@@ -62,10 +69,23 @@ export class Solver {
         alert('拘束条件不足のため計算できません');
       }
       const t1 = new Date().getTime();
+      const disp = this.result.displacement;
+      this.view.setDisplacement(disp);
+      //this.result.setConfig(disp,"0","6");
+      // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
-    }
-    catch (ex) {
+    } catch (ex) {
       alert(ex);
+    }
+  }
+  
+  //コンター
+  public conterStart() {
+    try {
+      const disp = 0;
+      this.result.setConfig(disp,"0","6");
+    } catch (ex1) {
+      alert(ex1);
     }
   }
 
@@ -98,7 +118,6 @@ export class Solver {
     this.extruct(matrix1, vector1, reducedList);
   }
 
-
   // 剛性マトリックスを作成する
   // dof - モデル自由度
   public stiffnessMatrix(dof) {
@@ -116,8 +135,7 @@ export class Solver {
         const sp = this.model.shellParams[elem.param];
         if (elem.getName() === 'TriElement1') {
           km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m2d, sp);
-        }
-        else {
+        } else {
           km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.msh, sp);
         }
         kmax = this.setElementMatrix(elem, 6, matrix, km, kmax);
@@ -164,7 +182,13 @@ export class Solver {
   // matrix - 全体剛性マトリックス
   // km - 要素の剛性マトリックス
   // kmax - 成分の絶対値の最大値
-  public setElementMatrix(element: any, dof: number, matrix: number[][], km: number[][], kmax) {
+  public setElementMatrix(
+    element: any,
+    dof: number,
+    matrix: number[][],
+    km: number[][],
+    kmax
+  ) {
     const nodeCount = element.nodeCount();
     const index = this.model.bc.nodeIndex;
     const nodes = element.nodes;
@@ -182,8 +206,7 @@ export class Solver {
             if (cj1 in mrow) {
               mrow[cj1] += krow[j0 + j1];
               kmax = Math.max(kmax, Math.abs(mrow[cj1]));
-            }
-            else {
+            } else {
               mrow[cj1] = krow[j0 + j1];
               kmax = Math.max(kmax, Math.abs(mrow[cj1]));
             }
@@ -200,33 +223,32 @@ export class Solver {
     return numeric.ccsLUPSolve(numeric.ccsLUP(a), this.vector);
   }
 
-
   // 荷重ベクトルを作成する
   // dof - モデル自由度
   public loadVector(dof) {
     const loads = this.model.bc.loads;
     // const press = this.model.bc.pressures;
-  const vector = numeric.rep([dof], 0);
+    const vector = numeric.rep([dof], 0);
     const index = this.model.bc.nodeIndex;
     const bcdof = this.model.bc.dof;
-  for (let i = 0; i < loads.length; i++) {
-    const ld = loads[i];
-    const nd = ld.node;
-    const ldx = ld.globalX;
-    const ldof = bcdof[nd];
-    const index0 = index[nd];
-    for (let j = 0; j < ldof; j++) {
-      vector[index0 + j] = ldx[j];
+    for (let i = 0; i < loads.length; i++) {
+      const ld = loads[i];
+      const nd = ld.node;
+      const ldx = ld.globalX;
+      const ldof = bcdof[nd];
+      const index0 = index[nd];
+      for (let j = 0; j < ldof; j++) {
+        vector[index0 + j] = ldx[j];
+      }
     }
-  }
-  const rests = this.model.bc.restraints;
-  for (let i = 0; i < rests.length; i++) {
-    const ri = rests[i];
-    if (ri.coords) {
-      ri.coords.transVector(vector, dof, index[ri.node], bcdof[i]);
+    const rests = this.model.bc.restraints;
+    for (let i = 0; i < rests.length; i++) {
+      const ri = rests[i];
+      if (ri.coords) {
+        ri.coords.transVector(vector, dof, index[ri.node], bcdof[i]);
+      }
     }
-  }
-  return vector;
+    return vector;
   }
 
   // 行列の一部を抽出する
@@ -239,7 +261,7 @@ export class Solver {
       this.vector[i] = vector1[list[i]];
       this.matrix[i] = this.extructRow(matrix1[list[i]], list);
     }
-  };
+  }
 
   // 行列の行から一部を抽出する
   // mrow - 元のマトリックスの行データ
@@ -249,28 +271,27 @@ export class Solver {
     const col = [];
     let i1 = 0;
     let j1 = 0;
-    for (let j  in mrow) {
+    for (let j in mrow) {
       if (mrow.hasOwnProperty(j)) {
         col.push(parseInt(j));
       }
     }
-    col.sort( (j1, j2) => { return j1 - j2; });
-    while ((i1 < col.length) && (j1 < list.length)) {
+    col.sort((j1, j2) => {
+      return j1 - j2;
+    });
+    while (i1 < col.length && j1 < list.length) {
       if (col[i1] == list[j1]) {
         exrow[j1] = mrow[col[i1]];
         i1++;
         j1++;
-      }
-      else if (col[i1] < list[j1]) {
+      } else if (col[i1] < list[j1]) {
         i1++;
-      }
-      else {
+      } else {
         j1++;
       }
     }
     return exrow;
-}
-
+  }
 
   /*
  
@@ -582,5 +603,4 @@ export class Solver {
   }
   
     */
-
 }
