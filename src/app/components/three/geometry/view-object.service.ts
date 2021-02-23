@@ -28,7 +28,7 @@ export class ViewObjectService {
     const geometry1 = this.mesh.getGeometry();
     // 要素表示マテリアル
     const elemMat = new THREE.MeshStandardMaterial({
-      //color: 0xff0000,
+      // color: 0xff0000,
       vertexColors:true,
       roughness: 0.2,
       metalness: 0.5,

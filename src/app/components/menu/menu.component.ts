@@ -18,13 +18,13 @@ export class MenuComponent implements OnInit {
   // 計算
   public calcrate() {
     this.Solver.calcStart();
+    this.Solver.conterStart();
   }
 
 
    // コンター
-   public conter() {
-    this.Solver.conterStart();
-  }
+  //  public conter() {
+  // }
 
   // 新規作成
   public renew(): void {
