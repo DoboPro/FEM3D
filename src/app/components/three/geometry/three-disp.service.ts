@@ -8,6 +8,7 @@ import { CSS2DObject } from '../libs/CSS2DRenderer.js';
 import { Vector3 } from 'three';
 import { MeshModel } from 'src/app/providers/mesh/MeshModel';
 import { Result } from 'src/app/providers/Result';
+import { Bounds } from 'src/app/providers/Bounds';
 
 @Injectable({
   providedIn: 'root',
@@ -38,6 +39,7 @@ export class ThreeDispService {
     private scene: SceneService,
     private mesh: MeshModel,
     private result:Result,
+    private bounds: Bounds,
     // private solver:Solver
   ) // private nodeThree: ThreeNodesService,
   // private node: InputNodesService,
@@ -71,7 +73,7 @@ export class ThreeDispService {
   // スケールを反映する
   private onResize(): void {
     const disp = this.result.displacement;
-    const coef = 0.11; //仮データ
+    const coef = this.dcoef * Math.min(this.bounds.size / this.result.dispMax, 1 / this.result.angleMax);
     if (disp.length === 0) return;
     this.setGeomDisplacement1(this.mesh.geometry_mesh, disp,coef);
     this.setGeomDisplacement2(this.mesh.geometry_edge, disp,coef);
@@ -167,7 +169,7 @@ export class ThreeDispService {
       .add(this.params, 'dispScale', 0, this.gui_max_scale)
       .step(gui_step)
       .onChange((value) => {
-        this.scale = value;
+        this.dcoef = value;
         this.onResize();
         this.scene.render();
       });
