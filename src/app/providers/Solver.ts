@@ -9,6 +9,9 @@ import * as numeric from './libs/numeric-1.2.6.min.js';
 import { View } from './View';
 import { Bounds } from './Bounds';
 
+import {ThreeService} from '../components/three/three.service'
+import { ThreeDispService } from '../components/three/geometry/three-disp.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,7 +34,9 @@ export class Solver {
     private model: FemDataModel,
     private view: View,
     private result: Result,
-    private bounds: Bounds
+    private bounds: Bounds,
+    private three:ThreeService,
+    private threeDisp:ThreeDispService
   ) {
     this.clear();
     this.method = this.LU_METHOD;
@@ -72,11 +77,12 @@ export class Solver {
       }
       const t1 = new Date().getTime();
       const disp = this.result.displacement;
-      const dcoef = 10;
+      const dcoef = this.threeDisp.dcoef//10;
       const dispMax = this.result.dispMax;
       const angleMax = this.result.angleMax;
       const coef = dcoef * Math.min(this.bounds.size / dispMax, 1 / angleMax);
-      this.view.setDisplacement(disp,coef);
+      this.view.setDisplacement(disp, coef);
+      this.three.ChangeMode('disp');
       //this.result.setConfig(disp,"0","6");
       // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
