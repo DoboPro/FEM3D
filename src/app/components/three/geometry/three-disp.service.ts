@@ -6,6 +6,8 @@ import { SceneService } from '../scene.service';
 import * as THREE from 'three';
 import { CSS2DObject } from '../libs/CSS2DRenderer.js';
 import { Vector3 } from 'three';
+import { MeshModel } from 'src/app/providers/mesh/MeshModel';
+import { Result } from 'src/app/providers/Result';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +27,7 @@ export class ThreeDispService {
   private params: any; // GUIの表示制御
   private gui: any;
 
-  public dcoef:number = 10;
+  public dcoef:number = 0.1;
 
   private objVisible: boolean;
   private txtVisible: boolean;
@@ -34,6 +36,9 @@ export class ThreeDispService {
 
   constructor(
     private scene: SceneService,
+    private mesh: MeshModel,
+    private result:Result,
+    // private solver:Solver
   ) // private nodeThree: ThreeNodesService,
   // private node: InputNodesService,
   // private member: InputMembersService
@@ -48,7 +53,7 @@ export class ThreeDispService {
     //this.txtVisible = false;
 
     // gui
-    this.scale = 0.5;
+    this.scale = this.dcoef;
     this.params = {
       //memberNo: this.txtVisible,
       //dispScale: this.scene.dcoef//this.scale,
@@ -57,29 +62,61 @@ export class ThreeDispService {
     this.gui = null;
   }
 
-  // 要素の太さを決定する基準値
-  public baseScale(): number {
-    const scale = 10; //もとはthis.nodeThree.baseScale 100は仮の値（適当）
-    return scale * 0.3;
-  }
+  // // 要素の太さを決定する基準値
+  // public baseScale(): number {
+  //   const scale = 10; //もとはthis.nodeThree.baseScale 100は仮の値（適当）
+  //   return scale * 0.3;
+  // }
 
   // スケールを反映する
   private onResize(): void {
-    let sc = this.scale / 100; // this.scale は 100 が基準値なので、100 のとき 1 となるように変換する
-    sc = Math.max(sc, 0.001); // ゼロは許容しない
-
-    let scale: number = this.baseScale() * sc;
-
-    for (const item of this.dispList.children) {
-      item.scale.set(scale, 1, scale);
-    }
-    scale *= 50;
-    for (const arrows of this.axisList) {
-      for (const item of arrows.children) {
-        item.scale.set(scale, scale, scale);
-      }
-    }
+    const disp = this.result.displacement;
+    const coef = 0.11; //仮データ
+    if (disp.length === 0) return;
+    this.setGeomDisplacement1(this.mesh.geometry_mesh, disp,coef);
+    this.setGeomDisplacement2(this.mesh.geometry_edge, disp,coef);
   }
+
+  public setGeomDisplacement1(geometry_mesh, disp,coef) {
+    const label = geometry_mesh.nodes,
+      nodes = this.mesh.nodes,
+      angle = geometry_mesh.angle;
+    
+    const pos = geometry_mesh.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
+        p = nodes[label[i]],
+        dx = disp[label[i]].x;
+      console.log(pos[i3]);
+      pos[i3] = p.x + coef * dx[0];
+      pos[i3 + 1] = p.y + coef * dx[1];
+      pos[i3 + 2] = p.z + coef * dx[2];
+      angle[i3] = coef * dx[3];
+      angle[i3 + 1] = coef * dx[4];
+      angle[i3 + 2] = coef * dx[5];
+    }
+    geometry_mesh.attributes.position.needsUpdate = true;
+  }
+
+  public setGeomDisplacement2(geometry_edge, disp,coef) {
+    const label = geometry_edge.nodes,
+      nodes = this.mesh.nodes,
+      angle = geometry_edge.angle;
+    const pos = geometry_edge.attributes.position.array;
+    for (let i = 0; i < label.length; i++) {
+      let i3 = 3 * i,
+        p = nodes[label[i]],
+        dx = disp[label[i]].x;
+      pos[i3] = p.x + coef * dx[0];
+      pos[i3 + 1] = p.y + coef * dx[1];
+      pos[i3 + 2] = p.z + coef * dx[2];
+      angle[i3] = coef * dx[3];
+      angle[i3 + 1] = coef * dx[4];
+      angle[i3 + 2] = coef * dx[5];
+    }
+    geometry_edge.attributes.position.needsUpdate = true;
+  }
+
 
   // 表示設定を変更する
   public visibleChange(flag: boolean, text: boolean, gui: boolean): void {
