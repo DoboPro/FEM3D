@@ -29,6 +29,7 @@ export class Solver {
   public method: number; // 方程式解法
 
   public d: number;
+  public coef:number;
 
   constructor(
     private model: FemDataModel,
