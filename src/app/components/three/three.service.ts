@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 import { ViewObjectService } from './geometry/view-object.service';
 import { SceneService } from './scene.service';
+import {ThreeDispService} from './geometry/three-disp.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,12 @@ export class ThreeService {
   public center: THREE.Vector3;
   public size: number;
   public viewPoint: number;
+
+  private mode: string;
   
   constructor(public scene: SceneService,
-              private viewObj: ViewObjectService) { 
+              private viewObj: ViewObjectService,
+              private disp:ThreeDispService,) { 
     this.ClearData();
   }
 
@@ -27,6 +31,7 @@ export class ThreeService {
     this.center = new THREE.Vector3();
     this.size = 1;
     this.viewPoint = 1;
+    // this.threeD.dcoef = 10;
   }
 
   //////////////////////////////////////////////////////
@@ -49,4 +54,15 @@ export class ThreeService {
     */
   }
 
+  public ChangeMode(ModeName: string): void {
+
+    if (this.mode === ModeName) {
+      return;
+    }
+
+    switch (ModeName) {
+      case 'disp':
+        this.disp.visibleChange(true, true, true);
+    }
+  }
 }

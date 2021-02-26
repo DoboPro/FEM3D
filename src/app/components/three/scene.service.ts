@@ -10,6 +10,7 @@ import { OrbitControls } from './libs/OrbitControls.js';
 export class SceneService {
   // シーン
   private scene: THREE.Scene;
+  // public dcoef:number;
 
   // レンダラー
   private renderer: THREE.WebGLRenderer;
@@ -102,7 +103,7 @@ export class SceneService {
   // カメラの初期化
   public createCamera(aspectRatio: number) {
     this.camera = new THREE.PerspectiveCamera(
-      100,
+      20,
       aspectRatio,
       0.1,
       1000

@@ -137,7 +137,7 @@ export class Result {
   // カンタ―
   public contour: string = '0';
   public component: string = '6';
-  public dispCoef: string = '10';
+  public dispCoef: string ;
 
   constructor(
     private view: View,
@@ -248,16 +248,16 @@ export class Result {
 
   // 設定を表示に反映させる
   setConfig(disp, contour, component) {
-    const dcoef = parseFloat(this.dispCoef);
+    // const dcoef = parseFloat(this.dispCoef);
     const param = parseInt(contour);
     const comp = parseInt(component);
-    const coef =
-      dcoef * Math.min(this.bounds.size / this.dispMax, 1 / this.angleMax);
-    // if(param<0){
-    //   viewObj.clearContour();
-    //   colorBar.clear();
-    // }
-    this.view.setDisplacement(this.displacement, coef);
+    // const coef =
+    //   dcoef * Math.min(this.bounds.size / this.dispMax, 1 / this.angleMax);
+    // // if(param<0){
+    // //   viewObj.clearContour();
+    // //   colorBar.clear();
+    // // }
+    // this.view.setDisplacement(this.displacement, coef);
 
     this.setContour(param, comp, 0);
     this.minValue = this.minValue;
