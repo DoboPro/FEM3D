@@ -40,7 +40,8 @@ export class Solver {
     private threeDisp:ThreeDispService
   ) {
     this.clear();
-    this.method = this.LU_METHOD;
+    // this.method = this.LU_METHOD; //直接解法
+    this.method = this.ILUCG_METHOD //反復解法
   }
 
   // データを消去する
