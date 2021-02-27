@@ -22,11 +22,6 @@ export class MenuComponent implements OnInit {
     this.Solver.conterStart();
   }
 
-
-   // コンター
-  //  public conter() {
-  // }
-
   // 新規作成
   public renew(): void {
     this.InputData.initModel('assets/bend/sampleBendHexa1.fem');
