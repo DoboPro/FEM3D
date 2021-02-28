@@ -25,10 +25,11 @@ export class ViewObjectService {
   ) {}
 
   public create(): void {
-    const geometry1 = this.mesh.getGeometry();
+  
     // 要素表示マテリアル
+    const geometry1 = this.mesh.getGeometry();
     const elemMat = new THREE.MeshStandardMaterial({
-      // color: 0xff0000,
+      //color: 0xff0000,
       vertexColors:true,
       roughness: 0.2,
       metalness: 0.5,
@@ -40,8 +41,8 @@ export class ViewObjectService {
     this.scene.add(meshMaterial);
 
     // 要素辺の表示マテリアル
-    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xffffff }); //color: 0xffffff });
     const geometry2 = this.mesh.getEdgeGeometry();
+    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xf5f5f5 }); //color: 0xffffff });
     const edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
     this.scene.add(edgeMaterial);
   }

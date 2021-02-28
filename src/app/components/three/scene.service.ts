@@ -10,7 +10,6 @@ import { OrbitControls } from './libs/OrbitControls.js';
 export class SceneService {
   // シーン
   private scene: THREE.Scene;
-  // public dcoef:number;
 
   // レンダラー
   private renderer: THREE.WebGLRenderer;
