@@ -13,7 +13,6 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.renew();
-    
   }
 
   // 計算
@@ -24,6 +23,6 @@ export class MenuComponent implements OnInit {
 
   // 新規作成
   public renew(): void {
-    this.InputData.initModel('assets/bend/sampleBendHexa1.fem');
+    this.InputData.initModel('assets/beam/sampleBeamHexa1.fem');
   }
 }
