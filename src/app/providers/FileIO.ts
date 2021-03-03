@@ -9,7 +9,6 @@ import { QuadElement1 } from './elements/QuadElement1';
 import { FemDataModel } from './FemDataModel';
 import { Coordinates } from './load_restaint/Coordinates';
 import { HexaElement1 } from './elements/HexaElement1';
-import { PlaneService } from '../components/three/geometry/plane.service';
 import { ViewObjectService } from '../components/three/geometry/view-object.service';
 
 @Injectable({
@@ -19,7 +18,6 @@ export class FileIO {
   constructor(
     private http: HttpClient,
     private model: FemDataModel,
-    private plane: PlaneService,
     private viewObj: ViewObjectService
   ) {}
 
@@ -90,7 +88,7 @@ export class FileIO {
               parseInt(ss[1]),
               parseInt(ss[2]),
               parseInt(ss[3]),
-              this.readVertex(ss, 4, 4)
+              this.readVertex(ss, 4, 4) //節点番号を読み取る
             )
           );
         } else if (keyWord == 'hexaelement1' && ss.length > 10) {
@@ -98,7 +96,7 @@ export class FileIO {
             new HexaElement1(
               parseInt(ss[1]),
               parseInt(ss[2]),
-              this.readVertex(ss, 3, 8)
+              this.readVertex(ss, 3, 8) //節点番号を読み取る
             )
           );
         }
@@ -111,7 +109,6 @@ export class FileIO {
         }
       }
     }
-
     this.model.init();
   }
 

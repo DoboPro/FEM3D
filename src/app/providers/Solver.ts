@@ -9,7 +9,7 @@ import * as numeric from './libs/numeric-1.2.6.min.js';
 import { View } from './View';
 import { Bounds } from './Bounds';
 
-import {ThreeService} from '../components/three/three.service'
+import { ThreeService } from '../components/three/three.service';
 import { ThreeDispService } from '../components/three/geometry/three-disp.service';
 
 @Injectable({
@@ -29,19 +29,19 @@ export class Solver {
   public method: number; // 方程式解法
 
   public d: number;
-  public coef:number;
+  public coef: number;
 
   constructor(
     private model: FemDataModel,
     private view: View,
     private result: Result,
     private bounds: Bounds,
-    private three:ThreeService,
-    private threeDisp:ThreeDispService
+    private three: ThreeService,
+    private threeDisp: ThreeDispService
   ) {
     this.clear();
     // this.method = this.LU_METHOD; //直接解法
-    this.method = this.ILUCG_METHOD //反復解法
+    this.method = this.ILUCG_METHOD; //反復解法
   }
 
   // データを消去する
@@ -79,14 +79,12 @@ export class Solver {
       }
       const t1 = new Date().getTime();
       const disp = this.result.displacement;
-      const dcoef = this.threeDisp.dcoef//10;
+      const dcoef = this.threeDisp.dcoef; //10;
       const dispMax = this.result.dispMax;
       const angleMax = this.result.angleMax;
       const coef = dcoef * Math.min(this.bounds.size / dispMax, 1 / angleMax);
       this.view.setDisplacement(disp, coef);
       this.three.ChangeMode('disp');
-      //this.result.setConfig(disp,"0","6");
-      // 変位とmagという情報を送る
       console.log('Calculation time:' + (t1 - t0) + 'ms');
     } catch (ex) {
       alert(ex);
@@ -97,7 +95,7 @@ export class Solver {
   public conterStart() {
     try {
       const disp = 0;
-      this.result.setConfig(disp, '0', '6');
+      this.result.setConfig('0', '6');
     } catch (ex1) {
       alert(ex1);
     }

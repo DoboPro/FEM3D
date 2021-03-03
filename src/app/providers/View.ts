@@ -26,28 +26,28 @@ export class View {
   cls: any[];
   cls1: any[];
 
-  constructor(
-    private bc: BoundaryCondition,
-    private mesh: MeshModel,
-    private bounds: Bounds
-  ) {}
+  constructor(private mesh: MeshModel) {}
 
-  public setDisplacement(disp,coef) {
+  //変位を設定する
+  // geometry - 座標を設定する形状データ
+  // disp - 変位
+  // coef - 表示係数
+  public setDisplacement(disp, coef) {
     if (disp.length === 0) return;
-    this.setGeomDisplacement1(this.mesh.geometry_mesh, disp,coef);
-    this.setGeomDisplacement2(this.mesh.geometry_edge, disp,coef);
+    this.setGeomDisplacementMesh(this.mesh.geometry_mesh, disp, coef);
+    this.setGeomDisplacementEdge(this.mesh.geometry_edge, disp, coef);
   }
 
-  public setGeomDisplacement1(geometry_mesh, disp,coef) {
-    const label = geometry_mesh.nodes,
-      nodes = this.mesh.nodes,
-      angle = geometry_mesh.angle;
-    
+  //geometry_mesh - 面の形状データ
+  public setGeomDisplacementMesh(geometry_mesh, disp, coef) {
+    const label = geometry_mesh.nodes;
+    const nodes = this.mesh.nodes;
+    const angle = geometry_mesh.angle;
     const pos = geometry_mesh.attributes.position.array;
     for (let i = 0; i < label.length; i++) {
-      let i3 = 3 * i,
-        p = nodes[label[i]],
-        dx = disp[label[i]].x;
+      const i3 = 3 * i;
+      const p = nodes[label[i]];
+      const dx = disp[label[i]].x;
       console.log(pos[i3]);
       pos[i3] = p.x + coef * dx[0];
       pos[i3 + 1] = p.y + coef * dx[1];
@@ -59,15 +59,16 @@ export class View {
     geometry_mesh.attributes.position.needsUpdate = true;
   }
 
-  public setGeomDisplacement2(geometry_edge, disp,coef) {
-    const label = geometry_edge.nodes,
-      nodes = this.mesh.nodes,
-      angle = geometry_edge.angle;
+  //geometry_edge - 線の形状データ
+  public setGeomDisplacementEdge(geometry_edge, disp, coef) {
+    const label = geometry_edge.nodes;
+    const nodes = this.mesh.nodes;
+    const angle = geometry_edge.angle;
     const pos = geometry_edge.attributes.position.array;
     for (let i = 0; i < label.length; i++) {
-      let i3 = 3 * i,
-        p = nodes[label[i]],
-        dx = disp[label[i]].x;
+      const i3 = 3 * i;
+      const p = nodes[label[i]];
+      const dx = disp[label[i]].x;
       pos[i3] = p.x + coef * dx[0];
       pos[i3 + 1] = p.y + coef * dx[1];
       pos[i3 + 2] = p.z + coef * dx[2];
@@ -79,10 +80,9 @@ export class View {
   }
 
   public setContour(value, minValue, maxValue) {
-    var coef = 1;
+    let coef = 1;
     if (maxValue !== minValue) coef = 1 / (maxValue - minValue);
     this.setGeomContour(this.mesh.geometry_mesh, value, minValue, coef);
-    // this.bar.setContour(value,minValue,coef,type);
   }
 
   // 形状データのコンター図を設定する
@@ -93,10 +93,8 @@ export class View {
   // type - データ保持形態
   public setGeomContour(geometry_mesh, value, minValue, coef) {
     const colors_mesh = geometry_mesh.attributes.color.array;
-
     const label_mesh = geometry_mesh.nodes;
-
-    for (var i = 0; i < label_mesh.length; i++) {
+    for (let i = 0; i < label_mesh.length; i++) {
       let i3 = 3 * i;
       let d0 = value[label_mesh[i]] - minValue;
       let d1 = coef * d0;

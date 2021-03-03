@@ -3,11 +3,8 @@ import * as THREE from 'three';
 
 import { SceneService } from '../scene.service';
 import { FemDataModel } from '../../../providers/FemDataModel';
-import { Restraint } from '../../../providers/load_restaint/Restraint';
 import { FENode } from '../../../providers/mesh/FENode';
 import { MeshModel } from '../../../providers/mesh/MeshModel';
-import { ThreeDispService } from './three-disp.service';
-import { Color } from 'three';
 
 @Injectable({
   providedIn: 'root',

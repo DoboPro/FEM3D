@@ -8,22 +8,22 @@ import { ShellParameter } from './parameter/ShellParameter';
 import * as numeric from './libs/numeric-1.2.6.min.js';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FemDataModel {
-  
-  public COEF_F_W = 0.5 / Math.PI;	// f/ω比 1/2π
-  
-  public materials: Material[];     // 材料
-  public shellParams: ShellParameter[];        // シェルパラメータ
-  // public barParams: any[];          // 梁パラメータ
-  public coordinates: any[];        // 局所座標系
-  public hasShellBar: boolean;      // シェル要素または梁要素を含まない
+  public COEF_F_W = 0.5 / Math.PI; // f/ω比 1/2π
 
-  constructor(public mesh: MeshModel,
+  public materials: Material[]; // 材料
+  public shellParams: ShellParameter[]; // シェルパラメータ
+  // public barParams: any[];          // 梁パラメータ
+  public coordinates: any[]; // 局所座標系
+  public hasShellBar: boolean; // シェル要素または梁要素を含まない
+
+  constructor(
+    public mesh: MeshModel,
     public bc: BoundaryCondition,
-    private result: Result) {
-  }
+    private result: Result
+  ) {}
 
   // データを消去する
   public clear(): void {
@@ -32,7 +32,7 @@ export class FemDataModel {
     // this.barParams = new Array();
     this.coordinates = new Array();
     this.mesh.clear(); // メッシュモデル
-    this.bc.clear();    // 境界条件
+    this.bc.clear(); // 境界条件
     this.result.clear(); // 計算結果
   }
 
@@ -56,13 +56,17 @@ export class FemDataModel {
       mats[i].matrix = { m2d: m2d, msh: msh, m3d: m3d };
     }
   }
-  
+
   // ラベルを比較する
   // o1,o2 - 比較する対象
   public compareLabel(o1, o2) {
-    if (o1.label < o2.label) return -1;
-    else if (o1.label > o2.label) return 1;
-    else return 0;
+    if (o1.label < o2.label) {
+      return -1;
+    } else if (o1.label > o2.label) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   // 節点・要素ポインタを設定する
@@ -100,7 +104,7 @@ export class FemDataModel {
   // 材料ポインタを設定する
   public resetMaterialLabel(): void {
     if (this.materials.length === 0) {
-      this.materials.push(new Material(1, 1, 0.3, 1, 1, 1)); //, 1));
+      this.materials.push(new Material(1, 1, 0.3, 1, 1, 1));
     }
     const map = [];
     const elements = this.mesh.elements;
@@ -110,17 +114,16 @@ export class FemDataModel {
     for (let i = 0; i < elements.length; i++) {
       if (elements[i].material in map) {
         elements[i].material = map[elements[i].material];
-      }
-      else {
-        throw new Error('材料番号' + elements[i].material +
-          'は存在しません');
+      } else {
+        throw new Error('材料番号' + elements[i].material + 'は存在しません');
       }
     }
   }
 
   // シェルパラメータ・梁パラメータのポインタを設定する
   public resetParameterLabel(): void {
-    if (this.shellParams.length === 0) { //} && (this.barParams.length === 0)) {
+    if (this.shellParams.length === 0) {
+      //} && (this.barParams.length === 0)) {
       this.hasShellBar = false;
       return;
     }
@@ -139,27 +142,25 @@ export class FemDataModel {
         if (elements[i].param in map1) {
           elements[i].param = map1[elements[i].param];
           shellbars++;
+        } else {
+          throw new Error(
+            'パラメータ番号' + elements[i].param + 'は存在しません'
+          );
         }
-        else {
-          throw new Error('パラメータ番号' + elements[i].param +
-            'は存在しません');
-        }
-      }
-      else if (elements[i].isBar) {
+      } else if (elements[i].isBar) {
         if (elements[i].param in map2) {
           elements[i].param = map2[elements[i].param];
           shellbars++;
-        }
-        else {
-          throw new Error('パラメータ番号' + elements[i].param +
-            'は存在しません');
+        } else {
+          throw new Error(
+            'パラメータ番号' + elements[i].param + 'は存在しません'
+          );
         }
       }
     }
-    this.hasShellBar = (shellbars > 0);
+    this.hasShellBar = shellbars > 0;
   }
 
- 
   // 節点集合の節点ラベルを再設定する
   // map - ラベルマップ
   // s - 節点集合
@@ -167,8 +168,7 @@ export class FemDataModel {
     for (let i = 0; i < s.nodes.length; i++) {
       if (s.nodes[i] in map) {
         s.nodes[i] = map[s.nodes[i]];
-      }
-      else {
+      } else {
         throw new Error('節点番号' + s.nodes[i] + 'は存在しません');
       }
     }
@@ -180,8 +180,7 @@ export class FemDataModel {
   public resetNodePointer(map, bc) {
     if (bc.node in map) {
       bc.node = map[bc.node];
-    }
-    else {
+    } else {
       throw new Error('節点番号' + bc.node + 'は存在しません');
     }
   }
@@ -192,8 +191,7 @@ export class FemDataModel {
   public resetElementPointer(map, bc) {
     if (bc.element in map) {
       bc.element = map[bc.element];
-    }
-    else {
+    } else {
       throw new Error('要素番号' + bc.element + 'は存在しません');
     }
   }
@@ -209,7 +207,8 @@ export class FemDataModel {
     }
     for (let i = 0; i < elemCount; i++) {
       const elem = this.mesh.elements[i];
-      if (elem.isShell || elem.isBar) {	// シェル要素・梁要素
+      if (elem.isShell || elem.isBar) {
+        // シェル要素・梁要素
         const count = elem.nodeCount();
         for (let j = 0; j < count; j++) {
           dof[elem.nodes[j]] = 6;
@@ -219,7 +218,6 @@ export class FemDataModel {
     return this.bc.setPointerStructure(nodeCount);
   }
 
-
   // 要素歪・応力・歪エネルギー密度を計算する
   public calculateElementStress(): void {
     const nodes = this.mesh.nodes;
@@ -227,21 +225,22 @@ export class FemDataModel {
     const elemCount = elems.length;
     this.result.initStrainAndStress(elemCount);
     for (let i = 0; i < elemCount; i++) {
-      const elem = elems[i], en = elem.nodes;
+      const elem = elems[i],
+        en = elem.nodes;
       const p = new Array();
       const v = new Array();
       for (let j = 0; j < en.length; j++) {
         p[j] = nodes[en[j]];
         v[j] = this.result.displacement[en[j]];
       }
-      const material = this.materials[elem.material], mat = material.matrix;
+      const material = this.materials[elem.material],
+        mat = material.matrix;
       if (elem.isShell) {
         const sp = this.shellParams[elem.param];
         let mmat: any;
         if (elem.getName() === 'TriElement1') {
           mmat = mat.m2d;
-        }
-        else {
+        } else {
           mmat = mat.msh;
         }
         const s = elem.elementStrainStress(p, v, mmat, sp);
@@ -268,7 +267,7 @@ export class FemDataModel {
     const angle = numeric.rep([nodeCount], 0);
     this.result.initStrainAndStress(nodeCount);
     for (let i = 0; i < elemCount; i++) {
-      const elem = elems[i]
+      const elem = elems[i];
       const en = elem.nodes;
       const p: any[] = new Array();
       const v: any[] = new Array();
@@ -284,8 +283,7 @@ export class FemDataModel {
         let mmat: any;
         if (elem.getName() === 'TriElement1') {
           mmat = mat.m2d;
-        }
-        else {
+        } else {
           mmat = mat.msh;
         }
         const s = elem.strainStress(p, v, mmat, sp);
@@ -303,12 +301,18 @@ export class FemDataModel {
           str2[j].mul(eaj);
           se1[j] *= eaj;
           se2[j] *= eaj;
-          this.result.addStructureData(en[j], eps1[j], str1[j], se1[j],
-            eps2[j], str2[j], se2[j]);
+          this.result.addStructureData(
+            en[j],
+            eps1[j],
+            str1[j],
+            se1[j],
+            eps2[j],
+            str2[j],
+            se2[j]
+          );
           angle[en[j]] += eaj;
         }
-      }
-      else {
+      } else {
         const s = elem.strainStress(p, v, mat.m3d);
         const eps1 = s[0];
         const str1 = s[1];
@@ -318,8 +322,15 @@ export class FemDataModel {
           eps1[j].mul(eaj);
           str1[j].mul(eaj);
           se1[j] *= eaj;
-          this.result.addStructureData(en[j], eps1[j], str1[j], se1[j],
-            eps1[j], str1[j], se1[j]);
+          this.result.addStructureData(
+            en[j],
+            eps1[j],
+            str1[j],
+            se1[j],
+            eps1[j],
+            str1[j],
+            se1[j]
+          );
           angle[en[j]] += eaj;
         }
       }
@@ -330,8 +341,6 @@ export class FemDataModel {
       }
     }
   }
-
-
 
   // 局所座標系を設定する
   public resetCoordinates(): void {
@@ -354,17 +363,14 @@ export class FemDataModel {
   // bc - 境界条件
   public resetCoordinatesPointer(map, bc) {
     const coords = bc.coords;
-    if ((coords === null) || (coords === undefined)) {
-    }
-    else if (coords in map) {
+    if (coords === null || coords === undefined) {
+    } else if (coords in map) {
       bc.coords = map[coords];
       bc.globalX = bc.coords.toGlobal(bc.x);
-    }
-    else {
+    } else {
       throw new Error('局所座標系番号' + coords + 'は存在しません');
     }
   }
-  
 
   /*
 
