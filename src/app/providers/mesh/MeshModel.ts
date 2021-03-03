@@ -10,8 +10,8 @@ import { FENode } from './FENode';
 
 // メッシュモデル
 export class MeshModel extends Comon {
-  //meshColors:number[]=[0.9,0.9,0.9];
-  meshColors: number[] = [0, 0, 0];
+  meshColors:number[]=[0.9,0.9,0.9];
+  //meshColors: number[] = [0, 0, 0];
 
   geometry_mesh:any;
   geometry_edge:any;

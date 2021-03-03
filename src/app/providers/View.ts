@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-
 import { BoundaryCondition } from './boundary/BoundaryCondition';
 import { Bounds } from './Bounds';
-//import { FemDataModel } from './FemDataModel';
-// import { Result } from './Result';
 import { MeshModel } from './mesh/MeshModel';
-// import { SceneService } from '../components/three/scene.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,8 +29,6 @@ export class View {
   constructor(
     private bc: BoundaryCondition,
     private mesh: MeshModel,
-    // private scene: SceneService,
-    // private result: Result
     private bounds: Bounds
   ) {}
 

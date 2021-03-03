@@ -6,6 +6,8 @@ import { FemDataModel } from '../../../providers/FemDataModel';
 import { Restraint } from '../../../providers/load_restaint/Restraint';
 import { FENode } from '../../../providers/mesh/FENode';
 import { MeshModel } from '../../../providers/mesh/MeshModel';
+import { ThreeDispService } from './three-disp.service';
+import { Color } from 'three';
 
 @Injectable({
   providedIn: 'root',
@@ -21,28 +23,28 @@ export class ViewObjectService {
   constructor(
     public scene: SceneService,
     public mesh: MeshModel,
-    public model: FemDataModel //public rest:Restraint
+    public model: FemDataModel
   ) {}
 
   public create(): void {
-  
     // 要素表示マテリアル
     const geometry1 = this.mesh.getGeometry();
     const elemMat = new THREE.MeshStandardMaterial({
-      //color: 0xff0000,
-      vertexColors:true,
+      vertexColors: true,
       roughness: 0.2,
       metalness: 0.5,
       transparent: true,
       opacity: 0.8,
       side: THREE.DoubleSide,
     });
+    const color = new THREE.Color(0x734e30); //茶色
+    this.setGeomContour(geometry1, color);
     const meshMaterial = new THREE.Mesh(geometry1, elemMat);
     this.scene.add(meshMaterial);
 
     // 要素辺の表示マテリアル
     const geometry2 = this.mesh.getEdgeGeometry();
-    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xf5f5f5 }); //color: 0xffffff });
+    const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xf5f5f5 });
     const edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
     this.scene.add(edgeMaterial);
   }
@@ -60,23 +62,35 @@ export class ViewObjectService {
     this.scene.add(restMaterial);
   }
 
-  // public changeData(model: any): void {
-  //   //
-  //   console.log(model);
-  //   //
-  //   const geometry = new THREE.PlaneGeometry(5, 20, 32);
-  //   const material = new THREE.MeshBasicMaterial({
-  //     color: 0xffff00,
-  //     side: THREE.DoubleSide,
-  //   });
-  //   const plane = new THREE.Mesh(geometry, material);
-
-  //   plane.rotation.x = -0.5 * Math.PI;
-  //   plane.position.y = 3;
-
-  //   this.scene.add(plane);
-  //   //this.geometrys.push(plane);
-
-  //   this.scene.render();
-  // }
+  private setGeomContour(geometry, color): void {
+    const colors_mesh = geometry.attributes.color.array;
+    const count = geometry.attributes.color.count;
+    for (let i = 0; i < count; i++) {
+      let i3 = 3 * i;
+      colors_mesh[i3] = color.r; //r  color.r
+      colors_mesh[i3 + 1] = color.g; //g  color.g
+      colors_mesh[i3 + 2] = color.b; //b  color.b
+    }
+    geometry.attributes.color.needsUpdate = true;
+  }
 }
+
+// public changeData(model: any): void {
+//   //
+//   console.log(model);
+//   //
+//   const geometry = new THREE.PlaneGeometry(5, 20, 32);
+//   const material = new THREE.MeshBasicMaterial({
+//     color: 0xffff00,
+//     side: THREE.DoubleSide,
+//   });
+//   const plane = new THREE.Mesh(geometry, material);
+
+//   plane.rotation.x = -0.5 * Math.PI;
+//   plane.position.y = 3;
+
+//   this.scene.add(plane);
+//   //this.geometrys.push(plane);
+
+//   this.scene.render();
+// }
