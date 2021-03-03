@@ -64,8 +64,8 @@ export class ThreeDispService {
         1 / this.result.angleMax
       );
     if (disp.length === 0) return;
-    this.view.setGeomDisplacement1(this.mesh.geometry_mesh, disp, coef);
-    this.view.setGeomDisplacement2(this.mesh.geometry_edge, disp, coef);
+    this.view.setGeomDisplacementMesh(this.mesh.geometry_mesh, disp, coef);
+    this.view.setGeomDisplacementEdge(this.mesh.geometry_edge, disp, coef);
   }
 
   // 表示設定を変更する

@@ -10,11 +10,11 @@ import { FENode } from './FENode';
 
 // メッシュモデル
 export class MeshModel extends Comon {
-  meshColors:number[]=[0.9,0.9,0.9];
+  meshColors: number[] = [0.9, 0.9, 0.9];
   //meshColors: number[] = [0, 0, 0];
 
-  geometry_mesh:any;
-  geometry_edge:any;
+  geometry_mesh: any;
+  geometry_edge: any;
 
   public nodes: FENode[]; // 節点
   public elements: any[]; // 要素
@@ -140,10 +140,7 @@ export class MeshModel extends Comon {
 
   // 形状データを取り出す
   public getGeometry() {
-    
-
     const sb = [];
-
     for (let i = 0; i < this.freeFaces.length; i++) {
       Array.prototype.push.apply(sb, this.freeFaces[i].splitBorder());
     }
@@ -157,7 +154,7 @@ export class MeshModel extends Comon {
     for (let i = 0; i < sb.length; i++) {
       let i9 = 9 * i;
       const v = sb[i].nodes;
-      const elem = sb[i].element;
+      //const elem = sb[i].element;
       const p = [this.nodes[v[0]], this.nodes[v[1]], this.nodes[v[2]]];
       const n = this.comon.normalVector(p);
       for (let j = 0; j < 3; j++) {
@@ -173,14 +170,23 @@ export class MeshModel extends Comon {
         colors[j3] = this.meshColors[0];
         colors[j3 + 1] = this.meshColors[1];
         colors[j3 + 2] = this.meshColors[2];
-       this.geometry_mesh.angle[j3] = 0;
-       this.geometry_mesh.angle[j3 + 1] = 0;
-       this.geometry_mesh.angle[j3 + 2] = 0;
+        this.geometry_mesh.angle[j3] = 0;
+        this.geometry_mesh.angle[j3 + 1] = 0;
+        this.geometry_mesh.angle[j3 + 2] = 0;
       }
     }
-    this.geometry_mesh.addAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.geometry_mesh.addAttribute('normal', new THREE.BufferAttribute(norm, 3));
-    this.geometry_mesh.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+    this.geometry_mesh.addAttribute(
+      'position',
+      new THREE.BufferAttribute(pos, 3)
+    );
+    this.geometry_mesh.addAttribute(
+      'normal',
+      new THREE.BufferAttribute(norm, 3)
+    );
+    this.geometry_mesh.addAttribute(
+      'color',
+      new THREE.BufferAttribute(colors, 3)
+    );
     return this.geometry_mesh;
   }
 
@@ -192,11 +198,11 @@ export class MeshModel extends Comon {
     this.geometry_edge.nodes = new Int32Array(2 * edges.length);
     this.geometry_edge.angle = new Float32Array(6 * edges.length);
     for (let i = 0; i < edges.length; i++) {
-      let i2 = 2 * i,
-        i6 = 6 * i,
-        v = edges[i].nodes;
-      const p1 = this.nodes[v[0]],
-        p2 = this.nodes[v[1]];
+      let i2 = 2 * i;
+      let i6 = 6 * i;
+      let v = edges[i].nodes;
+      const p1 = this.nodes[v[0]];
+      const p2 = this.nodes[v[1]];
       this.geometry_edge.nodes[i2] = v[0];
       this.geometry_edge.nodes[i2 + 1] = v[1];
       pos[i6] = p1.x;
@@ -207,7 +213,10 @@ export class MeshModel extends Comon {
       pos[i6 + 5] = p2.z;
       for (let j = 0; j < 6; j++) this.geometry_edge.angle[i6 + j] = 0;
     }
-    this.geometry_edge.addAttribute('position', new THREE.BufferAttribute(pos, 3));
+    this.geometry_edge.addAttribute(
+      'position',
+      new THREE.BufferAttribute(pos, 3)
+    );
     return this.geometry_edge;
   }
 

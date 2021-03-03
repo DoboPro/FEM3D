@@ -5,7 +5,6 @@ import { Stress } from './stress/Stress';
 import { Vector3R } from './load_restaint/Vector3R';
 import { View } from './View';
 import { Bounds } from './Bounds';
-// //import { ColorBar } from './ColorBar';
 
 @Injectable({
   providedIn: 'root',
@@ -137,13 +136,9 @@ export class Result {
   // カンタ―
   public contour: string = '0';
   public component: string = '6';
-  public dispCoef: string ;
+  public dispCoef: string;
 
-  constructor(
-    private view: View,
-    //private colorBar:ColorBar,
-    private bounds: Bounds
-  ) {}
+  constructor(private view: View) {}
 
   // 計算結果を消去する
   public clear(): void {
@@ -247,17 +242,9 @@ export class Result {
   }
 
   // 設定を表示に反映させる
-  setConfig(disp, contour, component) {
-    // const dcoef = parseFloat(this.dispCoef);
+  setConfig(contour, component) {
     const param = parseInt(contour);
     const comp = parseInt(component);
-    // const coef =
-    //   dcoef * Math.min(this.bounds.size / this.dispMax, 1 / this.angleMax);
-    // // if(param<0){
-    // //   viewObj.clearContour();
-    // //   colorBar.clear();
-    // // }
-    // this.view.setDisplacement(this.displacement, coef);
 
     this.setContour(param, comp, 0);
     this.minValue = this.minValue;
@@ -272,7 +259,6 @@ export class Result {
         this.view.setContour(this.value, this.minValue, this.maxValue);
         break;
     }
-    // this.colorBar.draw(this.minValue,this.maxValue);
   }
 
   // コンター図データを設定する
@@ -321,30 +307,6 @@ export class Result {
             return this.displacement[index].magnitude();
         }
         break;
-      // case STRAIN:
-      //   if(component<SHIFT){
-      //   	return this.getTensorComp(this.strain1[index],component);
-      //   }
-      //   else{
-      //   	return this.getTensorComp(this.strain2[index],component-SHIFT);
-      //   }
-      //   break;
-      // case STRESS:
-      //   if(component<SHIFT){
-      //   	return this.getTensorComp(this.stress1[index],component);
-      //   }
-      //   else{
-      //   	return this.getTensorComp(this.stress2[index],component-SHIFT);
-      //   }
-      //   break;
-      // case S_ENERGY:
-      //   if(component===0){
-      //   	return this.sEnergy1[index];
-      //   }
-      //   else{
-      //   	return this.sEnergy2[index];
-      //   }
-      //   break;
       case this.TEMPERATURE:
         return this.temperature[index];
     }
