@@ -24,11 +24,13 @@ export class ThreeDispService {
   private params: any; // GUIの表示制御
   private gui: any;
 
-  public dcoef: number = 0.1;
+  public dcoef: number = 1;
+
+  public coef:number;
 
   private objVisible: boolean;
 
-  private gui_max_scale: number = 10;
+  private gui_max_scale: number = 20;
 
   constructor(
     private scene: SceneService,
@@ -104,7 +106,7 @@ export class ThreeDispService {
     // this.gui = this.scene.gui
     //   .add(this.params, "dispScale", 0, 1000)
     // .step(1)
-    const gui_step: number = this.gui_max_scale * 0.001;
+    const gui_step: number = this.gui_max_scale * 0.1;
     this.gui = this.scene.gui
       .add(this.params, 'dispScale', 0, this.gui_max_scale)
       .step(gui_step)
