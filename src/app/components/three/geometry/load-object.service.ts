@@ -36,7 +36,7 @@ export class LoadObjectService {
       let x: number = this.nodeData[j].x;
       let y: number = this.nodeData[j].y;
       let z: number = this.nodeData[j].z;
-      let from = new THREE.Vector3(x + this.loadData[i].x[0]*0.1 ,y + this.loadData[i].x[1]*0.1 , z - this.loadData[i].x[2]*0.1 );
+      let from = new THREE.Vector3(x - this.loadData[i].x[0]*0.1 ,y - this.loadData[i].x[1]*0.1 , z - this.loadData[i].x[2]*0.1 );
       var to = new THREE.Vector3( x, y, z );
       var direction = to.clone().sub(from);
       var length = direction.length();
