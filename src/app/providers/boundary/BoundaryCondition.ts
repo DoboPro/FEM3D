@@ -41,6 +41,7 @@ export class BoundaryCondition {
   public init() {
     this.restraints.sort(this.compareNodeLabel);
     this.loads.sort(this.compareNodeLabel);
+    console.log(this.loads);
     // this.pressures.sort(this.compareElementLabel);
     // this.temperature.sort(this.compareNodeLabel);
     // this.htcs.sort(this.compareElementLabel);
