@@ -6,6 +6,7 @@ import { FemDataModel } from '../../../providers/FemDataModel';
 import { FENode } from '../../../providers/mesh/FENode';
 import { MeshModel } from '../../../providers/mesh/MeshModel';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -17,15 +18,22 @@ export class ViewObjectService {
   public freeFaces: any[]; // 表面
   public faceEdges: any[]; // 表面の要素辺
 
+  public meshMaterial:any;
+  public edgeMaterial:any;
+  public restMaterial:any;
+
+
   constructor(
     public scene: SceneService,
     public mesh: MeshModel,
-    public model: FemDataModel
+    public model: FemDataModel,
   ) {}
 
   public create(): void {
     // 要素表示マテリアル
-    const geometry1 = this.mesh.getGeometry();
+    this.scene.remove(this.meshMaterial);
+    this.scene.remove(this.edgeMaterial);
+        const geometry1 = this.mesh.getGeometry();
     const elemMat = new THREE.MeshStandardMaterial({
       vertexColors: true,
       roughness: 0.2,
@@ -36,27 +44,28 @@ export class ViewObjectService {
     });
     const color = new THREE.Color(0x734e30); //茶色
     this.setGeomContour(geometry1, color);
-    const meshMaterial = new THREE.Mesh(geometry1, elemMat);
-    this.scene.add(meshMaterial);
+    this.meshMaterial = new THREE.Mesh(geometry1, elemMat);
+    this.scene.add(this.meshMaterial);
 
     // 要素辺の表示マテリアル
     const geometry2 = this.mesh.getEdgeGeometry();
     const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0xf5f5f5 });
-    const edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
-    this.scene.add(edgeMaterial);
+    this.edgeMaterial = new THREE.LineSegments(geometry2, EDGE_MAT);
+    this.scene.add(this.edgeMaterial);
   }
 
   public createRestraint(): void {
+    this.scene.remove(this.restMaterial);
     // var hs=0.02*bounds.size,
     let hs = 1;
     const rests: any[] = this.model.bc.restraints;
-    const restMaterial = new THREE.Group();
+    this.restMaterial = new THREE.Group();
     for (let i = 0; i < rests.length; i++) {
       // let r=this.rest.RestraintHelper(rests[i],hs);
       // r.position.copy(this.model.mesh.nodes[rests[i].node]);
       // restMaterial.add(r);
     }
-    this.scene.add(restMaterial);
+    this.scene.add(this.restMaterial);
   }
 
   private setGeomContour(geometry, color): void {
@@ -71,6 +80,7 @@ export class ViewObjectService {
     geometry.attributes.color.needsUpdate = true;
   }
 }
+
 
 // public changeData(model: any): void {
 //   //

@@ -6,6 +6,7 @@ import { FemDataModel } from '../../../providers/FemDataModel';
 import { FENode } from '../../../providers/mesh/FENode';
 import { MeshModel } from '../../../providers/mesh/MeshModel';
 import { BoundaryCondition } from 'src/app/providers/boundary/BoundaryCondition';
+import { ThreeService } from '../three.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,8 @@ export class LoadObjectService {
   public loadDataMax : number;
   public nodeData: any[];
 
+  public arrowHelper:any;
+
   constructor(
     public scene: SceneService,
     public mesh: MeshModel,
@@ -28,9 +31,11 @@ export class LoadObjectService {
   ) {}
 
   public create(): void {
+    this.scene.remove(this.arrowHelper);
     this.loadData = this.bc.loads;
     this.loadDataMax = this.bc.loadMax;
     this.nodeData = this.mesh.nodes;
+    this.arrowHelper = new THREE.Group();
     for (let i = 0; i < this.loadData.length; i++) {
       let j = this.loadData[i].node;
       let x: number = this.nodeData[j].x;
@@ -41,8 +46,9 @@ export class LoadObjectService {
       var direction = to.clone().sub(from);
       var length = direction.length();
       var hex = 0xff0000;
-      let arrowHelper = new THREE.ArrowHelper(direction.normalize(), from, length, hex);
-      this.scene.add(arrowHelper);
+      const arrow = new THREE.ArrowHelper(direction.normalize(), from, length, hex);
+      this.arrowHelper.add(arrow);
     }
+    this.scene.add(this.arrowHelper);
   }
 }

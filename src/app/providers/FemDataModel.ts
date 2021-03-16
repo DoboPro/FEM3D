@@ -6,6 +6,8 @@ import { Result } from './Result';
 import { Solver } from './Solver';
 import { ShellParameter } from './parameter/ShellParameter';
 import * as numeric from './libs/numeric-1.2.6.min.js';
+import * as THREE from 'three';
+
 
 @Injectable({
   providedIn: 'root',
@@ -371,6 +373,14 @@ export class FemDataModel {
       throw new Error('局所座標系番号' + coords + 'は存在しません');
     }
   }
+
+  removeObject(obj){
+    const scene=new THREE.Scene();					// シーン
+    scene.remove(obj);
+  };
+
+
+  
 
   /*
 

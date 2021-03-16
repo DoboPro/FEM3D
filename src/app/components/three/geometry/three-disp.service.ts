@@ -39,6 +39,7 @@ export class ThreeDispService {
     private bounds: Bounds,
     private view: View
   ) {
+    this.scene.remove(this.dispList);
     this.geometry = new THREE.CylinderBufferGeometry();
     this.dispList = new THREE.Object3D();
     this.axisList = new Array();
