@@ -110,5 +110,8 @@ export class ThreeComponent implements AfterViewInit {
     
   }
 
+  // ngOnInit(){
+  //  this.three.ChangeMode('disp');
+  // }
 
 }
