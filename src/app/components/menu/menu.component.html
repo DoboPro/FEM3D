@@ -5,3 +5,13 @@
     <p>変位量最大</p>
     <p>{{d}}</p>
 </div>
+
+<div class="selectFEM">
+    <form>
+        <select [(ngModel)]="fileIndex.selectedIndex" (change)='onSelectChange($event.target.value)' name="first">
+        <option *ngFor="let item of FEMlist" [value]="item.id" [selected]="1" >
+          {{item.name}}
+        </option>
+      </select>
+    </form>
+</div>

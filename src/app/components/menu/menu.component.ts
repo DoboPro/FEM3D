@@ -5,6 +5,11 @@ import { Solver } from 'src/app/providers/Solver';
 import { ThreeService } from '../three/three.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
+import { FileIndexService } from '../fileIndex/file-index.service';
+import { Bounds } from 'src/app/providers/Bounds';
+import { Mesh } from 'three';
+import { ViewObjectService } from '../three/geometry/view-object.service';
+import { FemDataModel } from 'src/app/providers/FemDataModel';
 
 @Component({
   selector: 'app-menu',
@@ -14,23 +19,40 @@ import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 export class MenuComponent implements OnInit {
   public myElement = document.getElementById('result');
   public d: string;
+  public FEMlist;
 
   constructor(
     private modalService: NgbModal,
     public InputData: FemMainService,
     public result: Result,
-    public Solver: Solver
-  ) {}
+    public Solver: Solver,
+    public fileIndex: FileIndexService,
+    public viewObj:ViewObjectService,
+    public model:FemDataModel
+  ) {
+    this.FEMlist = this.fileIndex.FEMlist;
+  }
 
   ngOnInit(): void {
-    this.renew();
+    // this.renew();
+    this.onSelectChange(this.fileIndex.selectedIndex);
   }
 
   public dammy() {
     console.log('da');
   }
 
+  onSelectChange(value) {
+   this.model.clear();
+    // constviewObj=new ViewObject();
+    let v = parseInt(value);
+    const data = this.fileIndex.FEMlist[v - 1];
 
+    this.InputData.initModel(data.file);
+    // this.get(item.file, item.name);
+
+    //this.fileIndex.FEMlist = value;
+  }
 
   // 計算
   public calcrate() {
@@ -55,15 +77,12 @@ export class MenuComponent implements OnInit {
     //コンター図を出す
     this.Solver.conterStart();
     console.log('sasa- calcrate end');
-
   }
   public modal() {
     this.dammy(); //1
-    
-    //const modalRef = 
-    this.modalService.open(WaitDialogComponent).result.then((result)=>{
 
-    }); //5
+    //const modalRef =
+    this.modalService.open(WaitDialogComponent).result.then((result) => {}); //5
     // .result.then((result) => {
     //   this.d = result;
     //   // const w:number = this.d.toFixed(3);
