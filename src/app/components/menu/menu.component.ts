@@ -56,33 +56,26 @@ export class MenuComponent implements OnInit {
 
   // 計算
   public calcrate() {
-    // モーダルを開く
-    console.log('sasa-calcrate start');
-
-    //計算開始
-    const solve = this.Solver.calcStart();
-    console.log(solve);
     //計算後、menuバー上に変位量の最大値を表示させる
     const w = this.result.dispMax.toFixed(3);
     this.d = w;
     // const w:number = this.d.toFixed(3);
     const elem = document.getElementById('result').style;
     const myStyle = {
-      display: 'block',
+      display: 'inline-block',
     };
     for (const prop in myStyle) {
       elem[prop] = myStyle[prop];
     }
-
-    //コンター図を出す
-    this.Solver.conterStart();
-    console.log('sasa- calcrate end');
   }
   public modal() {
     this.dammy(); //1
 
     //const modalRef =
     this.modalService.open(WaitDialogComponent).result.then((result) => {}); //5
+    setTimeout(()=>{
+    this.calcrate();
+    },50);
     // .result.then((result) => {
     //   this.d = result;
     //   // const w:number = this.d.toFixed(3);
