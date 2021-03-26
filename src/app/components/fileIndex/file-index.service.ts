@@ -11,6 +11,7 @@ export class FileIndexService {
     { id: '2', name: '曲がり梁', file: 'assets/bend/sampleBendHexa1.fem' },
     { id: '3', name: '地盤もどき(mesh分割数多め)', file: 'assets/ground/groundsimpleHexa.fem' },
     { id: '4', name: '地盤もどき(mesh分割数少なめ)', file: 'assets/ground/groundsimpleHexa2.fem' },
+    { id: '5', name: '地盤もどき(ちいさい)', file: 'assets/ground/groundsimpleHexa4.fem' },
   ];
 
   constructor() { }
