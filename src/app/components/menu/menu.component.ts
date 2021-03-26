@@ -2,12 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FemMainService } from 'src/app/providers/FemMain';
 import { Result } from 'src/app/providers/Result';
 import { Solver } from 'src/app/providers/Solver';
-import { ThreeService } from '../three/three.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { WaitDialogComponent } from '../wait-dialog/wait-dialog.component';
 import { FileIndexService } from '../fileIndex/file-index.service';
-import { Bounds } from 'src/app/providers/Bounds';
-import { Mesh } from 'three';
 import { ViewObjectService } from '../three/geometry/view-object.service';
 import { FemDataModel } from 'src/app/providers/FemDataModel';
 
@@ -18,8 +15,8 @@ import { FemDataModel } from 'src/app/providers/FemDataModel';
 })
 export class MenuComponent implements OnInit {
   public myElement = document.getElementById('result');
-  public d: string;
-  public FEMlist;
+  public d: string; //変位量の最大
+  public FEMlist; //読み込みファイルの一覧
 
   constructor(
     private modalService: NgbModal,
@@ -34,32 +31,29 @@ export class MenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.renew();
     this.onSelectChange(this.fileIndex.selectedIndex);
   }
 
-  public dammy() {
-    console.log('da');
-  }
-
-  onSelectChange(value) {
+  // ファイルの選択
+  public onSelectChange(value) {
    this.model.clear();
-    // constviewObj=new ViewObject();
     let v = parseInt(value);
     const data = this.fileIndex.FEMlist[v - 1];
-
-    this.InputData.initModel(data.file);
-    // this.get(item.file, item.name);
-
-    //this.fileIndex.FEMlist = value;
+    this.InputData.initModel(data.file);　//FemMainServiceのinitModel()にdata.fileを送る
   }
 
-  // 計算
-  public calcrate() {
-    //計算後、menuバー上に変位量の最大値を表示させる
-    const w = this.result.dispMax.toFixed(3);
-    this.d = w;
-    // const w:number = this.d.toFixed(3);
+  // 計算途中に表示されるモーダル
+  public modal() {
+    //　モーダル(waitDialogcomponent)をひらく
+    this.modalService.open(WaitDialogComponent).result.then((result) => {}); //5
+    setTimeout(()=>{
+    this.maxDisplay();
+    },50);
+  }
+
+  //計算後、menuバー上に変位量の最大値を表示させる
+  public maxDisplay() {
+    this.d = this.result.dispMax.toFixed(3);
     const elem = document.getElementById('result').style;
     const myStyle = {
       display: 'inline-block',
@@ -68,35 +62,5 @@ export class MenuComponent implements OnInit {
       elem[prop] = myStyle[prop];
     }
   }
-  public modal() {
-    this.dammy(); //1
 
-    //const modalRef =
-    this.modalService.open(WaitDialogComponent).result.then((result) => {}); //5
-    setTimeout(()=>{
-    this.calcrate();
-    },50);
-    // .result.then((result) => {
-    //   this.d = result;
-    //   // const w:number = this.d.toFixed(3);
-    //   const elem = document.getElementById('result').style;
-    //   const myStyle = {
-    //     display: 'block',
-    //   };
-    //   for (const prop in myStyle) {
-    //     elem[prop] = myStyle[prop];
-    //   }
-    // });
-    //this.calcrate();//2,3
-    // this.calcrate();
-    //モーダルを閉じる
-    //modalRef.close(); //4
-    //console.log('sasa - modalRef.close()');
-  }
-
-  // 新規作成
-  public renew(): void {
-    this.InputData.initModel('assets/ground/groundsimpleHexa2.fem');
-    //this.InputData.initModel('assets/bend/sampleBendHexa1.fem');
-  }
 }

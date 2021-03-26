@@ -25,11 +25,10 @@ export class FemMainService {
   // データを初期化する
   // fileName - データファイル名
   public initModel(fileName: string = null) {
-    this.model.clear();
-    this.viewModel.ClearData();
-    // this.remove();
+    this.model.clear();　//前回データの計算処理上必要な部分の初期化
+    this.viewModel.ClearData();　//前回データのthree.js(物体を書くためのjs)データの初期化
     if (fileName !== null && fileName !== undefined) {
-      this.fileio.readServerFemFile(fileName);
+      this.fileio.readFemFile(fileName);　//　femファイルの取り込み開始
     }
   }
 }

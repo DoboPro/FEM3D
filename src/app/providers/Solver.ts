@@ -55,11 +55,13 @@ export class Solver {
   // 計算を開始する
   public calcStart() {
     try {
+      //　計算にかかる時間の計測（データ不足で計算できない場合はalertメッセージを出す）
       const t0 = new Date().getTime();
       let calc = false;
-
       if (this.model.bc.restraints.length > 0) {
+        // モデルの自由度を調べる
         this.dof = this.model.setNodeDoF();
+        // dofAllを求めた後、剛性マトリックス・荷重ベクトルを作成する
         this.createStiffnessMatrix();
         this.d = this.solve();
         this.result.setDisplacement(
@@ -101,16 +103,19 @@ export class Solver {
     }
   }
 
-  // 剛性マトリックス・荷重ベクトルを作成する
+  // ☆剛性マトリックス・荷重ベクトルを作成する
   public createStiffnessMatrix(): void {
     const bc: BoundaryCondition = this.model.bc;
+    // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）
     const bcList = bc.bcList;
+    // 変位が0である点を取り除きたい　
     const reducedList = new Array();
     for (let i = 0; i < bcList.length; i++) {
       if (bcList[i] < 0) {
         reducedList.push(i);
       }
     }
+    // 変位が0でない節点をreducedListに入れる。
 
     // 剛性マトリックス・荷重ベクトルの作成
     const matrix1: number[][] = this.stiffnessMatrix(this.dof);
@@ -143,24 +148,8 @@ export class Solver {
       const elem = elements[i];
       const material = this.model.materials[elem.material];
       const mat = material.matrix;
-      if (elem.isShell) {
-        const sp = this.model.shellParams[elem.param];
-        if (elem.getName() === 'TriElement1') {
-          km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m2d, sp);
-        } else {
-          km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.msh, sp);
-        }
-        kmax = this.setElementMatrix(elem, 6, matrix, km, kmax);
-      }
-      //else if (elem.isBar) {
-      //  const sect = this.model.barParams[elem.param].section;
-      //  km = elem.stiffnessMatrix(mesh.getNodes(elem), material, sect);
-      //  kmax = this.setElementMatrix(elem, 6, matrix, km, kmax);
-      //}
-      else {
-        km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
-        kmax = this.setElementMatrix(elem, 3, matrix, km, kmax);
-      }
+      km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
+      kmax = this.setElementMatrix(elem, 3, matrix, km, kmax);
     }
     // 座標変換
     const rests = this.model.bc.restraints;
@@ -366,8 +355,8 @@ export class Solver {
   // iterMax - 反復回数の上限
   // thres - 収束閾値
   public solveILU(matrix, ilu, p) {
-    const iterMax =  p.length;
-    const thres =  this.ILUCG_THRES;
+    const iterMax = p.length;
+    const thres = this.ILUCG_THRES;
     var x = numeric.rep([p.length], 0),
       xg = p.concat();
     var xq = this.solveLU(ilu, xg);

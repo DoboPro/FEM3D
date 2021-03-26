@@ -23,12 +23,17 @@ export class FileIO {
     private loadObj: LoadObjectService
   ) {}
 
-  // サーバー上のFEMデータファイルを読み込む
+  // ☆FEMデータファイル（文字の羅列）を読み込む
   // fileName - データファイル名
-  public readServerFemFile(fileName: string) {
+  // 非同期処理になるので、デバッグ処理の仕方に注意
+  public readFemFile(fileName: string) {
     this.http.get(fileName, { responseType: 'text' }).subscribe(
+      //　読み込みが正常に終わった後
       (responseText) => {
+        // ファイル内データのスペースごとにx,y,zなど認識するための分割を行っている。
         this.readFemModel(responseText.split(/\r?\n/g));
+        // データの初期化とDマトリックスが作り終わるとここに飛ぶ
+        // 読み込まれたデータをもとに物体の描画を開始する。
         this.viewObj.create();
         this.loadObj.create();
       },
@@ -38,13 +43,14 @@ export class FileIO {
     );
   }
 
-  // FEMデータを読み込む
+  // ☆FEMデータをパラメータごとにわける
   // s - データ文字列のリスト
   private readFemModel(s: string[]) {
     this.model.clear();
     const mesh = this.model.mesh;
     const bc = this.model.bc;
 
+    //　ファイルの全行に対して行の最初のkeywordをもとに、各パラメータごとに分類する
     for (let i = 0; i < s.length; i++) {
       const ss: string[] = s[i].trim().replace(/\t/g, ' ').split(/\s+/);
 
@@ -63,16 +69,7 @@ export class FileIO {
             )
           );
         }
-        // シェルパラメータ
-        else if (keyWord === 'shellparameter' && ss.length > 2) {
-          this.model.shellParams.push(
-            new ShellParameter(parseInt(ss[1]), parseFloat(ss[2]))
-          );
-        }
-        // 局所座標系
-        else if (keyWord == 'coordinates' && ss.length > 10) {
-          this.model.coordinates.push(this.readCoordinates(ss));
-        }
+      
         // 節点
         else if (keyWord == 'node' && ss.length > 4) {
           mesh.nodes.push(
@@ -112,7 +109,7 @@ export class FileIO {
         }
       }
     }
-    this.model.init();
+    this.model.init();　//分類したデータ
   }
 
   // データポインタを獲得する
