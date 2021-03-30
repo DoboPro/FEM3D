@@ -117,8 +117,11 @@ export class Solver {
     }
     // 変位が0でない節点をreducedListに入れる。
 
-    // 剛性マトリックス・荷重ベクトルの作成
-    const matrix1: number[][] = this.stiffnessMatrix(this.dof);
+    // 剛性マトリックスの作成
+    const matrix1: number[][] = this.stiffnessMatrix(this.dof);　//dofは自由度
+    // matrix1には自由度を減らしていない全体剛性マトリックスが生成
+
+    // 荷重ベクトルの作成
     const vector1: number[] = this.loadVector(this.dof);
 
     // 拘束自由度を除去する
@@ -148,6 +151,10 @@ export class Solver {
       const elem = elements[i];
       const material = this.model.materials[elem.material];
       const mat = material.matrix;
+      // 
+      // ☆要素剛性マトリックスの作成
+      // mesh.getNodes(elem):要素毎の節点をかき集めたもの
+      // mat.m3d:Dマトリックス
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
       kmax = this.setElementMatrix(elem, 3, matrix, km, kmax);
     }

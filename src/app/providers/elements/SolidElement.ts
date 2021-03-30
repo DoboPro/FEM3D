@@ -38,18 +38,22 @@ export class SolidElement extends FElement {
   }
 
 
-  // ヤコビ行列を返す
+  // ☆ヤコビ行列を返す
  // p - 要素節点
  // sf - 形状関数行列
   public jacobianMatrix(p, sf) {
     const jac = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     for (var i = 0; i < this.count; i++) {
+      // 形状関数のN1~N8まで順に取り出す
       const sfi = sf[i];
+      // 要素節点の座標を定義する
       const pix = p[i].x;
       const piy = p[i].y;
       const piz = p[i].z;
       for (var j = 0; j < 3; j++) {
+        // Nを各ξ,η,ζで微分したもの
         var sfij = sfi[j + 1];
+        // ヤコビ行列の解の導出
         jac[j] += sfij * pix;
         jac[j + 3] += sfij * piy;
         jac[j + 6] += sfij * piz;
@@ -65,8 +69,11 @@ export class SolidElement extends FElement {
   // ja - ヤコビ行列
   // sf - 形状関数行列
   public grad(p, ja, sf) {
+    // 形状関数の全体座標系による微分の定義
     const gr = [];
+    // ヤコビ行列の逆行列を求める
     const ji = new THREE.Matrix3().getInverse(ja, true).elements;
+    //　ヤコビ行列の逆行列と形状関数の局所座標系による微分(形状関数行列)の積
     for (let i = 0; i < this.count; i++) {
       gr[i] = [ji[0] * sf[i][1] + ji[3] * sf[i][2] + ji[6] * sf[i][3],
       ji[1] * sf[i][1] + ji[4] * sf[i][2] + ji[7] * sf[i][3],
@@ -75,7 +82,7 @@ export class SolidElement extends FElement {
     return gr;
   };
 
-  // 歪 - 変位マトリックスの転置行列を返す
+  // Bマトリックス（※すぐに転置行列にしている）→ガウス積分の際の都合のため
   // grad - 形状関数の勾配
   public strainMatrix(grad) {
     const m = numeric.rep([3 * this.count, 6], 0);
@@ -163,14 +170,27 @@ export class SolidElement extends FElement {
   // p - 要素節点
   // d1 - 応力 - 歪マトリックス
   public stiffnessMatrix(p, d1) {
+    //　要素剛性マトリックスの行数と列数を数える
     const count = 3 * this.count;
+    //　要素剛性マトリックスの定義（numeric.jsを使う）
     const kk = numeric.rep([count, count], 0);
     for (let i = 0; i < this.intP.length; i++) {
+      // この後行うガウス積分に必要となる未知数を決める処理
+      // ipの中身は三次元の局所座標系で用いる変数(0:ξ,1:η,2:ζ,3:重み係数)
       const ip = this.intP[i];
+      // ☆形状関数の導出（局所座標系に直す）
+      // sfで形状関数の式（3次元なので8つ）求まる
+      // sf[N,ξ,η,ζ]形式で格納されている
       const sf = this.shapeFunction(ip[0], ip[1], ip[2]);
+      // ヤコビ行列の導出（座標変換のため）
+      // p:要素ごとの接点
       const ja = this.jacobianMatrix(p, sf);
+
+      // ☆Bマトリックス(ひずみと変位を示すマトリックス)
+      // →要素剛性マトリックス
       const ks = this.stiffPart(
         d1,
+        // 形状関数の全体座標上における微分処理したものを使ってBマトリックを作る
         this.strainMatrix(this.grad(p, ja, sf)),
         ip[3] * Math.abs(ja.determinant()));
       this.addMatrix(kk, ks);
