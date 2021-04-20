@@ -104,9 +104,6 @@ export class ThreeDispService {
       return;
     }
 
-    // this.gui = this.scene.gui
-    //   .add(this.params, "dispScale", 0, 1000)
-    // .step(1)
     const gui_step: number = this.gui_max_scale * 0.1;
     this.gui = this.scene.gui
       .add(this.params, 'dispScale', 0, this.gui_max_scale)

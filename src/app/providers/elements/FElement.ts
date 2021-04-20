@@ -68,46 +68,19 @@ export class FElement extends Comon {
   // p - 頂点座標
   // axis - 断面基準方向ベクトル
   public dirVectors(p: any[], axis): any[] {
-    // let v1, v2, v3;
-    /*
-    if (p.length == 2) {		// 梁要素
-      v1 = p[1].clone().sub(p[0]).normalize();
-      v2 = new THREE.Vector3();
-      v3 = new THREE.Vector3();
-      if ((axis !== null) && (axis !== undefined)) {
-        const dt = v1.dot(axis);
-        v2.set(axis.x - dt * v1.x, axis.y - dt * v1.y, axis.z - dt * v1.z);
-        if (v2.lengthSq() > 0) v2.normalize();
-      }
-      if (v2.lengthSq() === 0) {
-        if (Math.abs(v1.x) < Math.abs(v1.y)) {
-          v2.set(1 - v1.x * v1.x, -v1.x * v1.y, -v1.x * v1.z).normalize();
-        }
-        else {
-          v2.set(-v1.y * v1.x, 1 - v1.y * v1.y, -v1.y * v1.z).normalize();
-        }
-      }
-      v3.crossVectors(v1, v2);
-      return [v1, v2, v3];
-    }
-    else if (p.length > 2) {		// シェル要素
-    */
     const v3: THREE.Vector3 = this.normalVector(p);
     let  v2 = p[1].clone().sub(p[0]);
     v2 = v3.clone().cross(v2).normalize();
     const v1 = v2.clone().cross(v3);
     return [v1, v2, v3];
-    /*
-    }
-    return null;
-    */
   }
 
 
-  // 積分点の剛性マトリックスを返す
-  // d - 応力-歪マトリックス
-  // b - 歪-変位マトリックスの転置行列
-  // coef - 係数
+  // 8節点の剛性マトリックスを返す
+  // d - 応力-歪マトリックス(Dマトリックス)
+  // b[i] - 歪-変位マトリックス(Bマトリックス)の転置行列の成分
+  // b[j] - 歪-変位マトリックス(Bマトリックス)の成分
+  // coef - 係数（重み係数とヤコビ行列式の積）
   public stiffPart(d, b, coef) {
     const size1 = b.length;
     const size2 = d.length;
@@ -116,10 +89,12 @@ export class FElement extends Comon {
     for (let i = 0; i < size1; i++) {
       a.length = 0;
       const bi = b[i];
+      //　ヤコビ行列、Bマトリックスの転置行列、Dマトリックスの積を行う。
       for (let j = 0; j < size2; j++) {
         a[j] = coef * numeric.dotVV(bi, d[j]);
       }
       const ki = [];
+      //　92行目からの処理とBマトリックスをかける。
       for (let j = 0; j < size1; j++) {
         ki[j] = numeric.dotVV(a, b[j]);
       }
@@ -225,49 +200,4 @@ export class FElement extends Comon {
     const a3 = max(min(-v31.dot(v23), 1), -1);
     return acos(a1) + acos(a2) + acos(a3) - Math.PI;
   }
-  
-  
-  /*
-  // 要素境界を返す
-  // element - 要素ラベル
-  public borders(element) {
-    const count = this.borderCount(), borders = [];
-    for (let i = 0; i < count; i++) borders[i] = this.border(element, i);
-    return borders;
-  }
-
-
-
-  // 節点変位を局所座標系・1次元配列に変換する
-  // u - 節点変位
-  // d - 方向余弦マトリックス
-  public toLocalArray(u, d) {
-    const v = [], j;
-    for (let i = 0; i < 2; i++) {
-      const ux = u[i].x;
-      for (j = 0; j < 3; j++) {
-        v.push(d[0][j] * ux[0] + d[1][j] * ux[1] + d[2][j] * ux[2]);
-      }
-      for (j = 0; j < 3; j++) {
-        v.push(d[0][j] * ux[3] + d[1][j] * ux[4] + d[2][j] * ux[5]);
-      }
-    }
-    return v;
-  }
-
-  // 節点を入れ替える
-  // i1,i2 - 節点インデックス
-  public swap(nodes, i1, i2) {
-    const t = nodes[i1];
-    nodes[i1] = nodes[i2];
-    nodes[i2] = t;
-  }
-
-
-
-
-
-
-  */
-
 }

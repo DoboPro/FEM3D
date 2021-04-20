@@ -56,15 +56,9 @@ export class ViewObjectService {
 
   public createRestraint(): void {
     this.scene.remove(this.restMaterial);
-    // var hs=0.02*bounds.size,
     let hs = 1;
     const rests: any[] = this.model.bc.restraints;
     this.restMaterial = new THREE.Group();
-    for (let i = 0; i < rests.length; i++) {
-      // let r=this.rest.RestraintHelper(rests[i],hs);
-      // r.position.copy(this.model.mesh.nodes[rests[i].node]);
-      // restMaterial.add(r);
-    }
     this.scene.add(this.restMaterial);
   }
 
@@ -80,24 +74,3 @@ export class ViewObjectService {
     geometry.attributes.color.needsUpdate = true;
   }
 }
-
-
-// public changeData(model: any): void {
-//   //
-//   console.log(model);
-//   //
-//   const geometry = new THREE.PlaneGeometry(5, 20, 32);
-//   const material = new THREE.MeshBasicMaterial({
-//     color: 0xffff00,
-//     side: THREE.DoubleSide,
-//   });
-//   const plane = new THREE.Mesh(geometry, material);
-
-//   plane.rotation.x = -0.5 * Math.PI;
-//   plane.position.y = 3;
-
-//   this.scene.add(plane);
-//   //this.geometrys.push(plane);
-
-//   this.scene.render();
-// }
