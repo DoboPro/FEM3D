@@ -16,36 +16,12 @@ export class WaitDialogComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    console.log("sasa-WaitDialogComponent ngAfterContentInit");
 
     setTimeout(()=>{
-      const solve = this.Solver.calcStart();
-      console.log('sasa- calcrate end');
+      //計算開始
+      this.Solver.calcStart();
       this.Solver.conterStart();
-      console.log('sasa- activeModal.conterStart');
       this.activeModal.close('e');
-      console.log('sasa- activeModal.close');
-    },1);
-
-
-    // console.log(solve);
-    // //計算後、menuバー上に変位量の最大値を表示させる
-    // const w = this.result.dispMax.toFixed(3);
-    // const d = w;
-    // //コンター図を出す
-
-
-    
+    },1); 
   }
-  // 計算
-  // public calcrate() {
-  //   //計算開始
-  //   const solve = this.Solver.calcStart();
-  //   console.log(solve);
-  //   //計算後、menuバー上に変位量の最大値を表示させる
-  //   const w = this.result.dispMax.toFixed(3);
-  //   const d = w;
-  //   //コンター図を出す
-  //   this.Solver.conterStart();
-  // }
 }
