@@ -20,11 +20,8 @@ export class WaitDialogComponent implements AfterViewInit {
     setTimeout(()=>{
       //計算開始
       this.Solver.calcStart();
-      console.log('calcrate end');
       this.Solver.conterStart();
-      console.log('activeModal.conterStart');
       this.activeModal.close('e');
-      console.log('activeModal.close');
     },1); 
   }
 }

@@ -148,7 +148,7 @@ export class FemDataModel {
     }
   }
 
-  // 節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
+  // ☆　節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
   public setNodeDoF(): number {
     const dof = this.bc.dof;
     const nodeCount = this.mesh.nodes.length;

@@ -82,7 +82,7 @@ export class SolidElement extends FElement {
     return gr;
   };
 
-  // Bマトリックス（※すぐに転置行列にしている）→ガウス積分の際の都合のため
+  // Bマトリックスを転置行列にしている
   // grad - 形状関数の勾配
   public strainMatrix(grad) {
     const m = numeric.rep([3 * this.count, 6], 0);
@@ -166,9 +166,10 @@ export class SolidElement extends FElement {
     return m;
   };
 
-  // 剛性マトリックスを返す
+  // 要素剛性マトリックスを返す
   // p - 要素節点
   // d1 - 応力 - 歪マトリックス
+  // intP - 積分点のξ,η,ζ座標,重み係数
   public stiffnessMatrix(p, d1) {
     //　要素剛性マトリックスの行数と列数を数える
     const count = 3 * this.count;
@@ -178,11 +179,11 @@ export class SolidElement extends FElement {
       // この後行うガウス積分に必要となる未知数を決める処理
       // ipの中身は三次元の局所座標系で用いる変数(0:ξ,1:η,2:ζ,3:重み係数)
       const ip = this.intP[i];
-      // ☆形状関数の導出（局所座標系に直す）
+      // ☆形状関数の導出（局所座標系に直したものを代入）
       // sfで形状関数の式（3次元なので8つ）求まる
       // sf[N,ξ,η,ζ]形式で格納されている
       const sf = this.shapeFunction(ip[0], ip[1], ip[2]);
-      // ヤコビ行列の導出（座標変換のため）
+      // ヤコビ行列の導出（座標変換に対応させるため）
       // p:要素ごとの接点
       const ja = this.jacobianMatrix(p, sf);
 
@@ -190,7 +191,7 @@ export class SolidElement extends FElement {
       // →要素剛性マトリックス
       const ks = this.stiffPart(
         d1,
-        // 形状関数の全体座標上における微分処理したものを使ってBマトリックを作る
+        // 形状関数の全体座標上における微分処理したものを使ってBマトリックスを作る
         this.strainMatrix(this.grad(p, ja, sf)),
         ip[3] * Math.abs(ja.determinant()));
       this.addMatrix(kk, ks);

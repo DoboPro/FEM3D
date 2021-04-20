@@ -63,17 +63,18 @@ export class Solver {
         this.dof = this.model.setNodeDoF();
         // dofAllを求めた後、剛性マトリックス・荷重ベクトルを作成する
         this.createStiffnessMatrix();
+        // 変位を求める
         this.d = this.solve();
         this.result.setDisplacement(
           this.model.bc,
           this.d,
           this.model.mesh.nodes.length
         );
-        if (this.result.type === this.result.ELEMENT_DATA) {
-          this.model.calculateElementStress();
-        } else {
-          this.model.calculateNodeStress();
-        }
+        // if (this.result.type === this.result.ELEMENT_DATA) {
+        //   this.model.calculateElementStress();
+        // } else {
+        //   this.model.calculateNodeStress();
+        // }
         calc = true;
       }
       if (!calc) {
@@ -87,7 +88,6 @@ export class Solver {
       const coef = dcoef * Math.min(this.bounds.size / dispMax, 1 / angleMax);
       this.view.setDisplacement(disp, coef);
       this.three.ChangeMode('disp');
-      console.log('Calculation time:' + (t1 - t0) + 'ms');
     } catch (ex) {
       alert(ex);
     }
@@ -117,7 +117,7 @@ export class Solver {
     }
     // 変位が0でない節点をreducedListに入れる。
 
-    // 剛性マトリックスの作成
+    // 要素・全体剛性マトリックスの作成
     const matrix1: number[][] = this.stiffnessMatrix(this.dof);　//dofは自由度
     // matrix1には自由度を減らしていない全体剛性マトリックスが生成
 
@@ -138,14 +138,13 @@ export class Solver {
     this.extruct(matrix1, vector1, reducedList);
   }
 
-  // 剛性マトリックスを作成する
+  // 要素・全体剛性マトリックスを作成する
   // dof - モデル自由度
   public stiffnessMatrix(dof) {
     const mesh: MeshModel = this.model.mesh;
     const elements = mesh.elements;
     const matrix = [];
     let km: number[][];
-    let kmax = 0;
     for (let i = 0; i < dof; i++) matrix[i] = [];
     for (let i = 0; i < elements.length; i++) {
       const elem = elements[i];
@@ -153,22 +152,22 @@ export class Solver {
       const mat = material.matrix;
       // 
       // ☆要素剛性マトリックスの作成
-      // mesh.getNodes(elem):要素毎の節点をかき集めたもの
+      // mesh.getNodes(elem):要素毎の節点番号と節点のx,y,z座標を紐づける
       // mat.m3d:Dマトリックス
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
-      kmax = this.setElementMatrix(elem, 3, matrix, km, kmax);
+      this.setElementMatrix(elem, 3, matrix, km);
     }
-    // 座標変換
-    const rests = this.model.bc.restraints;
-    const index = this.model.bc.nodeIndex;
-    const bcdof = this.model.bc.dof;
-    for (let i = 0; i < rests.length; i++) {
-      const ri = rests[i];
-      if (ri.coords) {
-        ri.coords.transMatrix(matrix, dof, index[ri.node], bcdof[i]);
-      }
-    }
-    // 絶対値が小さい成分を除去する
+    // // 座標変換
+    // const rests = this.model.bc.restraints;
+    // const index = this.model.bc.nodeIndex;
+    // const bcdof = this.model.bc.dof;
+    // for (let i = 0; i < rests.length; i++) {
+    //   const ri = rests[i];
+    //   if (ri.coords) {
+    //     ri.coords.transMatrix(matrix, dof, index[ri.node], bcdof[i]);
+    //   }
+    // }
+    /*/ 絶対値が小さい成分を除去する
     const eps = this.PRECISION * kmax;
     for (let i = 0; i < dof; i++) {
       const mrow = matrix[i];
@@ -180,11 +179,11 @@ export class Solver {
           }
         }
       }
-    }
+    }*/
     return matrix;
   }
 
-  // 要素のマトリックスを設定する
+  // 全体剛性マトリックスと成分の絶対値の最大を求める
   // element - 要素
   // dof - 自由度
   // matrix - 全体剛性マトリックス
@@ -195,11 +194,10 @@ export class Solver {
     dof: number,
     matrix: number[][],
     km: number[][],
-    kmax
   ) {
-    const nodeCount = element.nodeCount();
-    const index = this.model.bc.nodeIndex;
-    const nodes = element.nodes;
+    const nodeCount = element.nodeCount();　//要素1つ当たりの節点数
+    const index = this.model.bc.nodeIndex;//節点の3倍の値の集合
+    const nodes = element.nodes; //要素
     for (let i = 0; i < nodeCount; i++) {
       const row0 = index[nodes[i]];
       const i0 = dof * i;
@@ -211,25 +209,27 @@ export class Solver {
           const krow: number[] = km[i0 + i1];
           for (let j1 = 0; j1 < dof; j1++) {
             const cj1 = column0 + j1;
-            if (cj1 in mrow) {
-              mrow[cj1] += krow[j0 + j1];
-              kmax = Math.max(kmax, Math.abs(mrow[cj1]));
-            } else {
+            if (cj1 in mrow) { //　要素が重なるとき
+              mrow[cj1] += krow[j0 + j1];　
+            } else {　// 要素が重ならない時
               mrow[cj1] = krow[j0 + j1];
-              kmax = Math.max(kmax, Math.abs(mrow[cj1]));
             }
           }
         }
       }
     }
-    return kmax;
+    return matrix;
   }
 
   // 連立方程式を解く
   public solve() {
+  // 不完全LU分解共役勾配法
     return this.solveILU(
+      //　全体剛性マトリクスのデータが何も含んでいない成分を削除し、要素に寄らない一続きにしたマトリクス
       this.toSparse(this.matrix),
+      //　成分一部削除後のマトリクスで不完全LU分解をする
       this.getILU(this.matrix),
+      //　荷重ベクトル
       this.vector
     );
   }
@@ -356,7 +356,7 @@ export class Solver {
   }
 
   // 不完全LU分解共役勾配法で連立方程式の解を求める
-  // matrix - 元の行列
+  // matrix - 全体剛性マトリクス
   // ilu - 不完全LU分解した疎行列
   // p - ベクトル
   // iterMax - 反復回数の上限
@@ -447,26 +447,27 @@ export class Solver {
   // 荷重ベクトルを作成する
   // dof - モデル自由度
   public loadVector(dof) {
+    // 入力された実荷重データを呼んでくる
     const loads = this.model.bc.loads;
-    // const press = this.model.bc.pressures;
+    // 荷重ベクトル生成の準備（初期化）
     const vector = numeric.rep([dof], 0);
     const index = this.model.bc.nodeIndex;
     const bcdof = this.model.bc.dof;
     for (let i = 0; i < loads.length; i++) {
+    // i番目の荷重関連のデータを取り出す
       const ld = loads[i];
+    // i番目の荷重は節点いくつのことか
       const nd = ld.node;
-      const ldx = ld.globalX;
+    // i番目の荷重の大きさ、向き
+      const ldx = loads[i].globalX;
+    // i番目の荷重が作用する節点の自由度
       const ldof = bcdof[nd];
+    // i番目の荷重が作用する節点の3倍の値を返す。
       const index0 = index[nd];
+      // x,y,zそれぞれに対して、荷重条件のみを考慮して荷重ベクトルを作る。
+      // 荷重ベクトルを作るときにはx,y,zはただ順番に入るだけで、見た目の区別はない。
       for (let j = 0; j < ldof; j++) {
         vector[index0 + j] = ldx[j];
-      }
-    }
-    const rests = this.model.bc.restraints;
-    for (let i = 0; i < rests.length; i++) {
-      const ri = rests[i];
-      if (ri.coords) {
-        ri.coords.transVector(vector, dof, index[ri.node], bcdof[i]);
       }
     }
     return vector;

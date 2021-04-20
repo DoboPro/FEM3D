@@ -255,7 +255,6 @@ export class Result {
         this.view.setContour(this.value, this.minValue, this.maxValue);
         break;
       default:
-        console.log('da');
         this.view.setContour(this.value, this.minValue, this.maxValue);
         break;
     }

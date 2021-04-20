@@ -76,10 +76,11 @@ export class FElement extends Comon {
   }
 
 
-  // 積分点の剛性マトリックスを返す
-  // d - 応力-歪マトリックス
-  // b - 歪-変位マトリックスの転置行列
-  // coef - 係数
+  // 8節点の剛性マトリックスを返す
+  // d - 応力-歪マトリックス(Dマトリックス)
+  // b[i] - 歪-変位マトリックス(Bマトリックス)の転置行列の成分
+  // b[j] - 歪-変位マトリックス(Bマトリックス)の成分
+  // coef - 係数（重み係数とヤコビ行列式の積）
   public stiffPart(d, b, coef) {
     const size1 = b.length;
     const size2 = d.length;
@@ -88,10 +89,12 @@ export class FElement extends Comon {
     for (let i = 0; i < size1; i++) {
       a.length = 0;
       const bi = b[i];
+      //　ヤコビ行列、Bマトリックスの転置行列、Dマトリックスの積を行う。
       for (let j = 0; j < size2; j++) {
         a[j] = coef * numeric.dotVV(bi, d[j]);
       }
       const ki = [];
+      //　92行目からの処理とBマトリックスをかける。
       for (let j = 0; j < size1; j++) {
         ki[j] = numeric.dotVV(a, b[j]);
       }
