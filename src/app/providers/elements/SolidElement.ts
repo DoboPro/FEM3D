@@ -33,8 +33,6 @@ export class SolidElement extends FElement {
     this.nodeP = nodeP;
     this.intP = intP;
     this.isShell = false;
-    this.nodeP = nodeP;
-    this.intP = intP;
   }
 
 
