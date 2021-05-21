@@ -8,7 +8,6 @@ import { ShellParameter } from './parameter/ShellParameter';
 import * as numeric from './libs/numeric-1.2.6.min.js';
 import * as THREE from 'three';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -35,14 +34,14 @@ export class FemDataModel {
   // モデルを初期化する（各パラメータに分類したデータを計算するのに違う定数に代入、並び替え、初期化の残り等を行う。）
   public init(): void {
     // 材料特性の代入(材料番号、ヤング率、、など)
-    const mats = this.materials;　            
+    const mats = this.materials;
     // 材料特性を材料番号が小さい順に並び替える（片持ち梁データの場合は材料が1種類なので不要な処理）
-    mats.sort(this.compareLabel);　    
-    // 材料特性が2種類以上ある場合に、節点を小さい番号順に並び替える      
-    this.mesh.nodes.sort(this.compareLabel);　
+    mats.sort(this.compareLabel);
+    // 材料特性が2種類以上ある場合に、節点を小さい番号順に並び替える
+    this.mesh.nodes.sort(this.compareLabel);
     // 境界条件について、初期化、荷重の最大値の探索、小さい順に並び替えをしている。
-    this.bc.init();　        
-    // ラベルを再設定する（節点番号1をプログラミング用に0にするなど）             
+    this.bc.init();
+    // ラベルを再設定する（節点番号1をプログラミング用に0にするなど）
     this.reNumbering();
     this.resetMaterialLabel();
     // 要素を鏡像反転させるか（パソコンのメモリ節約のため）
@@ -52,7 +51,7 @@ export class FemDataModel {
     // 要素の境界線を引く
     this.mesh.getFaceEdges();
 
-    // ☆Dマトリックス（材料の特性を示すマトリックス）の作成
+    // ☆Dマトリクス（材料の特性を示すマトリクス）の作成
     for (let i = 0; i < mats.length; i++) {
       const m3d = mats[i].matrix3D();
       mats[i].matrix = { m3d: m3d };
@@ -113,7 +112,7 @@ export class FemDataModel {
     }
   }
 
-    // 節点集合の節点ラベルを再設定する
+  // 節点集合の節点ラベルを再設定する
   // map - ラベルマップ
   // s - 節点集合
   public resetNodes(map, s) {
@@ -158,7 +157,7 @@ export class FemDataModel {
     }
 
     //節点の数だけ自由度3を代入してあるので、dofAllという全節点分の自由度の合計を返してくる。
-    return this.bc.setPointerStructure(nodeCount);　// =dofAll
+    return this.bc.setPointerStructure(nodeCount); // =dofAll
   }
 
   // 要素歪・応力・歪エネルギー密度を計算する
@@ -178,8 +177,8 @@ export class FemDataModel {
       }
       const material = this.materials[elem.material],
         mat = material.matrix;
-        const s = elem.elementStrainStress(p, v, mat.m3d);
-        this.result.addStructureData(i, s[0], s[1], s[2], s[0], s[1], s[2]);
+      const s = elem.elementStrainStress(p, v, mat.m3d);
+      this.result.addStructureData(i, s[0], s[1], s[2], s[0], s[1], s[2]);
     }
   }
 
@@ -203,27 +202,27 @@ export class FemDataModel {
       const material = this.materials[elem.material];
       const mat = material.matrix;
       const ea = elem.angle(p, elem.nodeCount());
-    
-        const s = elem.strainStress(p, v, mat.m3d);
-        const eps1 = s[0];
-        const str1 = s[1];
-        const se1 = s[2];
-        for (let j = 0; j < en.length; j++) {
-          const eaj = ea[j];
-          eps1[j].mul(eaj);
-          str1[j].mul(eaj);
-          se1[j] *= eaj;
-          this.result.addStructureData(
-            en[j],
-            eps1[j],
-            str1[j],
-            se1[j],
-            eps1[j],
-            str1[j],
-            se1[j]
-          );
-          angle[en[j]] += eaj;
-        }
+
+      const s = elem.strainStress(p, v, mat.m3d);
+      const eps1 = s[0];
+      const str1 = s[1];
+      const se1 = s[2];
+      for (let j = 0; j < en.length; j++) {
+        const eaj = ea[j];
+        eps1[j].mul(eaj);
+        str1[j].mul(eaj);
+        se1[j] *= eaj;
+        this.result.addStructureData(
+          en[j],
+          eps1[j],
+          str1[j],
+          se1[j],
+          eps1[j],
+          str1[j],
+          se1[j]
+        );
+        angle[en[j]] += eaj;
+      }
     }
     for (let i = 0; i < nodeCount; i++) {
       if (angle[i] !== 0) {
@@ -232,8 +231,8 @@ export class FemDataModel {
     }
   }
 
-  removeObject(obj){
-    const scene=new THREE.Scene();					// シーン
+  removeObject(obj) {
+    const scene = new THREE.Scene(); // シーン
     scene.remove(obj);
-  };
+  }
 }

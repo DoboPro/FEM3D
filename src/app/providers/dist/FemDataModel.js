@@ -44,7 +44,7 @@ var FemDataModel = /** @class */ (function () {
         this.mesh.getFreeFaces();
         // 要素の境界線を引く
         this.mesh.getFaceEdges();
-        // ☆Dマトリックス（材料の特性を示すマトリックス）の作成
+        // ☆Dマトリクス（材料の特性を示すマトリクス）の作成
         for (var i = 0; i < mats.length; i++) {
             var m3d = mats[i].matrix3D();
             mats[i].matrix = { m3d: m3d };

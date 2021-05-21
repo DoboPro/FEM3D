@@ -16,7 +16,7 @@ var Solver = /** @class */ (function () {
         this.result = result;
         this.bounds = bounds;
         this.three = three;
-        this.PRECISION = 1e-10; // マトリックス精度
+        this.PRECISION = 1e-10; // マトリクス精度
         this.LU_METHOD = 0; // LU分解法
         this.ILUCG_METHOD = 1; // 不完全LU分解共役勾配法
         this.ILUCG_THRES = 1e-10; // 不完全LU分解共役勾配法の収束閾値のデフォルト値
@@ -40,7 +40,7 @@ var Solver = /** @class */ (function () {
             if (this.model.bc.restraints.length > 0) {
                 // モデルの自由度を調べる
                 this.dof = this.model.setNodeDoF();
-                // dofAllを求めた後、剛性マトリックス・荷重ベクトルを作成する
+                // dofAllを求めた後、剛性マトリクス・荷重ベクトルを作成する
                 this.createStiffnessMatrix();
                 this.d = this.solve();
                 this.result.setDisplacement(this.model.bc, this.d, this.model.mesh.nodes.length);
@@ -79,7 +79,7 @@ var Solver = /** @class */ (function () {
             alert(ex1);
         }
     };
-    // ☆剛性マトリックス・荷重ベクトルを作成する
+    // ☆剛性マトリクス・荷重ベクトルを作成する
     Solver.prototype.createStiffnessMatrix = function () {
         var bc = this.model.bc;
         // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）
@@ -92,9 +92,9 @@ var Solver = /** @class */ (function () {
             }
         }
         // 変位が0でない節点をreducedListに入れる。
-        // 剛性マトリックスの作成
+        // 剛性マトリクスの作成
         var matrix1 = this.stiffnessMatrix(this.dof); //dofは自由度
-        // matrix1には自由度を減らしていない全体剛性マトリックスが生成
+        // matrix1には自由度を減らしていない全体剛性マトリクスが生成
         // 荷重ベクトルの作成
         var vector1 = this.loadVector(this.dof);
         // 拘束自由度を除去する
@@ -110,7 +110,7 @@ var Solver = /** @class */ (function () {
         }
         this.extruct(matrix1, vector1, reducedList);
     };
-    // 剛性マトリックスを作成する
+    // 剛性マトリクスを作成する
     // dof - モデル自由度
     Solver.prototype.stiffnessMatrix = function (dof) {
         var mesh = this.model.mesh;
@@ -153,11 +153,11 @@ var Solver = /** @class */ (function () {
         }
         return matrix;
     };
-    // 要素のマトリックスを設定する
+    // 要素のマトリクスを設定する
     // element - 要素
     // dof - 自由度
-    // matrix - 全体剛性マトリックス
-    // km - 要素の剛性マトリックス
+    // matrix - 全体剛性マトリクス
+    // km - 要素の剛性マトリクス
     // kmax - 成分の絶対値の最大値
     Solver.prototype.setElementMatrix = function (element, dof, matrix, km, kmax) {
         var nodeCount = element.nodeCount();
@@ -390,7 +390,7 @@ var Solver = /** @class */ (function () {
         return vector;
     };
     // 行列の一部を抽出する
-    // matrix1,vector1 - 元のマトリックス,ベクトル
+    // matrix1,vector1 - 元のマトリクス,ベクトル
     // list - 抽出部分のリスト
     Solver.prototype.extruct = function (matrix1, vector1, list) {
         this.matrix.length = 0;
@@ -401,7 +401,7 @@ var Solver = /** @class */ (function () {
         }
     };
     // 行列の行から一部を抽出する
-    // mrow - 元のマトリックスの行データ
+    // mrow - 元のマトリクスの行データ
     // list - 抽出部分のリスト
     Solver.prototype.extructRow = function (mrow, list) {
         var exrow = [];

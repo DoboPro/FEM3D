@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { QuadangleBorder1 } from '../border/QuadangleBorder1';
 import { ShellElement } from './ShellElement';
-import  * as numeric from '../libs/numeric-1.2.6.min.js';
+import * as numeric from '../libs/numeric-1.2.6.min.js';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 //--------------------------------------------------------------------//
 // 四角形1次要素 (MITC4)
@@ -13,33 +13,39 @@ import  * as numeric from '../libs/numeric-1.2.6.min.js';
 // param - シェルパラメータのインデックス
 // nodes - 節点番号
 export class QuadElement1 extends ShellElement {
-
   // 四角形1次要素の節点のξ,η座標
   public QUAD1_NODE: number[][];
   // 四角形1次要素の積分点のξ,η座標,重み係数
   public QUAD1_INT: number[][];
 
   constructor(label: number, material: number, param: number, nodes: number[]) {
-    super(label, material, param, nodes,
+    super(
+      label,
+      material,
+      param,
+      nodes,
 
-      [[-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1]],
-      
-      [[-1 / Math.sqrt(3), -1 / Math.sqrt(3), 1],
-      [1 / Math.sqrt(3), -1 / Math.sqrt(3), 1],
-      [-1 / Math.sqrt(3), 1 / Math.sqrt(3), 1],
-      [1 / Math.sqrt(3), 1 / Math.sqrt(3), 1]]);
-    
-    this.QUAD1_NODE = this.nodeP;  // 四角形1次要素の節点のξ,η座標
-    this.QUAD1_INT = this.intP;    // 四角形1次要素の積分点のξ,η座標,重み係数
+      [
+        [-1, -1],
+        [1, -1],
+        [1, 1],
+        [-1, 1],
+      ],
+
+      [
+        [-1 / Math.sqrt(3), -1 / Math.sqrt(3), 1],
+        [1 / Math.sqrt(3), -1 / Math.sqrt(3), 1],
+        [-1 / Math.sqrt(3), 1 / Math.sqrt(3), 1],
+        [1 / Math.sqrt(3), 1 / Math.sqrt(3), 1],
+      ]
+    );
+
+    this.QUAD1_NODE = this.nodeP; // 四角形1次要素の節点のξ,η座標
+    this.QUAD1_INT = this.intP; // 四角形1次要素の積分点のξ,η座標,重み係数
 
     this.count = this.nodeCount();
     this.shapeFunction = this.shapeFunction1;
-
   }
-
 
   // 要素境界を返す
   // element - 要素ラベル
@@ -50,27 +56,33 @@ export class QuadElement1 extends ShellElement {
       default:
         return null;
       case 0:
-        return new QuadangleBorder1(element, [p[0], p[1], p[2], p[3]], this.QUAD1_INT);
+        return new QuadangleBorder1(
+          element,
+          [p[0], p[1], p[2], p[3]],
+          this.QUAD1_INT
+        );
       case 1:
-        return new QuadangleBorder1(element, [p[0], p[3], p[2], p[1]], this.QUAD1_INT);
+        return new QuadangleBorder1(
+          element,
+          [p[0], p[3], p[2], p[1]],
+          this.QUAD1_INT
+        );
     }
   }
 
-  
   // 要素名称を返す
   public getName() {
     return 'QuadElement1';
-  };
- 
+  }
+
   // 節点数を返す
   public nodeCount() {
     return 4;
   }
- 
 
-  // 剛性マトリックスを返す
+  // 剛性マトリクスを返す
   // p - 要素節点
-  // d1 - 応力 - 歪マトリックス
+  // d1 - 応力 - 歪マトリクス
   // sp - シェルパラメータ
   public stiffnessMatrix(p, d1, sp): number[][] {
     const size = 6 * this.nodeCount();
@@ -78,16 +90,22 @@ export class QuadElement1 extends ShellElement {
     const n = this.normalVector(p);
     const t = sp.thickness;
     for (let i = 0; i < this.intP.length; i++) {
-      const ks = this.quadstiffPart(p, d1, n, this.intP[i][0], this.intP[i][1], t);
+      const ks = this.quadstiffPart(
+        p,
+        d1,
+        n,
+        this.intP[i][0],
+        this.intP[i][1],
+        t
+      );
       this.addMatrix(kk, ks);
     }
     return kk;
   }
 
-  
-  // 積分点の剛性マトリックスを返す
+  // 積分点の剛性マトリクスを返す
   // p - 要素節点
-  // d1 - 応力 - 歪マトリックス
+  // d1 - 応力 - 歪マトリクス
   // n - 法線ベクトル
   // xsi,eta - 要素内部ξ,η座標
   // t - 要素厚さ
@@ -101,16 +119,36 @@ export class QuadElement1 extends ShellElement {
     const ja1 = this.jacobianMatrix(p, sf1, n, t);
     const sf2 = this.shapeFunction(0, eta);
     const ja2 = this.jacobianMatrix(p, sf2, n, t);
-    const bc = [this.strainMatrix1(ja1, sf1, d), this.strainMatrix1(ja2, sf2, d)];
+    const bc = [
+      this.strainMatrix1(ja1, sf1, d),
+      this.strainMatrix1(ja2, sf2, d),
+    ];
     const kk = numeric.rep([6 * count, 6 * count], 0);
     const jacob = Math.abs(ja.determinant());
- 
-    const tt6 = t * t / 6.0, ce1 = 1e-3 * t * t * d1[3][3]
+
+    const tt6 = (t * t) / 6.0,
+      ce1 = 1e-3 * t * t * d1[3][3];
     const ce2 = -ce1 / (count - 1);
-    const k1 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    const k2 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    const k3 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-    const k4 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    const k1 = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+    const k2 = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+    const k3 = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
+    const k4 = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ];
     for (let i = 0; i < count; i++) {
       for (let j = 0; j < count; j++) {
         for (let j1 = 0; j1 < 3; j1++) {
@@ -123,7 +161,8 @@ export class QuadElement1 extends ShellElement {
         }
         for (let j1 = 0; j1 < 2; j1++) {
           for (let j2 = 0; j2 < 2; j2++) {
-            k1[j1][j2] = bc0[i][j1] * d1[j1][j2] * bc0[j][j2] +
+            k1[j1][j2] =
+              bc0[i][j1] * d1[j1][j2] * bc0[j][j2] +
               bc0[i][1 - j1] * d1[2][2] * bc0[j][1 - j2];
           }
           const dd = d1[4 - j1][4 - j1];
@@ -135,7 +174,8 @@ export class QuadElement1 extends ShellElement {
           k3[j1][j1] = bc[1 - j1][i][3] * dd * bc[1 - j1][j][2];
           k3[j1][2] = bc[1 - j1][i][3] * dd * bc[1 - j1][j][j1];
         }
-        k1[2][2] = bc[0][i][1] * d1[3][3] * bc[0][j][1] +
+        k1[2][2] =
+          bc[0][i][1] * d1[3][3] * bc[0][j][1] +
           bc[1][i][0] * d1[4][4] * bc[1][j][0];
         k4[0][0] = k1[1][1] + 3 * bc[0][i][3] * d1[3][3] * bc[0][j][3];
         k4[0][1] = -k1[1][0];
@@ -149,7 +189,7 @@ export class QuadElement1 extends ShellElement {
           k3[0][j1] = -k3[1][j1];
           k3[1][j1] = kt;
         }
- 
+
         if (i == j) k4[2][2] = ce1;
         else k4[2][2] = ce2;
         this.toDir(d, k1);
@@ -174,10 +214,12 @@ export class QuadElement1 extends ShellElement {
   // 形状関数行列 [ Ni dNi/dξ dNi/dη ] を返す
   // xsi,eta - 要素内部ξ,η座標
   public shapeFunction1(xsi: number, eta: number) {
-    return [[0.25 * (1 - xsi) * (1 - eta), -0.25 * (1 - eta), -0.25 * (1 - xsi)],
-    [0.25 * (1 + xsi) * (1 - eta), 0.25 * (1 - eta), -0.25 * (1 + xsi)],
-    [0.25 * (1 + xsi) * (1 + eta), 0.25 * (1 + eta), 0.25 * (1 + xsi)],
-    [0.25 * (1 - xsi) * (1 + eta), -0.25 * (1 + eta), 0.25 * (1 - xsi)]];
+    return [
+      [0.25 * (1 - xsi) * (1 - eta), -0.25 * (1 - eta), -0.25 * (1 - xsi)],
+      [0.25 * (1 + xsi) * (1 - eta), 0.25 * (1 - eta), -0.25 * (1 + xsi)],
+      [0.25 * (1 + xsi) * (1 + eta), 0.25 * (1 + eta), 0.25 * (1 + xsi)],
+      [0.25 * (1 - xsi) * (1 + eta), -0.25 * (1 + eta), 0.25 * (1 - xsi)],
+    ];
   }
 
   /*
@@ -208,7 +250,7 @@ export class QuadElement1 extends ShellElement {
  
 
  
-  // 質量マトリックスを返す
+  // 質量マトリクスを返す
   // p - 要素節点
   // dens - 材料の密度
   // t - 要素厚さ
@@ -240,5 +282,4 @@ export class QuadElement1 extends ShellElement {
  
  
   */
-
 }

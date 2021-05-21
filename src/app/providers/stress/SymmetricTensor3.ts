@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import * as numeric from '../libs/numeric-1.2.6.min.js';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 //--------------------------------------------------------------------//
 // ３次元対称テンソル
 // s - 成分
 export class SymmetricTensor3 {
-  
-  public EIG_EPS = 1e-10;		// 固有値計算の収束閾値
+  public EIG_EPS = 1e-10; // 固有値計算の収束閾値
 
   public xx: number;
   public yy: number;
@@ -26,7 +25,6 @@ export class SymmetricTensor3 {
     this.yz = s[4];
     this.zx = s[5];
   }
-
 
   // テンソルをベクトルとして返す
   public vector() {
@@ -53,18 +51,21 @@ export class SymmetricTensor3 {
     this.xy *= a;
     this.yz *= a;
     this.zx *= a;
-  };
+  }
 
   // 固有値を返す
   public principal() {
     return this.eigenvalue(this, 100).lambda;
-  };
+  }
 
   // テンソルを回転させる
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   public rotate(d) {
-    const mat = [[this.xx, this.xy, this.zx], [this.xy, this.yy, this.yz],
-    [this.zx, this.yz, this.zz]];
+    const mat = [
+      [this.xx, this.xy, this.zx],
+      [this.xy, this.yy, this.yz],
+      [this.zx, this.yz, this.zz],
+    ];
     const s = [0, 0, 0, 0, 0, 0];
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
@@ -81,27 +82,32 @@ export class SymmetricTensor3 {
     this.xy = s[3];
     this.yz = s[4];
     this.zx = s[5];
-  };
+  }
 
   // テンソルの内積を計算する
   // t - 相手のテンソル
   public innerProduct(t) {
-    return this.xx * t.xx + this.yy * t.yy + this.zz * t.zz +
-      2 * (this.xy * t.xy + this.yz * t.yz + this.zx * t.zx);
-  };
+    return (
+      this.xx * t.xx +
+      this.yy * t.yy +
+      this.zz * t.zz +
+      2 * (this.xy * t.xy + this.yz * t.yz + this.zx * t.zx)
+    );
+  }
 
   // Jacobie法で対称テンソルの固有値を求める
   // Numeric.jsでは対角要素が0（例えばせん断のみの条件）だと求められない
   // st - 対称テンソル
   // iterMax - 反復回数の最大値
   public eigenvalue(st, iterMax) {
-    const m = [[st.xx, st.xy, st.zx],
-    [st.xy, st.yy, st.yz],
-    [st.zx, st.yz, st.zz]];
+    const m = [
+      [st.xx, st.xy, st.zx],
+      [st.xy, st.yy, st.yz],
+      [st.zx, st.yz, st.zz],
+    ];
 
     return this.eigenByJacob(m, iterMax);
   }
-
 
   // Jacobie法で対称テンソルの固有値を求める
   // m - 対称行列
@@ -138,7 +144,7 @@ export class SymmetricTensor3 {
       const mjm = m[jm];
       const alpha = 0.5 * (mim[im] - mjm[jm]);
       const beta = 0.5 / Math.sqrt(alpha * alpha + ndMax * ndMax);
-      const cc2 = 0.5 + abs(alpha) * beta
+      const cc2 = 0.5 + abs(alpha) * beta;
       let cs = -beta * mim[jm];
       if (alpha < 0) cs = -cs;
       const cc = Math.sqrt(cc2);
@@ -147,7 +153,8 @@ export class SymmetricTensor3 {
       const aii = mjm[jm] + aij;
       const ajj = mim[im] - aij;
       for (let i = 0; i < 3; i++) {
-        const mi = m[i], evi = ev[i];
+        const mi = m[i],
+          evi = ev[i];
         let a1 = mi[im] * cc - mi[jm] * ss;
         let a2 = mi[im] * ss + mi[jm] * cc;
         mi[im] = a1;
@@ -169,12 +176,13 @@ export class SymmetricTensor3 {
     const eig = [];
     ev = numeric.transpose(ev);
     for (let i = 0; i < size; i++) eig.push([m[i], ev[i]]);
-    eig.sort(function (v1, v2) { return v2[0] - v1[0]; });
+    eig.sort(function (v1, v2) {
+      return v2[0] - v1[0];
+    });
     for (let i = 0; i < size; i++) {
       m[i] = eig[i][0];
       ev[i] = eig[i][1];
     }
     return { lambda: m, ev: numeric.transpose(ev) };
   }
-
 }

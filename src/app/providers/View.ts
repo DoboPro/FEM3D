@@ -9,7 +9,7 @@ import { MeshModel } from './mesh/MeshModel';
 
 // 連立方程式求解オブジェクト
 export class View {
-  public PRECISION = 1e-10; // マトリックス精度
+  public PRECISION = 1e-10; // マトリクス精度
   public LU_METHOD = 0; // LU分解法
   public ILUCG_METHOD = 1; // 不完全LU分解共役勾配法
 

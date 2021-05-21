@@ -6,7 +6,7 @@ import { Strain } from '../stress/Strain';
 import { Stress } from '../stress/Stress';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 //--------------------------------------------------------------------//
 // シェル要素
@@ -17,8 +17,7 @@ import { Stress } from '../stress/Stress';
 // nodeP - 節点のξ,η座標
 // intP - 積分点のξ,η座標,重み係数
 export class ShellElement extends FElement {
-  
-  // 三角形1次要素の質量マトリックス係数
+  // 三角形1次要素の質量マトリクス係数
   //public TRI1_MASS1 = [[1, 0.5, 0.5],
   //[0.5, 1, 0.5],
   //[0.5, 0.5, 1]];
@@ -29,14 +28,20 @@ export class ShellElement extends FElement {
   public count: number;
   public shapeFunction: any;
 
-  constructor(label: number, material: number, param: number, nodes: number[], nodeP: number[][], intP: number[][]) {
+  constructor(
+    label: number,
+    material: number,
+    param: number,
+    nodes: number[],
+    nodeP: number[][],
+    intP: number[][]
+  ) {
     super(label, material, nodes);
     this.param = param;
     this.isShell = true;
     this.nodeP = nodeP;
     this.intP = intP;
   }
-
 
   // ヤコビ行列を返す
   // p - 要素節点
@@ -63,51 +68,59 @@ export class ShellElement extends FElement {
     jac[8] = 0.5 * t * n.z;
     return new THREE.Matrix3().fromArray(jac);
   }
-  
 
   // 逆ヤコビ行列を返す
   // ja - ヤコビ行列
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   public jacobInv(ja, d) {
     const e1 = ja.elements;
-    const jd = new THREE.Matrix3().set
-      (e1[0] * d[0][0] + e1[3] * d[1][0] + e1[6] * d[2][0],
-        e1[0] * d[0][1] + e1[3] * d[1][1] + e1[6] * d[2][1],
-        e1[0] * d[0][2] + e1[3] * d[1][2] + e1[6] * d[2][2],
-        e1[1] * d[0][0] + e1[4] * d[1][0] + e1[7] * d[2][0],
-        e1[1] * d[0][1] + e1[4] * d[1][1] + e1[7] * d[2][1],
-        e1[1] * d[0][2] + e1[4] * d[1][2] + e1[7] * d[2][2],
-        0, 0, e1[2] * d[0][2] + e1[5] * d[1][2] + e1[8] * d[2][2]);
-   // return new THREE.Matrix3().getInverse(jd, true);
-   return new THREE.Matrix3().getInverse(d, true);
+    const jd = new THREE.Matrix3().set(
+      e1[0] * d[0][0] + e1[3] * d[1][0] + e1[6] * d[2][0],
+      e1[0] * d[0][1] + e1[3] * d[1][1] + e1[6] * d[2][1],
+      e1[0] * d[0][2] + e1[3] * d[1][2] + e1[6] * d[2][2],
+      e1[1] * d[0][0] + e1[4] * d[1][0] + e1[7] * d[2][0],
+      e1[1] * d[0][1] + e1[4] * d[1][1] + e1[7] * d[2][1],
+      e1[1] * d[0][2] + e1[4] * d[1][2] + e1[7] * d[2][2],
+      0,
+      0,
+      e1[2] * d[0][2] + e1[5] * d[1][2] + e1[8] * d[2][2]
+    );
+    // return new THREE.Matrix3().getInverse(jd, true);
+    return new THREE.Matrix3().getInverse(d, true);
   }
 
   // 形状関数の勾配 [ dNi/dx dNi/dy ] を返す
   // p - 要素節点
   // ja - ヤコビ行列
   // sf - 形状関数行列
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   // t - 要素厚さ
   public grad(p, ja, sf, d, t) {
     const gr = [];
     const ji = this.jacobInv(ja, d).elements;
     for (let i = 0; i < this.count; i++) {
-      const sfi = sf[i], dndxsi = sfi[1], dndeta = sfi[2];
-      gr[i] = [ji[0] * dndxsi + ji[3] * dndeta, ji[1] * dndxsi + ji[4] * dndeta,
-      ji[2] * dndxsi + ji[5] * dndeta];
+      const sfi = sf[i],
+        dndxsi = sfi[1],
+        dndeta = sfi[2];
+      gr[i] = [
+        ji[0] * dndxsi + ji[3] * dndeta,
+        ji[1] * dndxsi + ji[4] * dndeta,
+        ji[2] * dndxsi + ji[5] * dndeta,
+      ];
     }
     return gr;
   }
 
-  // 歪 - 変位マトリックスの転置行列を返す
+  // 歪 - 変位マトリクスの転置行列を返す
   // ja - ヤコビ行列
   // sf - 形状関数行列
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   public strainMatrix1(ja, sf, d) {
     const m = numeric.rep([this.count, 4], 0);
     const ji = this.jacobInv(ja, d).elements;
     for (let i = 0; i < this.count; i++) {
-      const mi = m[i], sfi = sf[i];
+      const mi = m[i],
+        sfi = sf[i];
       for (let j = 0; j < 3; j++) {
         mi[j] = ji[j] * sfi[1] + ji[j + 3] * sfi[2];
       }
@@ -116,29 +129,36 @@ export class ShellElement extends FElement {
     return m;
   }
 
-
   // 要素節点の角度を返す
   // p - 要素節点
   public angle(p) {
     const th = [];
     for (let i = 0; i < this.count; i++) {
-      th[i] = this.planeAngle(p[i], p[(i + 1) % this.count], p[(i + this.count - 1) % this.count]);
+      th[i] = this.planeAngle(
+        p[i],
+        p[(i + 1) % this.count],
+        p[(i + this.count - 1) % this.count]
+      );
     }
     return th;
   }
 
-
   // 節点歪・応力を返す
   // p - 要素節点
   // u - 節点変位
-  // d1 - 応力 - 歪マトリックス
+  // d1 - 応力 - 歪マトリクス
   // sp - シェルパラメータ
   public strainStress(p, u, d1, sp) {
     const d = this.dirMatrix(p);
     const n = this.normalVector(p);
     const v = this.toArray(u, 6, this.count);
     const t = sp.thickness;
-    const strain1 = [], stress1 = [], energy1 = [], strain2 = [], stress2 = [], energy2 = [];
+    const strain1 = [],
+      stress1 = [],
+      energy1 = [],
+      strain2 = [],
+      stress2 = [],
+      energy2 = [];
     for (let i = 0; i < this.count; i++) {
       const np = this.nodeP[i];
       const eps1 = this.strainPart(p, v, n, d, np[0], np[1], 1, t);
@@ -157,12 +177,11 @@ export class ShellElement extends FElement {
     return [strain1, stress1, energy1, strain2, stress2, energy2];
   }
 
-
   // 要素内の歪ベクトルを返す
   // p - 要素節点
   // v - 節点変位ベクトル
   // n - 法線ベクトル
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   // xsi,eta,zeta - ξ,η,ζ座標
   // t - 要素厚さ
   public strainPart(p, v, n, d, xsi, eta, zeta, t) {
@@ -172,8 +191,7 @@ export class ShellElement extends FElement {
     return numeric.dotVM(v, sm);
   }
 
-
-  // 形状関数マトリックス [ ∫NiNjdV ] を返す
+  // 形状関数マトリクス [ ∫NiNjdV ] を返す
   // p - 要素節点
   // coef - 係数
   // sp - シェルパラメータ
@@ -181,12 +199,15 @@ export class ShellElement extends FElement {
     const s = numeric.rep([this.count, this.count], 0);
     const t = sp.thickness;
     for (let i = 0; i < this.intP.length; i++) {
-      this.addMatrix(s, this.shapePart(p, this.intP[i], coef * this.intP[i][2], t));
+      this.addMatrix(
+        s,
+        this.shapePart(p, this.intP[i], coef * this.intP[i][2], t)
+      );
     }
     return s;
   }
 
-  // 積分点の形状関数マトリックス [ NiNj ] を返す
+  // 積分点の形状関数マトリクス [ NiNj ] を返す
   // p - 要素節点
   // x - ξ,η,ζ座標
   // w - 重み係数
@@ -197,7 +218,8 @@ export class ShellElement extends FElement {
     const matrix = [];
     const coef = 2 * w * Math.abs(ja.determinant());
     for (let i = 0; i < this.count; i++) {
-      const matr = [], cf2 = coef * sf[i][0];
+      const matr = [],
+        cf2 = coef * sf[i][0];
       for (let j = 0; j < this.count; j++) {
         matr[j] = cf2 * sf[j][0];
       }
@@ -206,8 +228,7 @@ export class ShellElement extends FElement {
     return matrix;
   }
 
-
-  // 積分点の拡散マトリックス [ ∇Ni・∇Nj ] を返す
+  // 積分点の拡散マトリクス [ ∇Ni・∇Nj ] を返す
   // p - 要素節点
   // x - ξ,η,ζ座標
   // w - 重み係数
@@ -219,8 +240,11 @@ export class ShellElement extends FElement {
     const matrix = [];
     const coef = 2 * w * Math.abs(ja.determinant());
     for (let i = 0; i < this.count; i++) {
-      const matr = [], gri = gr[i];
-      const c1 = coef * gri[0], c2 = coef * gri[1], c3 = coef * gri[2];
+      const matr = [],
+        gri = gr[i];
+      const c1 = coef * gri[0],
+        c2 = coef * gri[1],
+        c3 = coef * gri[2];
       for (let j = 0; j < this.count; j++) {
         const grj = gr[j];
         matr[j] = c1 * grj[0] + c2 * grj[1] + c3 * grj[2];
@@ -230,11 +254,11 @@ export class ShellElement extends FElement {
     return matrix;
   }
 
-  // 歪 - 変位マトリックスの転置行列を返す
+  // 歪 - 変位マトリクスの転置行列を返す
   // ただし歪は要素面座標、変位は全体座標
   // ja - ヤコビ行列
   // sf - 形状関数行列
-  // d - 方向余弦マトリックス
+  // d - 方向余弦マトリクス
   // zeta - 節点のζ座標
   // t - 要素厚さ
   public strainMatrix(ja, sf, d, zeta, t) {
@@ -277,13 +301,11 @@ export class ShellElement extends FElement {
     return matrix;
   }
 
-
   // ベクトルを歪に変換する
   // s - 歪ベクトル
   public toStrain(s) {
     return new Strain([s[0], s[1], 0, s[2], s[3], s[4]]);
   }
-  
 
   // ベクトルを歪に変換する
   // s - 歪ベクトル
@@ -291,7 +313,6 @@ export class ShellElement extends FElement {
     return new Stress([s[0], s[1], 0, s[2], s[3], s[4]]);
   }
 
-  
   /*
 
   // 要素境界数を返す
@@ -299,7 +320,7 @@ export class ShellElement extends FElement {
     return 2;
   }
 
-  // 拡散マトリックス [ ∫∇Ni・∇NjdV ] を返す
+  // 拡散マトリクス [ ∫∇Ni・∇NjdV ] を返す
   // p - 要素節点
   // coef - 係数
   // sp - シェルパラメータ
@@ -312,10 +333,10 @@ export class ShellElement extends FElement {
     return g;
   }
 
-  // 幾何剛性マトリックスを返す
+  // 幾何剛性マトリクスを返す
   // p - 要素節点
   // u - 節点変位
-  // d1 - 応力 - 歪マトリックス
+  // d1 - 応力 - 歪マトリクス
   // sp - シェルパラメータ
   public geomStiffnessMatrix(p, u, d1, sp) {
     const count = this.nodeCount(), kk = numeric.rep([6 * count, 6 * count], 0);
@@ -351,7 +372,7 @@ export class ShellElement extends FElement {
   // 要素歪・応力を返す
   // p - 要素節点
   // u - 節点変位
-  // d1 - 応力 - 歪マトリックス
+  // d1 - 応力 - 歪マトリクス
   // sp - シェルパラメータ
   public elementStrainStress(p, u, d1, sp) {
     const d = dirMatrix(p), n = normalVector(p), v = this.toArray(u, 6);
@@ -397,5 +418,4 @@ export class ShellElement extends FElement {
   }
 
   */
-
 }

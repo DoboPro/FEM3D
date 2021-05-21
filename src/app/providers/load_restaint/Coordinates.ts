@@ -2,23 +2,40 @@ import { Injectable } from '@angular/core';
 import * as THREE from 'three';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 
 // 局所座標系
 export class Coordinates {
-
   public label: number; // 座標系ラベル
   public c: THREE.Matrix3;
 
   // label - 座標系ラベル
-  // n11,n12,n13,n21,n22,n23,n31,n32,n33 - 座標変換マトリックスの成分
-  constructor(label: number,
-    n11: number, n12: number, n13: number,
-    n21: number, n22: number, n23: number,
-    n31: number, n32: number, n33: number) {
+  // n11,n12,n13,n21,n22,n23,n31,n32,n33 - 座標変換マトリクスの成分
+  constructor(
+    label: number,
+    n11: number,
+    n12: number,
+    n13: number,
+    n21: number,
+    n22: number,
+    n23: number,
+    n31: number,
+    n32: number,
+    n33: number
+  ) {
     this.label = label;
-    this.c = new THREE.Matrix3().set(n11, n12, n13, n21, n22, n23, n31, n32, n33);
+    this.c = new THREE.Matrix3().set(
+      n11,
+      n12,
+      n13,
+      n21,
+      n22,
+      n23,
+      n31,
+      n32,
+      n33
+    );
   }
 
   // グローバル座標系に変換する
@@ -33,13 +50,17 @@ export class Coordinates {
     return y;
   }
 
-
   // 荷重ベクトルを変換する
   // vector - 荷重ベクトル
-  // dof - マトリックスの自由度
+  // dof - マトリクスの自由度
   // idx0 - 節点ポインタ
   // ndof - 節点自由度
-  public transVector(vector: number[], dof: number, idx0: number, ndof: number): void {
+  public transVector(
+    vector: number[],
+    dof: number,
+    idx0: number,
+    ndof: number
+  ): void {
     const e: number[] = this.c.elements;
     for (let j = idx0; j < idx0 + ndof; j += 3) {
       const x1 = vector[j];
@@ -51,13 +72,17 @@ export class Coordinates {
     }
   }
 
-  // 剛性マトリックスを変換する
-  // matrix - 剛性マトリックス
-  // dof - マトリックスの自由度
+  // 剛性マトリクスを変換する
+  // matrix - 剛性マトリクス
+  // dof - マトリクスの自由度
   // idx0 - 節点ポインタ
   // ndof - 節点自由度
-  public transMatrix(matrix: number[][], dof: number, idx0: number, ndof: number): void {
-
+  public transMatrix(
+    matrix: number[][],
+    dof: number,
+    idx0: number,
+    ndof: number
+  ): void {
     const e: number[] = this.c.elements;
 
     let mi1: number[];
@@ -69,9 +94,17 @@ export class Coordinates {
       mi3 = matrix[i + 2];
       for (let j = idx0; j < idx0 + ndof; j += 3) {
         if (j in matrix[i]) {
-          const me = [mi1[j], mi2[j], mi3[j], mi1[j + 1],
-          mi2[j + 1], mi3[j + 1], mi1[j + 2],
-          mi2[j + 2], mi3[j + 2]];
+          const me = [
+            mi1[j],
+            mi2[j],
+            mi3[j],
+            mi1[j + 1],
+            mi2[j + 1],
+            mi3[j + 1],
+            mi1[j + 2],
+            mi2[j + 2],
+            mi3[j + 2],
+          ];
           for (let k = 0; k < 3; k++) {
             const ke3: number = 3 * k;
             const e1: number = e[ke3];
@@ -90,9 +123,17 @@ export class Coordinates {
       mi3 = matrix[i + 2];
       for (let j = 0; j < dof; j += 3) {
         if (j in matrix[i]) {
-          const me = [mi1[j], mi2[j], mi3[j],
-          mi1[j + 1], mi2[j + 1], mi3[j + 1],
-          mi1[j + 2], mi2[j + 2], mi3[j + 2]];
+          const me = [
+            mi1[j],
+            mi2[j],
+            mi3[j],
+            mi1[j + 1],
+            mi2[j + 1],
+            mi3[j + 1],
+            mi1[j + 2],
+            mi2[j + 2],
+            mi3[j + 2],
+          ];
           for (let k = 0; k < 3; k++) {
             const km3 = 3 * k;
             const me1 = me[km3];
@@ -106,5 +147,4 @@ export class Coordinates {
       }
     }
   }
-
 }
