@@ -32,7 +32,7 @@ export class FileIO {
       (responseText) => {
         // ファイル内データのスペースごとにx,y,zなど認識するための分割を行っている。
         this.readFemModel(responseText.split(/\r?\n/g));
-        // データの初期化とDマトリックスが作り終わるとここに飛ぶ
+        // データの初期化とDマトリクスが作り終わるとここに飛ぶ
         // 読み込まれたデータをもとに物体の描画を開始する。
         this.viewObj.create();
         this.loadObj.create();
@@ -69,7 +69,7 @@ export class FileIO {
             )
           );
         }
-      
+
         // 節点
         else if (keyWord == 'node' && ss.length > 4) {
           mesh.nodes.push(
@@ -109,7 +109,7 @@ export class FileIO {
         }
       }
     }
-    this.model.init();　//分類したデータ
+    this.model.init(); //分類したデータ
   }
 
   // データポインタを獲得する

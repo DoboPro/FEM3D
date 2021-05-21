@@ -71,7 +71,7 @@ var SolidElement = /** @class */ (function (_super) {
         return gr;
     };
     ;
-    // 歪 - 変位マトリックスの転置行列を返す
+    // 歪 - 変位マトリクスの転置行列を返す
     // grad - 形状関数の勾配
     SolidElement.prototype.strainMatrix = function (grad) {
         var m = numeric.rep([3 * this.count, 6], 0);
@@ -90,7 +90,7 @@ var SolidElement = /** @class */ (function (_super) {
         return m;
     };
     ;
-    // 積分点の形状関数マトリックス [ NiNj ] を返す
+    // 積分点の形状関数マトリクス [ NiNj ] を返す
     // p - 要素節点
     // x - ξ,η,ζ座標
     // w - 重み係数
@@ -109,7 +109,7 @@ var SolidElement = /** @class */ (function (_super) {
         return matrix;
     };
     ;
-    // 積分点の拡散マトリックス [ ∇Ni・∇Nj ] を返す
+    // 積分点の拡散マトリクス [ ∇Ni・∇Nj ] を返す
     // p - 要素節点
     // x - ξ,η,ζ座標
     // w - 重み係数
@@ -131,7 +131,7 @@ var SolidElement = /** @class */ (function (_super) {
         return matrix;
     };
     ;
-    // 質量マトリックスを返す
+    // 質量マトリクスを返す
     // p - 要素節点
     // dens - 材料の密度
     SolidElement.prototype.massMatrix = function (p, dens) {
@@ -152,9 +152,9 @@ var SolidElement = /** @class */ (function (_super) {
         return m;
     };
     ;
-    // 剛性マトリックスを返す
+    // 剛性マトリクスを返す
     // p - 要素節点
-    // d1 - 応力 - 歪マトリックス
+    // d1 - 応力 - 歪マトリクス
     SolidElement.prototype.stiffnessMatrix = function (p, d1) {
         var count = 3 * this.count;
         var kk = numeric.rep([count, count], 0);
@@ -168,7 +168,7 @@ var SolidElement = /** @class */ (function (_super) {
         return kk;
     };
     ;
-    // 形状関数マトリックス [ ∫NiNjdV ] を返す
+    // 形状関数マトリクス [ ∫NiNjdV ] を返す
     // p - 要素節点
     // coef - 係数
     SolidElement.prototype.shapeFunctionMatrix = function (p, coef) {
@@ -179,7 +179,7 @@ var SolidElement = /** @class */ (function (_super) {
         return s;
     };
     ;
-    // 拡散マトリックス [ ∫∇Ni・∇NjdV ] を返す
+    // 拡散マトリクス [ ∫∇Ni・∇NjdV ] を返す
     // p - 要素節点
     // coef - 係数
     SolidElement.prototype.gradMatrix = function (p, coef) {
@@ -190,10 +190,10 @@ var SolidElement = /** @class */ (function (_super) {
         return g;
     };
     ;
-    // 幾何剛性マトリックスを返す
+    // 幾何剛性マトリクスを返す
     // p - 要素節点
     // u - 節点変位
-    // d1 - 応力 - 歪マトリックス
+    // d1 - 応力 - 歪マトリクス
     SolidElement.prototype.geomStiffnessMatrix = function (p, u, d1) {
         var kk = numeric.rep([3 * this.count, 3 * this.count], 0);
         var v = this.toArray(u, 3, this.count);
@@ -224,7 +224,7 @@ var SolidElement = /** @class */ (function (_super) {
     // 節点歪・応力を返す
     // p - 要素節点
     // u - 節点変位
-    // d1 - 応力 - 歪マトリックス
+    // d1 - 応力 - 歪マトリクス
     SolidElement.prototype.strainStress = function (p, u, d1) {
         var v = this.toArray(u, 3, this.count);
         var strain = [], stress = [], energy = [];
