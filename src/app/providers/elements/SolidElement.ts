@@ -40,7 +40,7 @@ export class SolidElement extends FElement {
     this.isShell = false;
   }
 
-  // ☆ヤコビ行列を返す
+  // ヤコビ行列を返す
   // p - 要素節点
   // sf - 形状関数行列
   public jacobianMatrix(p, sf) {
@@ -189,7 +189,7 @@ export class SolidElement extends FElement {
       // この後行うガウス積分に必要となる未知数を決める処理
       // ipの中身は三次元の局所座標系で用いる変数(0:ξ,1:η,2:ζ,3:重み係数)
       const ip = this.intP[i];
-      // ☆形状関数の導出（局所座標系に直したものを代入）
+      // 形状関数の導出（局所座標系に直したものを代入）
       // sfで形状関数の式（3次元なので8つ）求まる
       // sf[N,ξ,η,ζ]形式で格納されている
       const sf = this.shapeFunction(ip[0], ip[1], ip[2]);
@@ -197,7 +197,7 @@ export class SolidElement extends FElement {
       // p:要素ごとの接点
       const ja = this.jacobianMatrix(p, sf);
 
-      // ☆Bマトリクス(ひずみと変位を示すマトリクス)
+      // Bマトリクス(ひずみと変位を示すマトリクス)
       // →要素剛性マトリクス
       const ks = this.stiffPart(
         d1,

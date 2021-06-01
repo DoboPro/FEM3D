@@ -51,7 +51,7 @@ export class FemDataModel {
     // 要素の境界線を引く
     this.mesh.getFaceEdges();
 
-    // ☆Dマトリクス（材料の特性を示すマトリクス）の作成
+    // Dマトリクス（材料の特性を示すマトリクス）の作成
     for (let i = 0; i < mats.length; i++) {
       const m3d = mats[i].matrix3D();
       mats[i].matrix = { m3d: m3d };
@@ -147,7 +147,7 @@ export class FemDataModel {
     }
   }
 
-  // ☆　節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
+  // 　節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
   public setNodeDoF(): number {
     const dof = this.bc.dof;
     const nodeCount = this.mesh.nodes.length;

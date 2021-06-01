@@ -103,7 +103,7 @@ export class Solver {
     }
   }
 
-  // ☆剛性マトリクス・荷重ベクトルを作成する
+  // 剛性マトリクス・荷重ベクトルを作成する
   public createStiffnessMatrix(): void {
     const bc: BoundaryCondition = this.model.bc;
     // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）
@@ -151,7 +151,7 @@ export class Solver {
       const material = this.model.materials[elem.material];
       const mat = material.matrix;
       //
-      // ☆要素剛性マトリクスの作成
+      // 要素剛性マトリクスの作成
       // mesh.getNodes(elem):要素毎の節点番号と節点のx,y,z座標を紐づける
       // mat.m3d:Dマトリクス
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);

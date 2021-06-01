@@ -79,7 +79,7 @@ var Solver = /** @class */ (function () {
             alert(ex1);
         }
     };
-    // ☆剛性マトリクス・荷重ベクトルを作成する
+    // 剛性マトリクス・荷重ベクトルを作成する
     Solver.prototype.createStiffnessMatrix = function () {
         var bc = this.model.bc;
         // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）

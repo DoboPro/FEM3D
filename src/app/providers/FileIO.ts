@@ -23,7 +23,7 @@ export class FileIO {
     private loadObj: LoadObjectService
   ) {}
 
-  // ☆FEMデータファイル（文字の羅列）を読み込む
+  // FEMデータファイル（文字の羅列）を読み込む
   // fileName - データファイル名
   // 非同期処理になるので、デバッグ処理の仕方に注意
   public readFemFile(fileName: string) {
@@ -43,7 +43,7 @@ export class FileIO {
     );
   }
 
-  // ☆FEMデータをパラメータごとにわける
+  // FEMデータをパラメータごとにわける
   // s - データ文字列のリスト
   private readFemModel(s: string[]) {
     this.model.clear();

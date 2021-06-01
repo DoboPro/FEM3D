@@ -44,7 +44,7 @@ var FemDataModel = /** @class */ (function () {
         this.mesh.getFreeFaces();
         // 要素の境界線を引く
         this.mesh.getFaceEdges();
-        // ☆Dマトリクス（材料の特性を示すマトリクス）の作成
+        // Dマトリクス（材料の特性を示すマトリクス）の作成
         for (var i = 0; i < mats.length; i++) {
             var m3d = mats[i].matrix3D();
             mats[i].matrix = { m3d: m3d };
@@ -139,7 +139,7 @@ var FemDataModel = /** @class */ (function () {
             throw new Error('要素番号' + bc.element + 'は存在しません');
         }
     };
-    // ☆　節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
+    // 　節点の自由度を設定する（今回は回転拘束を考慮しないので自由度３になる）
     FemDataModel.prototype.setNodeDoF = function () {
         var dof = this.bc.dof;
         var nodeCount = this.mesh.nodes.length;

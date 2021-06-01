@@ -153,7 +153,7 @@ export class HexaElement1 extends SolidElement {
     return th;
   }
 
-  // ☆形状関数行列 [ Ni dNi/dξ dNi/dη dNi/dζ ] を返す
+  // 形状関数行列 [ Ni dNi/dξ dNi/dη dNi/dζ ] を返す
   // xsi,eta,zeta - 要素内部ξ,η,ζ座標
   public shapeFunction1(xsi, eta, zeta) {
     return [
