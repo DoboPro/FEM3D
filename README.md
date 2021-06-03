@@ -39,4 +39,8 @@ https://code.visualstudio.com/download
 }
 ```
 
+
+# 更新履歴情報(2021/06/03更新)
+最新版です。
+
 inspired by http://www7b.biglobe.ne.jp/~khiguchi/Tech/fem/femHtml5.html
