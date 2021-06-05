@@ -31,6 +31,7 @@ export class FemDataModel {
     this.result.clear(); // 計算結果
   }
 
+  
   // モデルを初期化する（各パラメータに分類したデータを計算するのに違う定数に代入、並び替え、初期化の残り等を行う。）
   public init(): void {
     // 材料特性の代入(材料番号、ヤング率、、など)
