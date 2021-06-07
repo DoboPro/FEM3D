@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class FileIndexService {
-  public selectedIndex = '1'; // スペクトルの種類
+  public selectedIndex = '1';
 
   public FEMlist: any[] = [
     { id: '1', 
@@ -13,7 +13,7 @@ export class FileIndexService {
     },
     {
       id: '2',
-      name: '片持ち梁(メッシュ数多め)',
+      name: '片持ち梁(分割数多め)',
       file: 'assets/beam/beamHexa_mesh_m.fem',
     },
     { id: '3',
