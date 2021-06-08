@@ -56,7 +56,7 @@ export class MenuComponent implements OnInit {
     this.d = this.result.dispMax.toFixed(3);
     const elem = document.getElementById('result').style;
     const myStyle = {
-      display: 'inline-block',
+      display: 'block',
     };
     for (const prop in myStyle) {
       elem[prop] = myStyle[prop];
