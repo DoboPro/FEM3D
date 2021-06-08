@@ -17,7 +17,7 @@ import { ThreeService } from '../components/three/three.service';
 
 // 連立方程式求解オブジェクト
 export class Solver {
-  public PRECISION = 1e-10; // マトリックス精度
+  public PRECISION = 1e-10; // マトリクス精度
   public LU_METHOD = 0; // LU分解法
   public ILUCG_METHOD = 1; // 不完全LU分解共役勾配法
 
@@ -61,7 +61,7 @@ export class Solver {
       if (this.model.bc.restraints.length > 0) {
         // モデルの自由度を調べる
         this.dof = this.model.setNodeDoF();
-        // dofAllを求めた後、剛性マトリックス・荷重ベクトルを作成する
+        // dofAllを求めた後、剛性マトリクス・荷重ベクトルを作成する
         this.createStiffnessMatrix();
         // 変位を求める
         this.d = this.solve();
@@ -103,12 +103,12 @@ export class Solver {
     }
   }
 
-  // ☆剛性マトリックス・荷重ベクトルを作成する
+  // 剛性マトリクス・荷重ベクトルを作成する
   public createStiffnessMatrix(): void {
     const bc: BoundaryCondition = this.model.bc;
     // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）
     const bcList = bc.bcList;
-    // 変位が0である点を取り除きたい　
+    // 変位が0である点を取り除きたい
     const reducedList = new Array();
     for (let i = 0; i < bcList.length; i++) {
       if (bcList[i] < 0) {
@@ -117,9 +117,9 @@ export class Solver {
     }
     // 変位が0でない節点をreducedListに入れる。
 
-    // 要素・全体剛性マトリックスの作成
-    const matrix1: number[][] = this.stiffnessMatrix(this.dof);　//dofは自由度
-    // matrix1には自由度を減らしていない全体剛性マトリックスが生成
+    // 要素・全体剛性マトリクスの作成
+    const matrix1: number[][] = this.stiffnessMatrix(this.dof); //dofは自由度
+    // matrix1には自由度を減らしていない全体剛性マトリクスが生成
 
     // 荷重ベクトルの作成
     const vector1: number[] = this.loadVector(this.dof);
@@ -138,7 +138,7 @@ export class Solver {
     this.extruct(matrix1, vector1, reducedList);
   }
 
-  // 要素・全体剛性マトリックスを作成する
+  // 要素・全体剛性マトリクスを作成する
   // dof - モデル自由度
   public stiffnessMatrix(dof) {
     const mesh: MeshModel = this.model.mesh;
@@ -150,10 +150,10 @@ export class Solver {
       const elem = elements[i];
       const material = this.model.materials[elem.material];
       const mat = material.matrix;
-      // 
-      // ☆要素剛性マトリックスの作成
+      //
+      // 要素剛性マトリクスの作成
       // mesh.getNodes(elem):要素毎の節点番号と節点のx,y,z座標を紐づける
-      // mat.m3d:Dマトリックス
+      // mat.m3d:Dマトリクス
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
       this.setElementMatrix(elem, 3, matrix, km);
     }
@@ -183,20 +183,20 @@ export class Solver {
     return matrix;
   }
 
-  // 全体剛性マトリックスと成分の絶対値の最大を求める
+  // 全体剛性マトリクスと成分の絶対値の最大を求める
   // element - 要素
   // dof - 自由度
-  // matrix - 全体剛性マトリックス
-  // km - 要素の剛性マトリックス
+  // matrix - 全体剛性マトリクス
+  // km - 要素の剛性マトリクス
   // kmax - 成分の絶対値の最大値
   public setElementMatrix(
     element: any,
     dof: number,
     matrix: number[][],
-    km: number[][],
+    km: number[][]
   ) {
-    const nodeCount = element.nodeCount();　//要素1つ当たりの節点数
-    const index = this.model.bc.nodeIndex;//節点の3倍の値の集合
+    const nodeCount = element.nodeCount(); //要素1つ当たりの節点数
+    const index = this.model.bc.nodeIndex; //節点の3倍の値の集合
     const nodes = element.nodes; //要素
     for (let i = 0; i < nodeCount; i++) {
       const row0 = index[nodes[i]];
@@ -209,9 +209,11 @@ export class Solver {
           const krow: number[] = km[i0 + i1];
           for (let j1 = 0; j1 < dof; j1++) {
             const cj1 = column0 + j1;
-            if (cj1 in mrow) { //　要素が重なるとき
-              mrow[cj1] += krow[j0 + j1];　
-            } else {　// 要素が重ならない時
+            if (cj1 in mrow) {
+              //　要素が重なるとき
+              mrow[cj1] += krow[j0 + j1];
+            } else {
+              // 要素が重ならない時
               mrow[cj1] = krow[j0 + j1];
             }
           }
@@ -223,7 +225,7 @@ export class Solver {
 
   // 連立方程式を解く
   public solve() {
-  // 不完全LU分解共役勾配法
+    // 不完全LU分解共役勾配法
     return this.solveILU(
       //　全体剛性マトリクスのデータが何も含んでいない成分を削除し、要素に寄らない一続きにしたマトリクス
       this.toSparse(this.matrix),
@@ -454,15 +456,15 @@ export class Solver {
     const index = this.model.bc.nodeIndex;
     const bcdof = this.model.bc.dof;
     for (let i = 0; i < loads.length; i++) {
-    // i番目の荷重関連のデータを取り出す
+      // i番目の荷重関連のデータを取り出す
       const ld = loads[i];
-    // i番目の荷重は節点いくつのことか
+      // i番目の荷重は節点いくつのことか
       const nd = ld.node;
-    // i番目の荷重の大きさ、向き
+      // i番目の荷重の大きさ、向き
       const ldx = loads[i].globalX;
-    // i番目の荷重が作用する節点の自由度
+      // i番目の荷重が作用する節点の自由度
       const ldof = bcdof[nd];
-    // i番目の荷重が作用する節点の3倍の値を返す。
+      // i番目の荷重が作用する節点の3倍の値を返す。
       const index0 = index[nd];
       // x,y,zそれぞれに対して、荷重条件のみを考慮して荷重ベクトルを作る。
       // 荷重ベクトルを作るときにはx,y,zはただ順番に入るだけで、見た目の区別はない。
@@ -474,7 +476,7 @@ export class Solver {
   }
 
   // 行列の一部を抽出する
-  // matrix1,vector1 - 元のマトリックス,ベクトル
+  // matrix1,vector1 - 元のマトリクス,ベクトル
   // list - 抽出部分のリスト
   public extruct(matrix1, vector1, list) {
     this.matrix.length = 0;
@@ -486,7 +488,7 @@ export class Solver {
   }
 
   // 行列の行から一部を抽出する
-  // mrow - 元のマトリックスの行データ
+  // mrow - 元のマトリクスの行データ
   // list - 抽出部分のリスト
   public extructRow(mrow, list) {
     const exrow = [];

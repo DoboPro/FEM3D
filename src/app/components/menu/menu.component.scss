@@ -1,38 +1,48 @@
-.control {
-    top: 380px;
-    padding: 2pt 0 2pt 0;
-    background-color: #ffffff;
-    position: absolute;
-}
-
 .menu {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+
+    h1 {
+        margin: 0;
+    }
+
+    .btn {
+        color: #fff;
+        background-color: #3cb371;
+        border-bottom: 4px solid #308f5a;
+        height: 40px;
+        width: 100px;
+        font-size: 16px;
+        border-radius: 8px;
+        &:hover {
+            opacity: 0.75;
+        }
+    }
+
+    .selectFEM {
+        margin: 8px 0;
+    }
+
+    .result_disp {
+        margin: 0;
+        color: #fff;
+    }
+
+    #result {
+        display: none;
+        margin: 0;
+    }
+
+    .mg {
+        margin-right: 16px;
+    }
+
     @media screen and (max-width: 767px) {
         display: block;
         text-align: center;
+        .mg {
+            margin-right: 0;
+        }
     }
-}
-
-.selectFEM {
-    margin: 8px;
-    display: inline-block;
-}
-
-.button {
-    //display: inline-block;
-    width: 120px;
-    margin: 8px;
-    padding: 8px;
-    color: #ffffff;
-    background: #669987;
-    border-radius: 4px;
-    font-size: 16px;
-    &:hover {
-        cursor: pointer;
-        opacity: 0.7;
-    }
-}
-
-#result {
-    display: none;
-    margin: 8px;
 }
