@@ -108,7 +108,7 @@ export class Solver {
     const bc: BoundaryCondition = this.model.bc;
     // 自由度を減らすための準備（境界条件を設定した節点のリストを定義する）
     const bcList = bc.bcList;
-    // 変位が0である点を取り除きたい
+    // 自由度が0である点を取り除きたい
     const reducedList = new Array();
     for (let i = 0; i < bcList.length; i++) {
       if (bcList[i] < 0) {
@@ -153,7 +153,7 @@ export class Solver {
       //
       // 要素剛性マトリクスの作成
       // mesh.getNodes(elem):要素毎の節点番号と節点のx,y,z座標を紐づける
-      // mat.m3d:Dマトリクス
+      // mat.m3d:Dマトリクス 
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
       this.setElementMatrix(elem, 3, matrix, km);
     }
