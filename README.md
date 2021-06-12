@@ -39,6 +39,9 @@ https://code.visualstudio.com/download
 }
 ```
 
+# .femファイルの詳細
+https://github.com/DoboPro/FEM3D/blob/main/data/FileFormat.pdf
+
 
 # 更新履歴情報(2021/06/03更新)
 最新版です。
