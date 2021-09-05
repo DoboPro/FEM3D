@@ -28,13 +28,6 @@ https://code.visualstudio.com/download
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
     },
-    {
-      "type": "chrome",
-      "request": "attach",
-      "name": "Attach to Chrome",
-      "port": 9222,
-      "webRoot": "${workspaceFolder}"
-    }
   ]
 }
 ```
