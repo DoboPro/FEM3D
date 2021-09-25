@@ -145,7 +145,6 @@ export class Solver {
     const elements = mesh.elements;
     const matrix = [];
     let km: number[][];
-    let kmax = 0;
     for (let i = 0; i < dof; i++) matrix[i] = [];
     for (let i = 0; i < elements.length; i++) {
       const elem = elements[i];
@@ -154,10 +153,33 @@ export class Solver {
       //
       // 要素剛性マトリクスの作成
       // mesh.getNodes(elem):要素毎の節点番号と節点のx,y,z座標を紐づける
-      // mat.m3d:Dマトリクス 
+      // mat.m3d:Dマトリクス
       km = elem.stiffnessMatrix(mesh.getNodes(elem), mat.m3d);
       this.setElementMatrix(elem, 3, matrix, km);
     }
+    // // 座標変換
+    // const rests = this.model.bc.restraints;
+    // const index = this.model.bc.nodeIndex;
+    // const bcdof = this.model.bc.dof;
+    // for (let i = 0; i < rests.length; i++) {
+    //   const ri = rests[i];
+    //   if (ri.coords) {
+    //     ri.coords.transMatrix(matrix, dof, index[ri.node], bcdof[i]);
+    //   }
+    // }
+    /*/ 絶対値が小さい成分を除去する
+    const eps = this.PRECISION * kmax;
+    for (let i = 0; i < dof; i++) {
+      const mrow = matrix[i];
+      for (let j of mrow) {
+        if (mrow.hasOwnProperty(j)) {
+          j = parseInt(j);
+          if (Math.abs(mrow[j]) < eps) {
+            delete mrow[j];
+          }
+        }
+      }
+    }*/
     return matrix;
   }
 
