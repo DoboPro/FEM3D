@@ -36,7 +36,7 @@ https://code.visualstudio.com/download
 https://github.com/DoboPro/FEM3D/blob/main/data/FileFormat.pdf
 
 
-# 更新履歴情報(2021/06/03更新)
+# 更新履歴情報(2021/10/31更新)
 最新版です。
 
 inspired by http://www7b.biglobe.ne.jp/~khiguchi/Tech/fem/femHtml5.html
