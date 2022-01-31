@@ -1,19 +1,24 @@
-<div class="menu">
-  <h1 class="header-logo mg">FEM3D</h1>
-  <div class="selectFEM mg">
-    <form>
-      <select [(ngModel)]="fileIndex.selectedIndex" (change)="onSelectChange($event.target.value)" name="first">
-        <option *ngFor="let item of FEMlist" [value]="item.id" [selected]="1">
-          {{ item.name }}
-        </option>
-      </select>
-    </form>
-  </div>
+<div class="menu-bar">
+    <div class="menu">
+        <h1 class="header-logo mg">FEM3D</h1>
+        <div class="selectFEM mg">
+            <form>
+                <select [(ngModel)]="fileIndex.selectedIndex" (change)="onSelectChange($event.target.value)" name="first">
+          <option *ngFor="let item of FEMlist" [value]="item.id" [selected]="1">
+            {{ item.name }}
+          </option>
+        </select>
+            </form>
+        </div>
 
-  <input type="button" class="btn mg" value="計算開始" (click)="modal()" />
-  <!-- <a href="#" class="">計算開始</a> -->
+        <input type="button" class="btn mg" value="計算開始" (click)="modal()" />
+        <!-- <a href="#" class="">計算開始</a> -->
 
-  <div class="result_forms mg" id="result">
-    <p class="result_disp">変位量最大 {{ d }} (mm)</p>
-  </div>
+        <div class="result_forms mg" id="result">
+            <p class="result_disp">変位量最大 {{ d }} (mm)</p>
+        </div>
+    </div>
+    <div class="disclaimer">
+        <a href="https://github.com/DoboPro/FEM3D_Disclaimer/blob/main/README.md">利用規約</a>
+    </div>
 </div>
