@@ -10,9 +10,12 @@ https://nodejs.org/ja/download/
 3) Visual Studio Code<br>
 https://code.visualstudio.com/download
 
+## 動作確認済みバージョン
+node 14.15.1
+
 ## コマンド
 1) `npm install`
-2) `npm install -g @angular/cli`
+2) `npm install -g @angular/cli@11.1.0`
 3) `set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process`
 4) `ng serve`
 
